@@ -65,7 +65,7 @@ const setupCanvasInit = (voyage: Voyage) => {
 
     <Transition v-if="getCurrentView === 'game' && hasMounted" name="slide-in" appear>
       <section class="flex flex-col items-center justify-center gap-6">
-        <h1 class="text-2xl text-glow md:text-[6rem] lg:text-[14rem] font-bold font-sci-fi uppercase z-10">
+        <h1 class="text-2xl text-glow md:text-[4rem] lg:text-[6rem] font-bold font-sci-fi uppercase z-10">
           {{ selectedVoyage?.name }}</h1>
           <VoyageCanvas />
       </section>

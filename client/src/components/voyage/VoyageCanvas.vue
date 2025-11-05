@@ -1,8 +1,14 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+export type Direction = 'up' | 'right' | 'down' | 'left'
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
+const size = 100
+
+//initialize the posX and posY
+let posX = 0
+let posY = 0
 
 function fitToDisplaySize(canvas: HTMLCanvasElement) {
     const dpr = Math.max(1, window.devicePixelRatio || 1)
@@ -27,28 +33,121 @@ function fitToDisplaySize(canvas: HTMLCanvasElement) {
 
 function init() {
     const canvas = canvasRef.value
+
     if (!canvas) return
 
+    // canvas.width = canvas.clientWidth
+    // canvas.height = canvas.clientHeight
     ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    //initialize the posX and posY
+    posX = canvas.clientWidth / 2
+    posY = canvas.clientHeight / 2
+
     fitToDisplaySize(canvas)
 
-    // Clear + simple test draw
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = '#04121a'
-    // Use CSS-space units (because we setTransform above)
-    ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight)
+    // small square example
+    ctx.fillStyle = 'green'
+    ctx.fillRect((canvas.clientWidth - size) / 2, (canvas.clientHeight - size) / 2, size, size)
 
-    ctx.fillStyle = '#e9d6b0'
-    ctx.font = '20px monospace'
-    ctx.fillText('Canvas Ready', 120, 36)
+
+}
+
+
+function movementControl(direction: Direction) {
+    console.log(`size: ${size}, posX: ${posX}, posY: ${posY}, direction: ${direction}, clientWidth: ${canvasRef.value!.clientWidth}, clientHeight: ${canvasRef.value!.clientHeight}`)
+
+
+    console.log("canvasRef.value!.clientHeight", canvasRef.value!.clientHeight)
+
+    console.log("canvasRef.value!.clientHeight - size", canvasRef.value!.clientHeight - size)
+
+    switch (direction) {
+        case "up":
+            if (posY > 0) {
+                //alow movement
+                posY -= 10
+            } else {
+                //then do nothing
+            }
+            break;
+
+
+        case "right":
+            if (posX >= canvasRef.value!.clientWidth - size) {
+                //then do nothing
+            } else {
+                //alow movement
+                posX += 10
+            }
+            break;
+
+        case "down":
+            if (posY <= canvasRef.value!.clientHeight - size) {
+                //alow movement
+                posY += 10
+            } else {
+                //then do nothing
+            }
+            break;
+
+        case "left":
+            if (posX <= 0) {
+                //then do nothing
+            } else {
+                //alow movement
+                posX -= 10
+            }
+            break;
+        default:
+            //do nothing
+            break
+
+    }
+
+}
+
+function onKeyDown(e: KeyboardEvent) {
+    console.log('keydown', e.key)
+    switch (e.key) {
+        case "ArrowUp":
+            movementControl('up')
+            break;
+        case "ArrowRight":
+            movementControl('right')
+            break;
+        case "ArrowDown":
+            movementControl('down')
+            break;
+        case "ArrowLeft":
+            movementControl('left')
+            break;
+        default:
+            //do nothing
+            break
+    }
+
+    //then rerender by using draw()
+    draw()
+}
+
+function draw() {
+    ctx?.clearRect(0, 0, canvasRef.value!.width, canvasRef.value!.height)
+    ctx?.fillRect(posX, posY, size, size)
 }
 
 onMounted(() => {
     init()
+    window.addEventListener('keydown', onKeyDown)
     // Later you can also add: window.addEventListener('resize', () => fitToDisplaySize(canvasRef.value!))
 })
+
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', onKeyDown)
+})
+
+
 </script>
 
 <template>
