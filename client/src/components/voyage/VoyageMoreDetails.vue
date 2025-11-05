@@ -40,7 +40,7 @@ defineProps<{
         </div>
         <!-- right side on large screens -->
         <div class="min-w-sm max-w-sm">
-            <img class="rounded-xl" :src="getImage(selectedVoyage?.imageUrlKey)" :alt="`${selectedVoyage?.name} image`">
+            <img class="rounded-xl" :src="getImage(selectedVoyage?.imageUrlKey ?? null)" :alt="`${selectedVoyage?.name} image`">
         </div>
 
     </div>

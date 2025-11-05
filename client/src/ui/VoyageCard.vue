@@ -4,12 +4,14 @@ import { Eclipse } from 'lucide-vue-next';
 import Difficulty from './Badge/Difficulty.vue';
 import { getImage } from '../utils/getImage';
 
+
 defineProps<{
     voyage: Voyage
 }>();
 
 defineEmits<{
-    (e: 'view-voyage-details', voyage: Voyage): void
+    (e: 'view-voyage-details', voyage: Voyage): void,
+    (e: 'join-voyage', voyage: Voyage): void
 }>();
 
 
@@ -36,7 +38,7 @@ defineEmits<{
             <div class="card-actions flex flex-col md:flex-row items-center gap-2">
                 <button @click="$emit('view-voyage-details', voyage)" class="btn btn-primary flex-1 text-xl">More
                     Info</button>
-                <button class="btn btn-secondary text-xl flex-1">Join</button>
+                <button class="btn btn-secondary text-xl flex-1" @click="$emit('join-voyage', voyage)">Join</button>
             </div>
         </div>
     </div>

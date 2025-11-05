@@ -22,10 +22,10 @@ const handleShipSelection = (ship: Ship) => {
     nextStep()
 }
 
-const onLiftOffFinished = () => {
-    //for now emit back to parent
-    emits('ship-selected', voyageSetup.value.ship!)
-}
+// const onLiftOffFinished = () => {
+//     //for now emit back to parent
+//     emits('ship-selected', voyageSetup.value.ship!)
+// }
 
 /**
  * Increment the current step by 1, unless the current step is 2

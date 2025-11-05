@@ -7,6 +7,9 @@ import BaseModal from '../ui/BaseModal.vue';
 import { TransitionGroup } from 'vue'
 import VoyageMoreDetails from '../components/voyage/VoyageMoreDetails.vue';
 
+const emits = defineEmits<{
+    (e: 'join-voyage', voyage: Voyage): void
+}>()
 
 const props = defineProps<{
     loading: boolean
@@ -38,7 +41,7 @@ const handleVoyageDetails = (voyage: Voyage) => {
 
         <h1 class="font-sci-fi text-8xl font-bold">Voyages</h1>
         <TransitionGroup name="fade" tag="div" appear class="flex items-center justify-center flex-wrap gap-4">
-            <VoyageCard v-for="(voyage, index) in props.voyages" :key="voyage.id" :voyage="voyage"
+            <VoyageCard v-for="(voyage, index) in props.voyages" :key="voyage.id" :voyage="voyage" @join-voyage="emits('join-voyage', voyage)"
                 :style="{ transitionDelay: `${index * 100}ms` }" @view-voyage-details="handleVoyageDetails($event)" />
         </TransitionGroup>
     </section>
