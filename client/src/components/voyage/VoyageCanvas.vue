@@ -1,11 +1,15 @@
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 export type Direction = 'up' | 'right' | 'down' | 'left'
+import spaceshipUp from '../../assets/img/cosmoport/spaceship-up.png'
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
 const size = 100
 
+//spaceship
+let spaceshipImg = new Image()
+spaceshipImg.src = spaceshipUp
 //initialize the posX and posY
 let posX = 0
 let posY = 0
@@ -47,22 +51,22 @@ function init() {
 
     fitToDisplaySize(canvas)
 
+    // remove this after we have used the spaceship image
     // small square example
-    ctx.fillStyle = 'green'
-    ctx.fillRect((canvas.clientWidth - size) / 2, (canvas.clientHeight - size) / 2, size, size)
+    // ctx.fillStyle = 'green'
+    // ctx.fillRect((canvas.clientWidth - size) / 2, (canvas.clientHeight - size) / 2, size, size)
+
+
+
+    spaceshipImg.onload = () => {
+        ctx!.drawImage(spaceshipImg, posX, posY, size, size)
+    }
 
 
 }
 
 
 function movementControl(direction: Direction) {
-    console.log(`size: ${size}, posX: ${posX}, posY: ${posY}, direction: ${direction}, clientWidth: ${canvasRef.value!.clientWidth}, clientHeight: ${canvasRef.value!.clientHeight}`)
-
-
-    console.log("canvasRef.value!.clientHeight", canvasRef.value!.clientHeight)
-
-    console.log("canvasRef.value!.clientHeight - size", canvasRef.value!.clientHeight - size)
-
     switch (direction) {
         case "up":
             if (posY > 0) {
@@ -109,7 +113,7 @@ function movementControl(direction: Direction) {
 }
 
 function onKeyDown(e: KeyboardEvent) {
-    console.log('keydown', e.key)
+
     switch (e.key) {
         case "ArrowUp":
             movementControl('up')
@@ -129,7 +133,14 @@ function onKeyDown(e: KeyboardEvent) {
     }
 
     //then rerender by using draw()
-    draw()
+    drawSpaceship()
+}
+
+
+function drawSpaceship() {
+    ctx?.clearRect(0, 0, canvasRef.value!.width, canvasRef.value!.height)
+
+    ctx?.drawImage(spaceshipImg, posX, posY, size, size)
 }
 
 function draw() {
