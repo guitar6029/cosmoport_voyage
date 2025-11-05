@@ -2,10 +2,14 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 export type Direction = 'up' | 'right' | 'down' | 'left'
 import spaceshipUp from '../../assets/img/cosmoport/spaceship-up.png'
+import crimsonriftbgimg from '../../assets/img/cosmoport/bg/crimson-rift-bg.jpg'
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
 const size = 100
+
+//bg image
+let bgImage: HTMLImageElement
 
 //spaceship
 let spaceshipImg = new Image()
@@ -56,6 +60,11 @@ function init() {
     // ctx.fillStyle = 'green'
     // ctx.fillRect((canvas.clientWidth - size) / 2, (canvas.clientHeight - size) / 2, size, size)
 
+    bgImage = new Image()
+    bgImage.src = crimsonriftbgimg
+    bgImage.onload = () => {
+        drawBackground()
+    }
 
 
     spaceshipImg.onload = () => {
@@ -133,19 +142,21 @@ function onKeyDown(e: KeyboardEvent) {
     }
 
     //then rerender by using draw()
-    drawSpaceship()
+    draw()
 }
 
+function drawBackground() {
+    ctx?.drawImage(bgImage, 0, 0, canvasRef.value!.width, canvasRef.value!.height)
+}
 
 function drawSpaceship() {
-    ctx?.clearRect(0, 0, canvasRef.value!.width, canvasRef.value!.height)
-
     ctx?.drawImage(spaceshipImg, posX, posY, size, size)
 }
 
 function draw() {
     ctx?.clearRect(0, 0, canvasRef.value!.width, canvasRef.value!.height)
-    ctx?.fillRect(posX, posY, size, size)
+    drawBackground()
+    drawSpaceship()
 }
 
 onMounted(() => {
