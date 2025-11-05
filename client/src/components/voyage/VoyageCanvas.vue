@@ -4,6 +4,7 @@ export type Direction = 'up' | 'right' | 'down' | 'left'
 import spaceshipUp from '../../assets/img/cosmoport/spaceship-up.png'
 import crimsonriftbgimg from '../../assets/img/cosmoport/bg/crimson-rift-bg.jpg'
 
+const margin = 20
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
 const size = 100
@@ -49,21 +50,17 @@ function init() {
     ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    //initialize the posX and posY
-    posX = canvas.clientWidth / 2
-    posY = canvas.clientHeight / 2
-
     fitToDisplaySize(canvas)
 
-    // remove this after we have used the spaceship image
-    // small square example
-    // ctx.fillStyle = 'green'
-    // ctx.fillRect((canvas.clientWidth - size) / 2, (canvas.clientHeight - size) / 2, size, size)
+    //initialize the posX and posY
+    // find the cente so the spaceship is in the middle
+    posX = (canvas.clientWidth - size) / 2
+    posY = canvas.clientHeight - size - margin
 
     bgImage = new Image()
     bgImage.src = crimsonriftbgimg
     bgImage.onload = () => {
-        drawBackground()
+        draw()
     }
 
 
