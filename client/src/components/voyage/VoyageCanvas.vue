@@ -4,6 +4,12 @@ export type Direction = 'up' | 'right' | 'down' | 'left'
 import spaceshipUp from '../../assets/img/cosmoport/spaceship-up.png'
 import crimsonriftbgimg from '../../assets/img/cosmoport/bg/crimson-rift-bg.jpg'
 
+import debrisImg from "../../assets/img/cosmoport/env-objects/crimson-rift/debris-001.png"
+import crystalImg from "../../assets/img/cosmoport/env-objects/crimson-rift/crystal-001.png"
+import asteroidImg from "../../assets/img/cosmoport/env-objects/crimson-rift/asteroid-001.png"
+
+let assetsReady = 0
+
 const margin = 20
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
@@ -18,6 +24,13 @@ spaceshipImg.src = spaceshipUp
 //initialize the posX and posY
 let posX = 0
 let posY = 0
+
+let debris = new Image()
+debris.src = debrisImg
+let crystal = new Image()
+crystal.src = crystalImg
+let asteroid = new Image()
+asteroid.src = asteroidImg
 
 function fitToDisplaySize(canvas: HTMLCanvasElement) {
     const dpr = Math.max(1, window.devicePixelRatio || 1)
@@ -40,6 +53,13 @@ function fitToDisplaySize(canvas: HTMLCanvasElement) {
     canvas.style.height = cssHeight + 'px'
 }
 
+function initialDraw() {
+    drawBackground()
+    randomizeObjects(5)
+    drawSpaceship()
+
+}
+
 function init() {
     const canvas = canvasRef.value
 
@@ -52,6 +72,7 @@ function init() {
 
     fitToDisplaySize(canvas)
 
+
     //initialize the posX and posY
     // find the cente so the spaceship is in the middle
     posX = (canvas.clientWidth - size) / 2
@@ -60,17 +81,31 @@ function init() {
     bgImage = new Image()
     bgImage.src = crimsonriftbgimg
     bgImage.onload = () => {
-        draw()
+        assetsReady++
+        if (assetsReady == 2) {
+            initialDraw()
+        }
     }
-
 
     spaceshipImg.onload = () => {
-        ctx!.drawImage(spaceshipImg, posX, posY, size, size)
+        assetsReady++
+        if (assetsReady == 2) {
+            initialDraw()
+        }
     }
-
-
 }
 
+
+function randomizeObjects(numberOfItems: number) {
+    let items = [debris, crystal, asteroid] as HTMLImageElement[]
+    for (let i = 0; i < numberOfItems; i++) {
+        let randomX = Math.floor(Math.random() * canvasRef.value!.clientWidth)
+        let randomY = Math.floor(Math.random() * canvasRef.value!.clientHeight)
+        let randomindex = Math.floor(Math.random() * items.length)
+        ctx?.drawImage(items[randomindex], randomX, randomY, 150, 150)
+    }
+
+}
 
 function movementControl(direction: Direction) {
     switch (direction) {
@@ -86,9 +121,8 @@ function movementControl(direction: Direction) {
 
         case "right":
             if (posX >= canvasRef.value!.clientWidth - size) {
-                //then do nothing
+
             } else {
-                //alow movement
                 posX += 10
             }
             break;
