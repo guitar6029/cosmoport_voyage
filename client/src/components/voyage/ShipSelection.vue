@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-vue-next';
-import { shipsData } from '../../assets/shipsData';
 import type { Ship } from '../../types/Ship';
 import { computed, ref } from 'vue';
 
 // refs
 const currentCarouselStep = ref(0)
-const ships = ref<Ship[] | null>(shipsData)
+const ships = ref<Ship[] | null>([])
 
 
 //emits 

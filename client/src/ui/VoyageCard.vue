@@ -19,7 +19,7 @@ defineEmits<{
 <template>
     <div class="card card-xl card-border bg-base-100 w-96 h-150 shadow-sm hover-bg hover:bg-accent">
         <figure class="relative">
-            <img :src="getImage(voyage.imageUrlKey)"  :alt="voyage.description" class="zoom-in w-full" />
+            <img :src="getImage(voyage.imageUrlKey)" :alt="voyage.description" class="zoom-in w-full" />
         </figure>
         <div class="card-body flex flex-col gap-2">
             <h2 class="card-title">{{ voyage.name }}</h2>
@@ -36,8 +36,7 @@ defineEmits<{
             <div class="card-actions flex flex-col md:flex-row items-center gap-2">
                 <button @click="$emit('view-voyage-details', voyage)" class="btn btn-primary flex-1 text-xl">More
                     Info</button>
-                <RouterLink :to="{ name: 'voyage-details', params: { name: voyage.name } }"
-                    class="btn btn-secondary text-xl flex-1">Join</RouterLink>
+                <button class="btn btn-secondary text-xl flex-1">Join</button>
             </div>
         </div>
     </div>

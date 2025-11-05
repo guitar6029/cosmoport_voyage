@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import ShipSelection from './ShipSelection.vue';
 import type { Ship } from '../../types/Ship';
-import LiftOff from '../../ui/Animated/LiftOff.vue';
+// import LiftOff from '../../ui/Animated/LiftOff.vue';
 
 //emits
 const emits = defineEmits<{
@@ -57,10 +57,10 @@ function nextStep() {
 
     <!-- End Step 1 -->
     <!-- Confirm Slide -->
-    <Transition name="slide-in" mode="out-in" appear v-if="currentStep === 1">
+    <!-- <Transition name="slide-in" mode="out-in" appear v-if="currentStep === 1">
         <LiftOff :showConfirm="true" confirmText="Arm Thrusters" :autoStart="false" :showSkip="true"
             @finished="onLiftOffFinished" />
-    </Transition>
+    </Transition> -->
 
 
 
