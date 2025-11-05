@@ -1,0 +1,30 @@
+/* textAnimations.css */
+.text-glow {
+  text-shadow: 0 0 8px rgba(180, 160, 255, 0.6),
+               0 0 16px rgba(120, 120, 255, 0.3);
+}
+
+.text-fade-in {
+  opacity: 0;
+  animation: fadeIn 1.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid #fff;
+  white-space: nowrap;
+  animation: typing 3s steps(20, end), blink 0.7s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}

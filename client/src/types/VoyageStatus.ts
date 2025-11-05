@@ -1,0 +1,1 @@
+export type VoyageStatus = "available" | "in-progress" | "completed"; 

@@ -1,0 +1,43 @@
+<script setup lang="ts">
+import type { Voyage } from '../types/Voyage';
+import { Eclipse } from 'lucide-vue-next';
+import Difficulty from './Badge/Difficulty.vue';
+defineProps<{
+    voyage: Voyage
+}>();
+
+defineEmits<{
+    (e: 'view-voyage-details', voyage: Voyage): void
+}>();
+
+
+
+</script>
+
+<template>
+    <div class="card card-xl card-border bg-base-100 w-96 shadow-sm hover-bg hover:bg-accent">
+        <figure class="relative">
+            <img :src="voyage.imageUrl" :alt="voyage.description" class="zoom-in" />
+            
+        </figure>
+        <div class="card-body flex flex-col gap-2">
+            <h2 class="card-title">{{ voyage.name }}</h2>
+            <p class="line-clamp-2">{{ voyage.description }}</p>
+            <Difficulty :difficulty="voyage.difficulty" />
+            <div class="flex flex-row items-center gap-2 m-2">
+                <Eclipse class="w-6 h-6" />
+                <span>Origin: <span class="font-bold">{{ voyage.origin }}</span></span>
+            </div>
+            <div class="flex flex-row items-center gap-2 m-2">
+                <Eclipse class="w-6 h-6" />
+                <span>Destination: <span class="font-bold">{{ voyage.destination }}</span></span>
+            </div>
+            <div class="card-actions flex flex-col md:flex-row items-center gap-2">
+                <button @click="$emit('view-voyage-details', voyage)" class="btn btn-primary flex-1 text-xl">More
+                    Info</button>
+                <RouterLink :to="{ name: 'voyage-details', params: { name: voyage.name } }"
+                    class="btn btn-secondary text-xl flex-1">Join</RouterLink>
+            </div>
+        </div>
+    </div>
+</template>
