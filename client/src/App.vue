@@ -11,10 +11,14 @@ const voyageData = ref<Voyage[]>([])
 const showHero = ref(true);
 onMounted(async () => {
   hasMounted.value = true
-  const { data } = await fetchVoyageData()
-  console.log("data : ", data)
-  if (data.data && data.data.length > 0) {
-    voyageData.value = data.data
+  const result = await fetchVoyageData()
+  console.log("voyage fetch result:", result)
+  const payload = Array.isArray(result.data)
+    ? result.data
+    : (result.data && Array.isArray(result.data.data) ? result.data.data : [])
+
+  if (payload.length > 0) {
+    voyageData.value = payload
   }
 })
 </script>

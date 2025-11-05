@@ -13,13 +13,6 @@ const props = defineProps<{
     voyages: Voyage[]
 }>()
 
-
-
-// const voyages = ref<Voyage[] | null>([])
-
-
-
-
 const selectedVoyage = ref<Voyage | null>(null);
 const isModalShowing = ref(false);
 
