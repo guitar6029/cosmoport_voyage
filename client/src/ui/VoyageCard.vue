@@ -2,6 +2,8 @@
 import type { Voyage } from '../types/Voyage';
 import { Eclipse } from 'lucide-vue-next';
 import Difficulty from './Badge/Difficulty.vue';
+import { getImage } from '../utils/getImage';
+
 defineProps<{
     voyage: Voyage
 }>();
@@ -15,10 +17,9 @@ defineEmits<{
 </script>
 
 <template>
-    <div class="card card-xl card-border bg-base-100 w-96 shadow-sm hover-bg hover:bg-accent">
+    <div class="card card-xl card-border bg-base-100 w-96 h-150 shadow-sm hover-bg hover:bg-accent">
         <figure class="relative">
-            <img :src="voyage.imageUrl" :alt="voyage.description" class="zoom-in" />
-            
+            <img :src="getImage(voyage.imageUrlKey)"  :alt="voyage.description" class="zoom-in w-full" />
         </figure>
         <div class="card-body flex flex-col gap-2">
             <h2 class="card-title">{{ voyage.name }}</h2>

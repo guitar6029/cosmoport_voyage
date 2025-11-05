@@ -3,6 +3,7 @@ import type { Voyage } from '../../types/Voyage';
 import Difficulty from '../../ui/Badge/Difficulty.vue';
 import { Eclipse, DollarSign } from 'lucide-vue-next';
 import UiIcon from '../../ui/UiIcon.vue';
+import { getImage } from '../../utils/getImage';
 
 defineProps<{
     selectedVoyage: Voyage | null
@@ -39,7 +40,7 @@ defineProps<{
         </div>
         <!-- right side on large screens -->
         <div class="min-w-sm max-w-sm">
-            <img class="rounded-xl" :src="selectedVoyage?.imageUrl" :alt="`${selectedVoyage?.name} image`">
+            <img class="rounded-xl" :src="getImage(selectedVoyage?.imageUrlKey)" :alt="`${selectedVoyage?.name} image`">
         </div>
 
     </div>

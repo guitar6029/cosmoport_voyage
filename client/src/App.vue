@@ -2,11 +2,20 @@
 
 import { Transition, onMounted, ref } from 'vue';
 import VoyageContainer from './components/VoyageContainer.vue';
+import useVoyage from './composables/useVoyage';
+import type { Voyage } from './types/Voyage';
 
+const { fetchVoyageData, isLoadingVoyageData } = useVoyage()
 const hasMounted = ref(false);
+const voyageData = ref<Voyage[]>([])
 const showHero = ref(true);
-onMounted(() => {
+onMounted(async () => {
   hasMounted.value = true
+  const { data } = await fetchVoyageData()
+  console.log("data : ", data)
+  if (data.data && data.data.length > 0) {
+    voyageData.value = data.data
+  }
 })
 </script>
 
@@ -27,6 +36,6 @@ onMounted(() => {
       </section>
     </Transition>
 
-    <VoyageContainer v-else-if="hasMounted && !showHero" />
+    <VoyageContainer v-else-if="hasMounted && !showHero" :loading="isLoadingVoyageData" :voyages="voyageData" />
   </div>
 </template>

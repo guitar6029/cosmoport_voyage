@@ -11,7 +11,7 @@ export interface Voyage {
   recommendedShip: "Scout" | "Freighter" | "Explorer" | "Fighter";
   reward: number;
   status?: VoyageStatus;
-  imageUrl: string;
+  imageUrlKey: string;
 }
 
 
