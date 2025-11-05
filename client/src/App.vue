@@ -6,13 +6,14 @@ import VoyageContainer from './components/VoyageContainer.vue';
 import useVoyage from './composables/useVoyage';
 import type { Voyage } from './types/Voyage';
 import type { AppView } from './types/AppView';
+import VoyageCanvas from './components/voyage/VoyageCanvas.vue';
 
 const { fetchVoyageData, isLoadingVoyageData } = useVoyage()
 
 const hasMounted = ref(false);
 const voyageData = ref<Voyage[]>([])
 const currentView = ref<AppView>("hero")
-
+const selectedVoyage = ref<Voyage | null>(null);
 onMounted(async () => {
   hasMounted.value = true
   const result = await fetchVoyageData()
@@ -34,6 +35,11 @@ const getCurrentView = computed(() => {
   return currentView.value
 })
 
+const setupCanvasInit = (voyage: Voyage) => {
+  selectedVoyage.value = voyage
+  handleViewChange('game')
+}
+
 </script>
 
 <template>
@@ -54,15 +60,14 @@ const getCurrentView = computed(() => {
     </Transition>
 
     <VoyageContainer v-if="getCurrentView === 'voyages' && hasMounted" :loading="isLoadingVoyageData"
-      :voyages="voyageData" @join-voyage="handleViewChange('game')" />
+      :voyages="voyageData" @join-voyage="setupCanvasInit($event)" />
 
 
     <Transition v-if="getCurrentView === 'game' && hasMounted" name="slide-in" appear>
       <section class="flex flex-col items-center justify-center gap-6">
         <h1 class="text-2xl text-glow md:text-[6rem] lg:text-[14rem] font-bold font-sci-fi uppercase z-10">
-          CosmoPort</h1>
-        <h1 class="text-2xl text-glow md:text-[6rem] lg:text-[14rem] font-bold font-sci-fi uppercase z-10">
-          Canvas</h1>
+          {{ selectedVoyage?.name }}</h1>
+          <VoyageCanvas />
       </section>
     </Transition>
 
