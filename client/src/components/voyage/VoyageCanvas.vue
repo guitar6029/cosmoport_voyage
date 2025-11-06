@@ -2,13 +2,15 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 export type Direction = 'up' | 'right' | 'down' | 'left'
 import spaceshipUp from '../../assets/img/cosmoport/spaceship-up.png'
-import crimsonriftbgimg from '../../assets/img/cosmoport/bg/crimson-rift-bg.jpg'
-
+import default_bg from '../../assets/img/cosmoport/bg/default-bg.jpg'
 import debrisImg from "../../assets/img/cosmoport/env-objects/crimson-rift/debris-001.png"
 import crystalImg from "../../assets/img/cosmoport/env-objects/crimson-rift/crystal-001.png"
 import asteroidImg from "../../assets/img/cosmoport/env-objects/crimson-rift/asteroid-001.png"
 
 let assetsReady = 0
+// global variables
+let bgOffsetY = 0
+const scrollSpeed = 2 // pixels per frame (adjust for feel)
 
 const margin = 20
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -79,7 +81,7 @@ function init() {
     posY = canvas.clientHeight - size - margin
 
     bgImage = new Image()
-    bgImage.src = crimsonriftbgimg
+    bgImage.src = default_bg
     bgImage.onload = () => {
         assetsReady++
         if (assetsReady == 2) {
@@ -177,7 +179,20 @@ function onKeyDown(e: KeyboardEvent) {
 }
 
 function drawBackground() {
-    ctx?.drawImage(bgImage, 0, 0, canvasRef.value!.width, canvasRef.value!.height)
+    const canvas = canvasRef.value!
+    if (!ctx || !canvas) return
+
+    // draw first copy
+    ctx.drawImage(bgImage, 0, bgOffsetY, canvas.clientWidth, canvas.clientHeight)
+
+    // draw second copy, right above it
+    ctx.drawImage(bgImage, 0, bgOffsetY - canvas.clientHeight, canvas.clientWidth, canvas.clientHeight)
+
+    // move the background down
+    bgOffsetY += scrollSpeed
+
+    // if first copy moved fully off-screen, reset
+    if (bgOffsetY >= canvas.clientHeight) bgOffsetY = 0
 }
 
 function drawSpaceship() {
