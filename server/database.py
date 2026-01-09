@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
@@ -7,6 +8,9 @@ from server.models.models import Voyage
 load_dotenv()
 
 #get the mongo uri
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
+
 MONGO_URI = os.getenv("MONGODB_URI")
 
 # create the async client
