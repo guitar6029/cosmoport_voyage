@@ -1,75 +1,80 @@
 <script setup lang="ts">
+import { Transition, onMounted, ref, computed } from "vue";
+import VoyageContainer from "./components/VoyageContainer.vue";
+import useVoyage from "./composables/useVoyage";
+import type { Voyage } from "./types/Voyage";
+import type { AppView } from "./types/AppView";
 
-
-import { Transition, onMounted, ref, computed } from 'vue';
-import VoyageContainer from './components/VoyageContainer.vue';
-import useVoyage from './composables/useVoyage';
-import type { Voyage } from './types/Voyage';
-import type { AppView } from './types/AppView';
-import VoyageCanvas from './components/voyage/VoyageCanvas.vue';
-
-const { fetchVoyageData, isLoadingVoyageData } = useVoyage()
+const { fetchVoyageData, isLoadingVoyageData } = useVoyage();
 
 const hasMounted = ref(false);
-const voyageData = ref<Voyage[]>([])
-const currentView = ref<AppView>("hero")
+const voyageData = ref<Voyage[]>([]);
+const currentView = ref<AppView>("hero");
 const selectedVoyage = ref<Voyage | null>(null);
+
 onMounted(async () => {
-  hasMounted.value = true
-  const result = await fetchVoyageData()
-  console.log("voyage fetch result:", result)
+  hasMounted.value = true;
+  const result = await fetchVoyageData();
+  console.log("voyage fetch result:", result);
   const payload = Array.isArray(result.data)
     ? result.data
-    : (result.data && Array.isArray(result.data.data) ? result.data.data : [])
+    : result.data && Array.isArray(result.data.data)
+    ? result.data.data
+    : [];
 
   if (payload.length > 0) {
-    voyageData.value = payload
+    voyageData.value = payload;
   }
-})
+});
 
 const handleViewChange = (view: AppView) => {
-  currentView.value = view
-}
+  currentView.value = view;
+};
 
 const getCurrentView = computed(() => {
-  return currentView.value
-})
+  return currentView.value;
+});
 
 const setupCanvasInit = (voyage: Voyage) => {
-  selectedVoyage.value = voyage
-  handleViewChange('game')
-}
-
+  selectedVoyage.value = voyage;
+  handleViewChange("game");
+};
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col items-center justify-center">
-    <Transition v-if="getCurrentView === 'hero' && hasMounted" name="slide-in" appear>
+    <Transition
+      v-if="getCurrentView === 'hero' && hasMounted"
+      name="slide-in"
+      appear
+    >
+      <section
+        class="hero flex flex-col md:flex-row items-center justify-center gap-6"
+      >
+        <div
+          class="w-full md:max-w-xl flex flex-col items-center justify-center gap-12"
+        >
+          <h1
+            class="text-2xl text-glow md:text-[6rem] lg:text-[14rem] font-bold font-sci-fi uppercase z-10"
+          >
+            CosmoPort
+          </h1>
 
-      <section class="hero flex flex-col md:flex-row items-center justify-center gap-6">
-        <div class="w-full md:max-w-xl flex flex-col items-center justify-center gap-12">
-          <h1 class="text-2xl text-glow md:text-[6rem] lg:text-[14rem] font-bold font-sci-fi uppercase z-10">
-            CosmoPort</h1>
-
-          <button @click="handleViewChange('voyages')"
-            class="border-2 p-2 hover-bg hover:bg-primary hover:text-accent cursor-pointer rounded-xl border-primary text-6xl md:w-fit w-full uppercase font-sci-fi">Explore
-            Voyages</button>
+          <button
+            @click="handleViewChange('voyages')"
+            class="border-2 p-2 hover-bg hover:bg-primary hover:text-accent cursor-pointer rounded-xl border-primary text-6xl md:w-fit w-full uppercase font-sci-fi"
+          >
+            Explore Voyages
+          </button>
         </div>
-
       </section>
     </Transition>
 
-    <VoyageContainer v-if="getCurrentView === 'voyages' && hasMounted" :loading="isLoadingVoyageData"
-      :voyages="voyageData" @join-voyage="setupCanvasInit($event)" />
-
-
-    <Transition v-if="getCurrentView === 'game' && hasMounted" name="slide-in" appear>
-      <section class="flex flex-col items-center justify-center gap-6">
-        <h1 class="text-2xl text-glow md:text-[4rem] lg:text-[6rem] font-bold font-sci-fi uppercase z-10">
-          {{ selectedVoyage?.name }}</h1>
-          <VoyageCanvas />
-      </section>
-    </Transition>
-
+    <VoyageContainer
+      v-if="getCurrentView === 'voyages' && hasMounted"
+      :loading="isLoadingVoyageData"
+      :voyages="voyageData"
+      @join-voyage="setupCanvasInit($event)"
+    />
   </div>
 </template>
