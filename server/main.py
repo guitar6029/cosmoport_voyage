@@ -1,4 +1,3 @@
-import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # Use absolute import to the existing module
@@ -19,6 +18,8 @@ app.add_middleware(
 	allow_headers=["*"],
 )
 
+# use lifespan instead 
+# on_event is depreicated
 @app.on_event("startup")
 async def startup_event():
 	await init_db()
