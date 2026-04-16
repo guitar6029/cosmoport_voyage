@@ -21,7 +21,7 @@ const isModalShowing = ref(false);
 
 const handleVoyageDetails = (voyage: Voyage) => {
   selectedVoyage.value = voyage;
-  console.log("selected voyage", selectedVoyage.value);
+  //console.log("selected voyage", selectedVoyage.value);
   isModalShowing.value = true;
 };
 </script>
