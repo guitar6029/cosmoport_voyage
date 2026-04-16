@@ -13,6 +13,7 @@ const currentView = ref<AppView>("hero");
 const selectedVoyage = ref<Voyage | null>(null);
 
 onMounted(async () => {
+  document.title = 'Cosmoport Voyage'
   hasMounted.value = true;
   const result = await fetchVoyageData();
   console.log("voyage fetch result:", result);
@@ -74,7 +75,7 @@ const setupCanvasInit = (voyage: Voyage) => {
       v-if="getCurrentView === 'voyages' && hasMounted"
       :loading="isLoadingVoyageData"
       :voyages="voyageData"
-      @join-voyage="setupCanvasInit($event)"
+      @join-voyage="console.log('join')"
     />
   </div>
 </template>
