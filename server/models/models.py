@@ -21,4 +21,3 @@ class Voyage(Document):
 	class Config:
 		#allow using field names or aliases both ways
 		populate_by_name = True
-
