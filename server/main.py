@@ -1,10 +1,19 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from server.routes.voyages import router as voyages_router
 from server.database import init_db
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    print("Starting up...")
+    await init_db()
+    yield
+    print("Shutting down...")
+
+
+app = FastAPI(lifespan=lifespan)
 
 # middleware
 app.add_middleware(
@@ -14,12 +23,6 @@ app.add_middleware(
 	allow_methods=["*"],
 	allow_headers=["*"],
 )
-
-# use lifespan instead
-# on_event is depreicated
-@app.on_event("startup")
-async def startup_event():
-	await init_db()
 
 #routes
 @app.get("/")
