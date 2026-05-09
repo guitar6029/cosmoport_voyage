@@ -1,15 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# Use absolute import to the existing module
-from server.models.models import Voyage
-
-# import the init_db
+from server.routes.voyages import router as voyages_router
 from server.database import init_db
 
 
 app = FastAPI()
 
-##add some middleware
+# middleware
 app.add_middleware(
 	CORSMiddleware,
 	allow_origins=["*"],
@@ -18,7 +15,7 @@ app.add_middleware(
 	allow_headers=["*"],
 )
 
-# use lifespan instead 
+# use lifespan instead
 # on_event is depreicated
 @app.on_event("startup")
 async def startup_event():
@@ -29,7 +26,4 @@ async def startup_event():
 async def root():
 	return {"message": "FastAPI  is running "}
 
-
-@app.get("/voyages")
-async def list_voyages():
-	return await Voyage.find_all().to_list()
+app.include_router(voyages_router)
