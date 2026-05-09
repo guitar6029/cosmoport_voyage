@@ -6,6 +6,7 @@ from beanie import init_beanie
 
 # Use absolute import so it works when running from project root
 from server.models.models import Voyage
+from server.models.voyageBooking import VoyageBooking
 
 load_dotenv()
 
@@ -22,6 +23,6 @@ client = AsyncIOMotorClient(MONGO_URI)
 async def init_db():
     await init_beanie(
         database=client["cosmoport"],
-        document_models=[Voyage],
+        document_models=[Voyage, VoyageBooking],
     )
     print("Connected to the MongoDB cluster ")
