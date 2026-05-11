@@ -37,3 +37,21 @@ async def create_booking_for_voyage(
     await booking.insert()
 
     return {"booking": booking}
+
+
+async def delete_voyage_booking_by_id(voyage_id: int, booking_id: str):
+    await _get_voyage_or_404(voyage_id)
+
+    booking = await VoyageBooking.get(booking_id)
+
+    if booking is None:
+        raise HTTPException(status_code=404, detail="Booking does not exist")
+
+    if booking.voyage_id != voyage_id:
+        raise HTTPException(
+            status_code=404, detail="Booking does not exist for this voyage"
+        )
+
+    await booking.delete()
+
+    return {"message": "Booking deleted"}

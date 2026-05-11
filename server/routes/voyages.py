@@ -3,6 +3,7 @@ from server.models.models import Voyage
 from server.models.voyageBooking import VoyageBookingCreate
 from server.services.voyage_booking_service import (
     create_booking_for_voyage,
+    delete_voyage_booking_by_id,
     list_bookings_for_voyage,
 )
 
@@ -33,3 +34,9 @@ async def list_voyage_booking_list_by_id(
 async def create_voyage_booking(voyage_id: int, voyage_booking: VoyageBookingCreate):
 
     return await create_booking_for_voyage(voyage_id, voyage_booking)
+
+
+# delete booking by voyage id
+@router.delete("/{voyage_id}/interest/{booking_id}")
+async def delete_voyage_booking(voyage_id: int, booking_id: str):
+    return await delete_voyage_booking_by_id(voyage_id, booking_id)
