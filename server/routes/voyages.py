@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Query
 from server.models.models import Voyage
-from server.models.voyageBooking import VoyageBookingCreate
+from server.models.voyageBooking import VoyageBookingCreate, VoyageBookingUpdate
 from server.services.voyage_booking_service import (
     create_booking_for_voyage,
     delete_voyage_booking_by_id,
     list_bookings_for_voyage,
+    update_voyage_booking_by_id,
 )
 
 router = APIRouter(prefix="/voyages", tags=["voyages"])
@@ -34,6 +35,14 @@ async def list_voyage_booking_list_by_id(
 async def create_voyage_booking(voyage_id: int, voyage_booking: VoyageBookingCreate):
 
     return await create_booking_for_voyage(voyage_id, voyage_booking)
+
+
+# update booking message
+@router.patch("/{voyage_id}/interest/{booking_id}")
+async def update_voyage_booking(
+    voyage_id: int, booking_id: str, message: VoyageBookingUpdate
+):
+    return await update_voyage_booking_by_id(voyage_id, booking_id, message)
 
 
 # delete booking by voyage id

@@ -1,7 +1,11 @@
 from fastapi import HTTPException
 
 from server.models.models import Voyage
-from server.models.voyageBooking import VoyageBooking, VoyageBookingCreate
+from server.models.voyageBooking import (
+    VoyageBooking,
+    VoyageBookingCreate,
+    VoyageBookingUpdate,
+)
 
 
 async def _get_voyage_or_404(voyage_id: int) -> Voyage:
@@ -9,6 +13,19 @@ async def _get_voyage_or_404(voyage_id: int) -> Voyage:
     if voyage is None:
         raise HTTPException(status_code=404, detail="Voyage does not exist")
     return voyage
+
+
+async def _get_booking_or_404(voyage_id: int, booking_id: str) -> VoyageBooking:
+    booking = await VoyageBooking.get(booking_id)
+
+    if booking is None:
+        raise HTTPException(status_code=404, detail="Booking does not exist")
+
+    if booking.voyage_id != voyage_id:
+        raise HTTPException(
+            status_code=404, detail="Booking does not exist for this voyage"
+        )
+    return booking
 
 
 async def list_bookings_for_voyage(voyage_id: int, limit: int, skip: int):
@@ -39,18 +56,24 @@ async def create_booking_for_voyage(
     return {"booking": booking}
 
 
+async def update_voyage_booking_by_id(
+    voyage_id: int,
+    booking_id: str,
+    voyage_booking: VoyageBookingUpdate,
+):
+    await _get_voyage_or_404(voyage_id)
+
+    booking = await _get_booking_or_404(voyage_id, booking_id)
+
+    booking.message = voyage_booking.message
+    await booking.save()
+    return {"booking": booking}
+
+
 async def delete_voyage_booking_by_id(voyage_id: int, booking_id: str):
     await _get_voyage_or_404(voyage_id)
 
-    booking = await VoyageBooking.get(booking_id)
-
-    if booking is None:
-        raise HTTPException(status_code=404, detail="Booking does not exist")
-
-    if booking.voyage_id != voyage_id:
-        raise HTTPException(
-            status_code=404, detail="Booking does not exist for this voyage"
-        )
+    booking = await _get_booking_or_404(voyage_id, booking_id)
 
     await booking.delete()
 
