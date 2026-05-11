@@ -3,6 +3,18 @@ from typing import Optional
 from beanie import Document
 
 
+class VoyageBookingUpdate(BaseModel):
+    message: Optional[str] = None
+
+    @field_validator("message")
+    @classmethod
+    def sanitize_message(cls, value: Optional[str]):
+        if value is None:
+            return None
+        value = value.strip()
+        return value or None
+
+
 class VoyageBookingCreate(BaseModel):
     name: str = Field(min_length=1)
     email: EmailStr
