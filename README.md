@@ -41,8 +41,8 @@ A small sci‑fi themed web app to explore space “voyages”. The client shows
 - `server/` – FastAPI app
   - `main.py` – API app setup, CORS, lifespan, and route registration
   - `database.py` – Beanie/Mongo initialization (uses `.env`)
-  - `models/models.py` – `Voyage` Beanie document model
-  - `models/voyageBooking.py` – Voyage booking request models and Beanie document
+  - `models/` – Beanie document models for MongoDB collections
+  - `schemas/` – Pydantic request/response schemas
   - `routes/voyages.py` – Voyage and booking HTTP route handlers
   - `services/voyage_booking_service.py` – Booking service logic
 
