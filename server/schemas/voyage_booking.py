@@ -1,10 +1,10 @@
+from typing import Annotated, Optional
+
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from typing import Optional
-from beanie import Document
 
 
 class VoyageBookingUpdate(BaseModel):
-    message: Optional[str] = None
+    message: Annotated[Optional[str], Field(max_length=250)] = None
 
     @field_validator("message")
     @classmethod
@@ -16,9 +16,9 @@ class VoyageBookingUpdate(BaseModel):
 
 
 class VoyageBookingCreate(BaseModel):
-    name: str = Field(min_length=1)
+    name: Annotated[str, Field(min_length=1)]
     email: EmailStr
-    message: Optional[str] = None
+    message: Annotated[Optional[str], Field(max_length=250)] = None
 
     @field_validator("name")
     @classmethod
@@ -44,13 +44,3 @@ class VoyageBookingCreate(BaseModel):
         if value == "":
             return None
         return value
-
-
-class VoyageBooking(Document):
-    voyage_id: int
-    name: str
-    email: EmailStr
-    message: Optional[str] = None
-
-    class Settings:
-        name = "voyage_booking"

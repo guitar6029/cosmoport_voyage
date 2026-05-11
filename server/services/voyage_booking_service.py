@@ -1,11 +1,12 @@
 from fastapi import HTTPException
 
-from server.models.models import Voyage
-from server.models.voyageBooking import (
-    VoyageBooking,
+from server.models.voyage import Voyage
+from server.schemas.voyage_booking import (
     VoyageBookingCreate,
     VoyageBookingUpdate,
 )
+
+from server.models.voyage_booking import VoyageBooking
 
 
 async def _get_voyage_or_404(voyage_id: int) -> Voyage:

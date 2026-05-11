@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
-from server.models.models import Voyage
-from server.models.voyageBooking import VoyageBookingCreate, VoyageBookingUpdate
+from server.models.voyage import Voyage
+from server.schemas.voyage_booking import VoyageBookingCreate, VoyageBookingUpdate
 from server.services.voyage_booking_service import (
     create_booking_for_voyage,
     delete_voyage_booking_by_id,
