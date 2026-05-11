@@ -1,6 +1,10 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from server.models.models import Voyage
-from server.models.voyageBooking import VoyageBookingCreate, VoyageBooking
+from server.models.voyageBooking import VoyageBookingCreate
+from server.services.voyage_booking_service import (
+    create_booking_for_voyage,
+    list_bookings_for_voyage,
+)
 
 router = APIRouter(prefix="/voyages", tags=["voyages"])
 
@@ -19,18 +23,8 @@ async def list_voyage_booking_list_by_id(
     limit: int = Query(default=10, ge=1, le=100),
     skip: int = Query(default=0, ge=0),
 ):
-    voyage = await Voyage.find_one(Voyage.voyage_id == voyage_id)
-    if voyage is None:
-        raise HTTPException(status_code=404, detail="Voyage does not exist")
 
-    bookings = (
-        await VoyageBooking.find(VoyageBooking.voyage_id == voyage_id)
-        .skip(skip)
-        .limit(limit)
-        .to_list()
-    )
-
-    return {"voyage_id": voyage_id, "limit": limit, "skip": skip, "bookings": bookings}
+    return await list_bookings_for_voyage(voyage_id, limit, skip)
 
 
 # voyage booking
@@ -38,18 +32,4 @@ async def list_voyage_booking_list_by_id(
 @router.post("/{voyage_id}/interest")
 async def create_voyage_booking(voyage_id: int, voyage_booking: VoyageBookingCreate):
 
-    voyage = await Voyage.find_one(Voyage.voyage_id == voyage_id)
-    if voyage is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Voyage does not exist",
-        )
-
-    booking = VoyageBooking(
-        voyage_id=voyage_id,
-        **voyage_booking.model_dump(),
-    )
-
-    await booking.insert()
-
-    return {"booking": booking}
+    return await create_booking_for_voyage(voyage_id, voyage_booking)
