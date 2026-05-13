@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 def clean_name(value: str, field_name: str) -> str:
@@ -48,3 +48,13 @@ class UserRegister(BaseModel):
         if isinstance(value, str):
             return value.strip().lower()
         return value
+
+
+class UserResponse(BaseModel):
+    id: str
+    first_name: str
+    last_name: str
+    username: str
+    email: EmailStr
+
+    model_config = ConfigDict(from_attributes=True)
