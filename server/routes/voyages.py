@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from server.models.voyage import Voyage
+from server.models.voyages.voyage import Voyage
 from server.schemas.voyage_booking import VoyageBookingCreate, VoyageBookingUpdate
 from server.services.voyage_booking_service import (
     create_booking_for_voyage,

@@ -3,7 +3,7 @@ from pymongo.errors import DuplicateKeyError
 from server.utils.jwt import verify_jwt_token
 from server.services.profile import get_profile_details
 
-from server.models.user import User
+from server.models.users.user import User
 from server.schemas.user import UserLogin, UserProfile, UserRegister
 from server.utils.password import hash_password, verify_password
 

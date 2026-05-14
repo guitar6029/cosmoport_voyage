@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from server.models.user import User
+from server.models.users.user import User
 from server.schemas.user import UserProfile
 from beanie import PydanticObjectId
 

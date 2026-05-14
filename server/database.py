@@ -5,10 +5,11 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 
 # Use absolute import so it works when running from project root
-from server.models.user import User
-from server.models.voyage import Voyage
-from server.models.voyage_booking import VoyageBooking
-from server.models.voyage_proposal import VoyageProposal
+from server.models.users.user import User
+from server.models.voyages.voyage import Voyage
+from server.models.voyages.voyage_booking import VoyageBooking
+from server.models.voyages.voyage_proposal import VoyageProposal
+from server.models.voyages.voyage_proposal_vote import VoyageProposalVote
 
 load_dotenv()
 
@@ -25,6 +26,12 @@ client = AsyncIOMotorClient(MONGO_URI)
 async def init_db():
     await init_beanie(
         database=client["cosmoport"],
-        document_models=[Voyage, VoyageBooking, VoyageProposal, User],
+        document_models=[
+            Voyage,
+            VoyageBooking,
+            VoyageProposal,
+            VoyageProposalVote,
+            User,
+        ],
     )
     print("Connected to the MongoDB cluster ")
