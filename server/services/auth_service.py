@@ -1,9 +1,10 @@
 from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
-
+from server.utils.jwt import verify_jwt_token
+from server.services.profile import get_profile_details
 
 from server.models.user import User
-from server.schemas.user import UserLogin, UserRegister
+from server.schemas.user import UserLogin, UserProfile, UserRegister
 from server.utils.password import hash_password, verify_password
 
 
@@ -52,3 +53,43 @@ async def login_user(user: UserLogin) -> User:
         )
 
     return existing_user
+
+
+async def profile_user(auth_header: str | None) -> UserProfile:
+    # http header validation
+    # check the authorization header
+    # is it authorization header ie contains authoization
+    # if not return error 401
+    if auth_header is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing authorization headers",
+        )
+
+    # if authorzation header then check if the value has Bearer str
+    # if does not have Bearer then raise 401
+
+    if not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required"
+        )
+
+    # if has Bearer, then split the str, get the last str section - the jwt string only
+    # does it exist if not then raise error 401
+    token = auth_header.split("Bearer ")[-1]
+    if not token.strip():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required"
+        )
+
+    # validate the jwt
+    # decode the token
+    decoded_token = verify_jwt_token(token)
+
+    # get the sub unique identifier
+    sub_value = decoded_token.sub
+
+    # get the user
+    user = await get_profile_details(sub_value)
+
+    return user

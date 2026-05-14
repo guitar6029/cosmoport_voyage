@@ -58,3 +58,12 @@ class UserResponse(BaseModel):
     email: EmailStr
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserProfile(BaseModel):
+    first_name: str
+    last_name: str
+    username: str
+    email: EmailStr
+
+    model_config = ConfigDict(from_attributes=True)

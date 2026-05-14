@@ -1,11 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from server.schemas.auth import AuthResponse
-from server.schemas.user import UserLogin, UserRegister, UserResponse
+from server.schemas.user import UserLogin, UserProfile, UserRegister, UserResponse
 from server.services.auth_service import (
     register_user as register_user_svc,
     login_user as login_user_svc,
 )
 from server.utils.token import create_access_token
+from server.services.auth_service import profile_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -41,3 +42,12 @@ async def login(user: UserLogin) -> AuthResponse:
     return AuthResponse(
         user=user_response, access_token=access_token, token_type="bearer"
     )
+
+
+@router.get("/me", response_model=UserProfile)
+async def get_profile(request: Request):
+    # get the Authorization header
+    auth_header = request.headers.get("authorization")
+    profile = await profile_user(auth_header=auth_header)
+
+    return profile
