@@ -8,6 +8,7 @@ from beanie import init_beanie
 from server.models.user import User
 from server.models.voyage import Voyage
 from server.models.voyage_booking import VoyageBooking
+from server.models.voyage_proposal import VoyageProposal
 
 load_dotenv()
 
@@ -24,6 +25,6 @@ client = AsyncIOMotorClient(MONGO_URI)
 async def init_db():
     await init_beanie(
         database=client["cosmoport"],
-        document_models=[Voyage, VoyageBooking, User],
+        document_models=[Voyage, VoyageBooking, VoyageProposal, User],
     )
     print("Connected to the MongoDB cluster ")

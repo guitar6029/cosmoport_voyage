@@ -2,8 +2,7 @@ from typing import Literal, Optional
 
 from beanie import Document
 from pydantic import Field
-
-Difficulty = Literal["Easy", "Moderate", "Hard"]
+from server.types.difficulty import Difficulty
 
 
 class Voyage(Document):
