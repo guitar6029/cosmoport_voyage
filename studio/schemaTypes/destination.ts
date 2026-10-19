@@ -1,4 +1,4 @@
-import { defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType } from "sanity";
 
 export const destination = defineType({
   name: "destination",
@@ -85,10 +85,56 @@ export const destination = defineType({
       title: "Highlights",
       type: "array",
       of: [
-        {
-          type: "string",
-          validation: (Rule) => Rule.required().max(120),
-        },
+        defineArrayMember({
+          name: "highlight",
+          title: "Highlight",
+          type: "object",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Title",
+              type: "string",
+              validation: (Rule) => Rule.required().min(2).max(100),
+            }),
+            defineField({
+              name: "description",
+              title: "Description",
+              type: "text",
+              rows: 4,
+              validation: (Rule) => Rule.max(600),
+            }),
+            defineField({
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: {
+                hotspot: true,
+              },
+            }),
+            defineField({
+              name: "altText",
+              title: "Image alt text",
+              type: "string",
+              description: "Accessible description used when an image is provided.",
+              validation: (Rule) =>
+                Rule.max(180).custom((value, context) => {
+                  const parent = context.parent as { image?: unknown } | undefined;
+
+                  if (parent?.image && !value) {
+                    return "Alt text is required when an image is provided.";
+                  }
+
+                  return true;
+                }),
+            }),
+          ],
+          preview: {
+            select: {
+              title: "title",
+              media: "image",
+            },
+          },
+        }),
       ],
       validation: (Rule) => Rule.max(8),
     }),
