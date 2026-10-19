@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Prepare Nuxt
+        run: npx nuxt prepare
+
       - name: Run tests
         run: npm run test
 
