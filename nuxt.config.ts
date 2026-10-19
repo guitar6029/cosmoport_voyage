@@ -2,7 +2,19 @@ import tailwindcss from "@tailwindcss/vite";
 import { SITE_DESCRIPTION, SITE_TITLE } from "./app/site";
 
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/sanity"],
+  modules: ["@nuxtjs/sanity", "@nuxt/fonts"],
+  fonts: {
+    families: [
+      {
+        name: "Fontdiner Swanky",
+        provider: "google",
+      },
+      {
+        name: "Cherry Cream Soda",
+        provider: "google"
+      }
+    ],
+  },
   css: ["~/assets/css/main.css"],
   vite: {
     plugins: [tailwindcss()],
