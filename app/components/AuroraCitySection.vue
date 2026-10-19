@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { getWrappedIndex } from "../utils/carouselNavigation";
 
 interface SanityImage {
   asset?: {
@@ -49,7 +50,9 @@ const { data, error, pending } = await useSanityQuery<AuroraCityDestination | nu
 
 const carousel = ref<HTMLElement | null>(null);
 const selectedIndex = ref(0);
-let observer: IntersectionObserver | undefined;
+let scrollFrame: number | undefined;
+let programmaticIndex: number | undefined;
+let programmaticResetFrame: number | undefined;
 
 const destination = computed(() => data.value);
 const highlights = computed(() => destination.value?.highlights ?? []);
@@ -64,13 +67,33 @@ const scrollToHighlight = (index: number) => {
     return;
   }
 
-  const nextIndex = (index + count) % count;
+  const nextIndex = getWrappedIndex(index, count);
   const card = carousel.value?.querySelector<HTMLElement>(
     `[data-highlight-index="${nextIndex}"]`,
   );
 
+  if (!card || !carousel.value) {
+    return;
+  }
+
+  const targetScrollLeft = card.offsetLeft - (carousel.value.clientWidth - card.offsetWidth) / 2;
+  const maxScrollLeft = carousel.value.scrollWidth - carousel.value.clientWidth;
+
   selectedIndex.value = nextIndex;
-  card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  programmaticIndex = nextIndex;
+  carousel.value.scrollTo({
+    left: Math.min(maxScrollLeft, Math.max(0, targetScrollLeft)),
+    behavior: "auto",
+  });
+
+  if (programmaticResetFrame !== undefined) {
+    cancelAnimationFrame(programmaticResetFrame);
+  }
+
+  programmaticResetFrame = requestAnimationFrame(() => {
+    programmaticIndex = undefined;
+    programmaticResetFrame = undefined;
+  });
 };
 
 const handleCarouselKeydown = (event: KeyboardEvent) => {
@@ -85,34 +108,89 @@ const handleCarouselKeydown = (event: KeyboardEvent) => {
   }
 };
 
-onMounted(() => {
-  if (!carousel.value || !highlights.value.length || !("IntersectionObserver" in window)) {
+const updateSelectedIndex = () => {
+  if (!carousel.value) {
     return;
   }
 
-  observer = new IntersectionObserver(
-    (entries) => {
-      const visibleCard = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+  const cards = carousel.value.querySelectorAll<HTMLElement>("[data-highlight-index]");
+  const maxScrollLeft = carousel.value.scrollWidth - carousel.value.clientWidth;
 
-      const index = visibleCard?.target instanceof HTMLElement
-        ? Number(visibleCard.target.dataset.highlightIndex)
-        : undefined;
+  // At either scroll boundary, the centered-card calculation can favor a
+  // neighboring card that is only partially visible. The boundary itself is
+  // the canonical position for the first and last cards.
+  if (carousel.value.scrollLeft <= 1 && selectedIndex.value === 0) {
+    selectedIndex.value = 0;
+    return;
+  }
 
-      if (index !== undefined && !Number.isNaN(index)) {
-        selectedIndex.value = index;
-      }
-    },
-    { root: carousel.value, threshold: [0.6, 0.85] },
-  );
+  if (carousel.value.scrollLeft >= maxScrollLeft - 1) {
+    selectedIndex.value = cards.length - 1;
+    return;
+  }
 
-  carousel.value.querySelectorAll<HTMLElement>("[data-highlight-index]").forEach((card) => {
-    observer?.observe(card);
+  const carouselCenter = carousel.value.scrollLeft + carousel.value.clientWidth / 2;
+  let closestIndex = 0;
+  let closestDistance = Number.POSITIVE_INFINITY;
+
+  cards.forEach((card) => {
+    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+    const distance = Math.abs(cardCenter - carouselCenter);
+
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = Number(card.dataset.highlightIndex);
+    }
   });
+
+  if (!Number.isNaN(closestIndex)) {
+    selectedIndex.value = closestIndex;
+  }
+};
+
+const handleCarouselScroll = () => {
+  if (programmaticIndex !== undefined) {
+    selectedIndex.value = programmaticIndex;
+    programmaticIndex = undefined;
+
+    if (programmaticResetFrame !== undefined) {
+      cancelAnimationFrame(programmaticResetFrame);
+      programmaticResetFrame = undefined;
+    }
+
+    return;
+  }
+
+  if (scrollFrame !== undefined) {
+    cancelAnimationFrame(scrollFrame);
+  }
+
+  scrollFrame = requestAnimationFrame(() => {
+    updateSelectedIndex();
+    scrollFrame = undefined;
+  });
+};
+
+onMounted(() => {
+  if (!carousel.value || !highlights.value.length) {
+    return;
+  }
+
+  carousel.value.addEventListener("scroll", handleCarouselScroll, { passive: true });
+  updateSelectedIndex();
 });
 
-onBeforeUnmount(() => observer?.disconnect());
+onBeforeUnmount(() => {
+  carousel.value?.removeEventListener("scroll", handleCarouselScroll);
+
+  if (scrollFrame !== undefined) {
+    cancelAnimationFrame(scrollFrame);
+  }
+
+  if (programmaticResetFrame !== undefined) {
+    cancelAnimationFrame(programmaticResetFrame);
+  }
+});
 </script>
 
 <template>
@@ -398,11 +476,12 @@ onBeforeUnmount(() => observer?.disconnect());
 .aurora-carousel {
   display: flex;
   gap: 1.25rem;
-  margin-inline: calc((min(100vw, 100% + 3rem) - 100%) / -2);
-  padding: 0.75rem max(1.5rem, calc((100vw - min(100vw, 1380px)) / 2 + 1.5rem)) 1.5rem;
+  width: 100vw;
+  margin-left: calc((100% - 100vw) / 2);
+  margin-right: calc((100% - 100vw) / 2);
+  padding: 0.75rem 1.5rem 1.5rem max(1.5rem, calc((100vw - 1380px) / 2 + 1.5rem));
   overflow-x: auto;
-  scroll-behavior: smooth;
-  scroll-padding-inline: max(1.5rem, calc((100vw - min(100vw, 1380px)) / 2 + 1.5rem));
+  scroll-padding-inline: 1.5rem;
   scroll-snap-type: x mandatory;
   scrollbar-width: thin;
   scrollbar-color: var(--aurora-gold) transparent;
@@ -524,8 +603,8 @@ onBeforeUnmount(() => observer?.disconnect());
   }
 
   .aurora-carousel {
-    margin-inline: -1rem;
-    padding-inline: 1rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
     scroll-padding-inline: 1rem;
   }
 
@@ -535,10 +614,6 @@ onBeforeUnmount(() => observer?.disconnect());
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora-carousel {
-    scroll-behavior: auto;
-  }
-
   .aurora-card {
     transition: none;
   }
