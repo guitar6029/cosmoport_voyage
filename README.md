@@ -62,6 +62,18 @@ The Nuxt Sanity module reads these values from the environment:
 
 Copy `.env.example` to `.env` for local development and fill in the values. The integration is configured in `nuxt.config.ts` with a fixed API version. The project does not yet define schemas, queries, or application content views, so live CMS connectivity is not required for the current test or build commands.
 
+### Sanity Studio
+
+The standalone Studio lives in `studio/` and remains independent from the Nuxt application. Copy `studio/.env.example` to `studio/.env` and provide the existing Sanity project ID and dataset values.
+
+```bash
+cd studio
+npm ci
+npm run dev
+```
+
+The Studio runs at `http://localhost:3333`. It currently has no destination schemas. When it is ready to host, run `npm run deploy` from `studio/` and follow Sanity's deployment prompts.
+
 ---
 
 Copyright © 2025
