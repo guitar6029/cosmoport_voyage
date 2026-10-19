@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Nuxt and build output
+.nuxt/
+.output/
+dist/
+coverage/
+
+# Logs and local tooling
+*.log
+*.local
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Local Python environments
+.venv/
+venv/

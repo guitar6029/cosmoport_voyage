@@ -1,1 +1,0 @@
-export type AppView = "hero" | "voyages" | "game"
