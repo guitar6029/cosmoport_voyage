@@ -104,7 +104,10 @@ function randomizeObjects(numberOfItems: number) {
         let randomX = Math.floor(Math.random() * canvasRef.value!.clientWidth)
         let randomY = Math.floor(Math.random() * canvasRef.value!.clientHeight)
         let randomindex = Math.floor(Math.random() * items.length)
-        ctx?.drawImage(items[randomindex], randomX, randomY, 150, 150)
+        const item = items[randomindex]
+        if (item) {
+            ctx?.drawImage(item, randomX, randomY, 150, 150)
+        }
     }
 
 }

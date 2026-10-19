@@ -10,7 +10,6 @@ const { fetchVoyageData, isLoadingVoyageData } = useVoyage();
 const hasMounted = ref(false);
 const voyageData = ref<Voyage[]>([]);
 const currentView = ref<AppView>("hero");
-const selectedVoyage = ref<Voyage | null>(null);
 
 onMounted(async () => {
   document.title = 'Cosmoport Voyage'
@@ -36,10 +35,6 @@ const getCurrentView = computed(() => {
   return currentView.value;
 });
 
-const setupCanvasInit = (voyage: Voyage) => {
-  selectedVoyage.value = voyage;
-  handleViewChange("game");
-};
 </script>
 
 <template>
