@@ -5,6 +5,7 @@ import { getWrappedIndex } from "../utils/carouselNavigation";
 interface DestinationSectionProps {
   slug?: string;
   destinationLabel?: string;
+  guideLabel?: string;
   guideTitle?: string;
   guideSubtitle?: string;
   fallbackName?: string;
@@ -15,6 +16,7 @@ interface DestinationSectionProps {
 const props = withDefaults(defineProps<DestinationSectionProps>(), {
   slug: "aurora-city",
   destinationLabel: "Destination 01 · Velora-7",
+  guideLabel: "City guide",
   guideTitle: "Explore Aurora City",
   guideSubtitle: "Five Spectacular Ways to Experience Tomorrow.",
   fallbackName: "Aurora City",
@@ -215,7 +217,7 @@ onBeforeUnmount(() => {
   >
     <div class="destination-section__inner">
       <div v-if="pending" class="destination-status" role="status">
-        Preparing the Aurora City departure board…
+        Preparing the {{ props.fallbackName }} departure board…
       </div>
 
       <div v-else-if="error || !hasContent" class="destination-status">
@@ -251,7 +253,7 @@ onBeforeUnmount(() => {
         <div v-if="highlights.length" class="destination-attractions">
           <div class="destination-attractions__heading">
             <div>
-              <p class="destination-eyebrow">City guide</p>
+              <p class="destination-eyebrow">{{ props.guideLabel }}</p>
               <h3>{{ props.guideTitle }}</h3>
               <p class="destination-attractions__subtitle">{{ props.guideSubtitle }}</p>
             </div>
