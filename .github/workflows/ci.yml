@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: ci/checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Run frontend checks and production build
+        working-directory: client
+        run: npm run build
+
+      - name: Run frontend tests when available
+        working-directory: client
+        run: |
+          if node -e "const { scripts = {} } = require('./package.json'); process.exit(scripts.test ? 0 : 1)"; then
+            npm test
+          else
+            echo "No test script is defined in client/package.json; skipping frontend tests."
+          fi
