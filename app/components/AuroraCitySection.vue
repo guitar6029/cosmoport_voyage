@@ -2,6 +2,26 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { getWrappedIndex } from "../utils/carouselNavigation";
 
+interface DestinationSectionProps {
+  slug?: string;
+  destinationLabel?: string;
+  guideTitle?: string;
+  guideSubtitle?: string;
+  fallbackName?: string;
+  sectionId?: string;
+  theme?: "aurora" | "pearlwater";
+}
+
+const props = withDefaults(defineProps<DestinationSectionProps>(), {
+  slug: "aurora-city",
+  destinationLabel: "Destination 01 · Velora-7",
+  guideTitle: "Explore Aurora City",
+  guideSubtitle: "Five Spectacular Ways to Experience Tomorrow.",
+  fallbackName: "Aurora City",
+  sectionId: "aurora-title",
+  theme: "aurora",
+});
+
 interface SanityImage {
   asset?: {
     _ref?: string;
@@ -45,7 +65,7 @@ const destinationQuery = `*[
 
 const { data, error, pending } = await useSanityQuery<AuroraCityDestination | null>(
   destinationQuery,
-  { slug: "aurora-city" },
+  { slug: props.slug },
 );
 
 const carousel = ref<HTMLElement | null>(null);
@@ -188,7 +208,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="aurora-section" aria-labelledby="aurora-title">
+  <section
+    class="aurora-section"
+    :class="`aurora-section--${props.theme}`"
+    :aria-labelledby="props.sectionId"
+  >
     <div class="aurora-section__inner">
       <div v-if="pending" class="aurora-status" role="status">
         Preparing the Aurora City departure board…
@@ -196,15 +220,15 @@ onBeforeUnmount(() => {
 
       <div v-else-if="error || !hasContent" class="aurora-status">
         <p class="aurora-status__eyebrow">CosmoPort destination desk</p>
-        <h2 id="aurora-title">Aurora City is preparing for departure.</h2>
+        <h2 :id="props.sectionId">{{ props.fallbackName }} is preparing for departure.</h2>
         <p>Destination details will appear here when the city is ready for visitors.</p>
       </div>
 
       <template v-else>
         <div class="aurora-intro">
           <div class="aurora-copy">
-            <p class="aurora-eyebrow">Destination 01 · Velora-7</p>
-            <h2 id="aurora-title">{{ destination?.name || "Aurora City" }}</h2>
+            <p class="aurora-eyebrow">{{ props.destinationLabel }}</p>
+            <h2 :id="props.sectionId">{{ destination?.name || props.fallbackName }}</h2>
             <p v-if="destination?.tagline" class="aurora-tagline">
               {{ destination.tagline }}
             </p>
@@ -216,7 +240,7 @@ onBeforeUnmount(() => {
           <div v-if="imageAssetId(destination?.heroImage)" class="aurora-hero-image">
             <SanityImage
               :asset-id="imageAssetId(destination?.heroImage)"
-              :alt="destination?.altText || `${destination?.name || 'Aurora City'} destination`"
+              :alt="destination?.altText || `${destination?.name || props.fallbackName} destination`"
               width="960"
               height="620"
               sizes="sm:100vw md:50vw lg:45vw"
@@ -228,17 +252,15 @@ onBeforeUnmount(() => {
           <div class="aurora-attractions__heading">
             <div>
               <p class="aurora-eyebrow">City guide</p>
-              <h3>Explore Aurora City</h3>
-              <p class="aurora-attractions__subtitle">
-                Five Spectacular Ways to Experience Tomorrow.
-              </p>
+              <h3>{{ props.guideTitle }}</h3>
+              <p class="aurora-attractions__subtitle">{{ props.guideSubtitle }}</p>
             </div>
             <div class="aurora-controls">
               <button
                 type="button"
                 class="aurora-control"
                 :disabled="highlights.length < 2"
-                aria-label="Previous Aurora City attraction"
+                :aria-label="`Previous ${props.fallbackName} attraction`"
                 @click="scrollToHighlight(selectedIndex - 1)"
               >
                 ←
@@ -251,7 +273,7 @@ onBeforeUnmount(() => {
                 type="button"
                 class="aurora-control"
                 :disabled="highlights.length < 2"
-                aria-label="Next Aurora City attraction"
+                :aria-label="`Next ${props.fallbackName} attraction`"
                 @click="scrollToHighlight(selectedIndex + 1)"
               >
                 →
@@ -264,7 +286,7 @@ onBeforeUnmount(() => {
             class="aurora-carousel"
             tabindex="0"
             role="region"
-            aria-label="Aurora City attractions"
+            :aria-label="`${props.fallbackName} attractions`"
             @keydown="handleCarouselKeydown"
           >
             <article
@@ -278,18 +300,18 @@ onBeforeUnmount(() => {
               <div v-if="imageAssetId(highlight.image)" class="aurora-card__image">
                 <SanityImage
                   :asset-id="imageAssetId(highlight.image)"
-                  :alt="highlight.altText || highlight.title || 'Aurora City attraction'"
+                  :alt="highlight.altText || highlight.title || `${props.fallbackName} attraction`"
                   width="720"
                   height="840"
                   sizes="sm:82vw md:42vw lg:30vw"
                 />
               </div>
               <div v-else class="aurora-card__image aurora-card__image--empty" aria-hidden="true">
-                <span>CPV / AURORA</span>
+                <span>CPV / {{ props.fallbackName }}</span>
               </div>
               <div class="aurora-card__body">
                 <p class="aurora-card__number">0{{ index + 1 }}</p>
-                <h4>{{ highlight.title || "Aurora City attraction" }}</h4>
+                <h4>{{ highlight.title || `${props.fallbackName} attraction` }}</h4>
                 <p v-if="highlight.description">{{ highlight.description }}</p>
               </div>
             </article>
@@ -297,7 +319,7 @@ onBeforeUnmount(() => {
         </div>
 
         <p v-else class="aurora-status aurora-status--compact">
-          Aurora City attractions are still being charted.
+          {{ props.fallbackName }} attractions are still being charted.
         </p>
       </template>
     </div>
@@ -311,12 +333,27 @@ onBeforeUnmount(() => {
   --aurora-aqua: #71d6d0;
   --aurora-ivory: #fff4df;
   --aurora-gold: #eac78d;
+  --aurora-background-start: #0b303d;
+  --aurora-background-end: #194e59;
   min-height: 100svh;
   background:
     radial-gradient(circle at 15% 18%, rgba(113, 214, 208, 0.16), transparent 28rem),
-    linear-gradient(135deg, #0b303d 0%, var(--aurora-teal) 48%, #194e59 100%);
+    linear-gradient(135deg, var(--aurora-background-start) 0%, var(--aurora-teal) 48%, var(--aurora-background-end) 100%);
   color: var(--aurora-ivory);
   overflow: hidden;
+}
+
+.aurora-section--pearlwater {
+  --aurora-teal: #155764;
+  --aurora-deep-teal: #0b3542;
+  --aurora-aqua: #79ded8;
+  --aurora-gold: #f2ce9a;
+  --aurora-background-start: #0a3e4c;
+  --aurora-background-end: #26818a;
+}
+
+.aurora-section--pearlwater .aurora-tagline {
+  color: #f18d77;
 }
 
 .aurora-section__inner {
