@@ -1,5 +1,5 @@
 <template>
-  <AuroraCitySection
+  <DestinationSection
     slug="pearlwater-coast"
     destination-label="Destination 02 · Velora-7"
     guide-title="Explore Pearlwater Coast"
