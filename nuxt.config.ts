@@ -2,9 +2,15 @@ import tailwindcss from "@tailwindcss/vite";
 import { SITE_DESCRIPTION, SITE_TITLE } from "./app/site";
 
 export default defineNuxtConfig({
+  modules: ["@nuxtjs/sanity"],
   css: ["~/assets/css/main.css"],
   vite: {
     plugins: [tailwindcss()],
+  },
+  sanity: {
+    projectId: process.env.SANITY_PROJECT_ID,
+    dataset: process.env.SANITY_DATASET,
+    apiVersion: "2025-02-19",
   },
   app: {
     head: {
