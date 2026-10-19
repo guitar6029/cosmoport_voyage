@@ -31,4 +31,10 @@ describe("Aurora City carousel navigation", () => {
     expect(cardFour).toBe(3);
     expect(previous(cardFour)).toBe(2);
   });
+
+  it("preserves the complete 3 to 4 to 5 to 4 to 3 sequence", () => {
+    const sequence = [2, next(2), next(3), previous(4), previous(3)];
+
+    expect(sequence).toEqual([2, 3, 4, 3, 2]);
+  });
 });

@@ -114,18 +114,12 @@ const updateSelectedIndex = () => {
   }
 
   const cards = carousel.value.querySelectorAll<HTMLElement>("[data-highlight-index]");
-  const maxScrollLeft = carousel.value.scrollWidth - carousel.value.clientWidth;
 
-  // At either scroll boundary, the centered-card calculation can favor a
-  // neighboring card that is only partially visible. The boundary itself is
-  // the canonical position for the first and last cards.
+  // Keep the initial left edge stable, but let manual scrolling determine the
+  // active card everywhere else. Arrow navigation is protected separately by
+  // programmaticIndex so a clamped scroll cannot replace its requested index.
   if (carousel.value.scrollLeft <= 1 && selectedIndex.value === 0) {
     selectedIndex.value = 0;
-    return;
-  }
-
-  if (carousel.value.scrollLeft >= maxScrollLeft - 1) {
-    selectedIndex.value = cards.length - 1;
     return;
   }
 
