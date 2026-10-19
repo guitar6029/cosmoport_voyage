@@ -2,7 +2,7 @@
 
 CosmoPort Voyage is an interactive fictional space-tourism website with a 1950s Space Age retrofuturist / Atompunk visual direction.
 
-This repository currently contains the minimal Nuxt frontend foundation. Sanity CMS is planned for content management but is not yet integrated.
+This repository currently contains the minimal Nuxt frontend foundation with the official Sanity integration configured for future content management. No CMS content is fetched yet.
 
 ## Tech Stack
 
@@ -52,6 +52,15 @@ npm run build
 - `app/pages/index.vue` – accessible placeholder homepage
 - `app/site.ts` – shared site metadata
 - `assets/css/main.css` – Tailwind and DaisyUI entrypoint
+
+## Sanity setup
+
+The Nuxt Sanity module reads these values from the environment:
+
+- `SANITY_PROJECT_ID` – the project ID shown in the Sanity dashboard under the project settings
+- `SANITY_DATASET` – the dataset name shown in the Sanity project configuration, usually `production`
+
+Copy `.env.example` to `.env` for local development and fill in the values. The integration is configured in `nuxt.config.ts` with a fixed API version. The project does not yet define schemas, queries, or application content views, so live CMS connectivity is not required for the current test or build commands.
 
 ---
 
