@@ -2,6 +2,28 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { getWrappedIndex } from "../utils/carouselNavigation";
 
+interface DestinationSectionProps {
+  slug?: string;
+  destinationLabel?: string;
+  guideLabel?: string;
+  guideTitle?: string;
+  guideSubtitle?: string;
+  fallbackName?: string;
+  sectionId?: string;
+  theme?: "destination" | "pearlwater";
+}
+
+const props = withDefaults(defineProps<DestinationSectionProps>(), {
+  slug: "aurora-city",
+  destinationLabel: "Destination 01 · Velora-7",
+  guideLabel: "City guide",
+  guideTitle: "Explore Aurora City",
+  guideSubtitle: "Five Spectacular Ways to Experience Tomorrow.",
+  fallbackName: "Aurora City",
+  sectionId: "destination-title",
+  theme: "destination",
+});
+
 interface SanityImage {
   asset?: {
     _ref?: string;
@@ -16,7 +38,7 @@ interface DestinationHighlight {
   altText?: string;
 }
 
-interface AuroraCityDestination {
+interface DestinationContent {
   name?: string;
   tagline?: string;
   description?: string;
@@ -43,9 +65,9 @@ const destinationQuery = `*[
   }
 }`;
 
-const { data, error, pending } = await useSanityQuery<AuroraCityDestination | null>(
+const { data, error, pending } = await useSanityQuery<DestinationContent | null>(
   destinationQuery,
-  { slug: "aurora-city" },
+  { slug: props.slug },
 );
 
 const carousel = ref<HTMLElement | null>(null);
@@ -188,35 +210,39 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="aurora-section" aria-labelledby="aurora-title">
-    <div class="aurora-section__inner">
-      <div v-if="pending" class="aurora-status" role="status">
-        Preparing the Aurora City departure board…
+  <section
+    class="destination-section"
+    :class="`destination-section--${props.theme}`"
+    :aria-labelledby="props.sectionId"
+  >
+    <div class="destination-section__inner">
+      <div v-if="pending" class="destination-status" role="status">
+        Preparing the {{ props.fallbackName }} departure board…
       </div>
 
-      <div v-else-if="error || !hasContent" class="aurora-status">
-        <p class="aurora-status__eyebrow">CosmoPort destination desk</p>
-        <h2 id="aurora-title">Aurora City is preparing for departure.</h2>
+      <div v-else-if="error || !hasContent" class="destination-status">
+        <p class="destination-status__eyebrow">CosmoPort destination desk</p>
+        <h2 :id="props.sectionId">{{ props.fallbackName }} is preparing for departure.</h2>
         <p>Destination details will appear here when the city is ready for visitors.</p>
       </div>
 
       <template v-else>
-        <div class="aurora-intro">
-          <div class="aurora-copy">
-            <p class="aurora-eyebrow">Destination 01 · Velora-7</p>
-            <h2 id="aurora-title">{{ destination?.name || "Aurora City" }}</h2>
-            <p v-if="destination?.tagline" class="aurora-tagline">
+        <div class="destination-intro">
+          <div class="destination-copy">
+            <p class="destination-eyebrow">{{ props.destinationLabel }}</p>
+            <h2 :id="props.sectionId">{{ destination?.name || props.fallbackName }}</h2>
+            <p v-if="destination?.tagline" class="destination-tagline">
               {{ destination.tagline }}
             </p>
-            <p v-if="destination?.description" class="aurora-description">
+            <p v-if="destination?.description" class="destination-description">
               {{ destination.description }}
             </p>
           </div>
 
-          <div v-if="imageAssetId(destination?.heroImage)" class="aurora-hero-image">
+          <div v-if="imageAssetId(destination?.heroImage)" class="destination-hero-image">
             <SanityImage
               :asset-id="imageAssetId(destination?.heroImage)"
-              :alt="destination?.altText || `${destination?.name || 'Aurora City'} destination`"
+              :alt="destination?.altText || `${destination?.name || props.fallbackName} destination`"
               width="960"
               height="620"
               sizes="sm:100vw md:50vw lg:45vw"
@@ -224,34 +250,32 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div v-if="highlights.length" class="aurora-attractions">
-          <div class="aurora-attractions__heading">
+        <div v-if="highlights.length" class="destination-attractions">
+          <div class="destination-attractions__heading">
             <div>
-              <p class="aurora-eyebrow">City guide</p>
-              <h3>Explore Aurora City</h3>
-              <p class="aurora-attractions__subtitle">
-                Five Spectacular Ways to Experience Tomorrow.
-              </p>
+              <p class="destination-eyebrow">{{ props.guideLabel }}</p>
+              <h3>{{ props.guideTitle }}</h3>
+              <p class="destination-attractions__subtitle">{{ props.guideSubtitle }}</p>
             </div>
-            <div class="aurora-controls">
+            <div class="destination-controls">
               <button
                 type="button"
-                class="aurora-control"
+                class="destination-control"
                 :disabled="highlights.length < 2"
-                aria-label="Previous Aurora City attraction"
+                :aria-label="`Previous ${props.fallbackName} attraction`"
                 @click="scrollToHighlight(selectedIndex - 1)"
               >
                 ←
               </button>
-              <span class="aurora-position" aria-live="polite">
+              <span class="destination-position" aria-live="polite">
                 {{ String(selectedIndex + 1).padStart(2, "0") }} /
                 {{ String(highlights.length).padStart(2, "0") }}
               </span>
               <button
                 type="button"
-                class="aurora-control"
+                class="destination-control"
                 :disabled="highlights.length < 2"
-                aria-label="Next Aurora City attraction"
+                :aria-label="`Next ${props.fallbackName} attraction`"
                 @click="scrollToHighlight(selectedIndex + 1)"
               >
                 →
@@ -261,43 +285,43 @@ onBeforeUnmount(() => {
 
           <div
             ref="carousel"
-            class="aurora-carousel"
+            class="destination-carousel"
             tabindex="0"
             role="region"
-            aria-label="Aurora City attractions"
+            :aria-label="`${props.fallbackName} attractions`"
             @keydown="handleCarouselKeydown"
           >
             <article
               v-for="(highlight, index) in highlights"
               :key="highlight._key"
               :data-highlight-index="index"
-              class="aurora-card"
+              class="destination-card"
               :class="{ 'is-selected': selectedIndex === index }"
               :aria-current="selectedIndex === index ? 'true' : undefined"
             >
-              <div v-if="imageAssetId(highlight.image)" class="aurora-card__image">
+              <div v-if="imageAssetId(highlight.image)" class="destination-card__image">
                 <SanityImage
                   :asset-id="imageAssetId(highlight.image)"
-                  :alt="highlight.altText || highlight.title || 'Aurora City attraction'"
+                  :alt="highlight.altText || highlight.title || `${props.fallbackName} attraction`"
                   width="720"
                   height="840"
                   sizes="sm:82vw md:42vw lg:30vw"
                 />
               </div>
-              <div v-else class="aurora-card__image aurora-card__image--empty" aria-hidden="true">
-                <span>CPV / AURORA</span>
+              <div v-else class="destination-card__image destination-card__image--empty" aria-hidden="true">
+                <span>CPV / {{ props.fallbackName }}</span>
               </div>
-              <div class="aurora-card__body">
-                <p class="aurora-card__number">0{{ index + 1 }}</p>
-                <h4>{{ highlight.title || "Aurora City attraction" }}</h4>
+              <div class="destination-card__body">
+                <p class="destination-card__number">0{{ index + 1 }}</p>
+                <h4>{{ highlight.title || `${props.fallbackName} attraction` }}</h4>
                 <p v-if="highlight.description">{{ highlight.description }}</p>
               </div>
             </article>
           </div>
         </div>
 
-        <p v-else class="aurora-status aurora-status--compact">
-          Aurora City attractions are still being charted.
+        <p v-else class="destination-status destination-status--compact">
+          {{ props.fallbackName }} attractions are still being charted.
         </p>
       </template>
     </div>
@@ -305,52 +329,67 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.aurora-section {
-  --aurora-teal: #103947;
-  --aurora-deep-teal: #082b37;
-  --aurora-aqua: #71d6d0;
-  --aurora-ivory: #fff4df;
-  --aurora-gold: #eac78d;
+.destination-section {
+  --destination-teal: #103947;
+  --destination-deep-teal: #082b37;
+  --destination-aqua: #71d6d0;
+  --destination-ivory: #fff4df;
+  --destination-gold: #eac78d;
+  --destination-background-start: #0b303d;
+  --destination-background-end: #194e59;
   min-height: 100svh;
   background:
     radial-gradient(circle at 15% 18%, rgba(113, 214, 208, 0.16), transparent 28rem),
-    linear-gradient(135deg, #0b303d 0%, var(--aurora-teal) 48%, #194e59 100%);
-  color: var(--aurora-ivory);
+    linear-gradient(135deg, var(--destination-background-start) 0%, var(--destination-teal) 48%, var(--destination-background-end) 100%);
+  color: var(--destination-ivory);
   overflow: hidden;
 }
 
-.aurora-section__inner {
+.destination-section--pearlwater {
+  --destination-teal: #155764;
+  --destination-deep-teal: #0b3542;
+  --destination-aqua: #79ded8;
+  --destination-gold: #f2ce9a;
+  --destination-background-start: #0a3e4c;
+  --destination-background-end: #26818a;
+}
+
+.destination-section--pearlwater .destination-tagline {
+  color: #f18d77;
+}
+
+.destination-section__inner {
   width: min(100% - 3rem, 1380px);
   min-height: 100svh;
   margin: 0 auto;
   padding: clamp(4rem, 8vw, 8rem) 0 clamp(4rem, 8vw, 7rem);
 }
 
-.aurora-intro {
+.destination-intro {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(20rem, 1.2fr);
   gap: clamp(2rem, 7vw, 8rem);
   align-items: end;
 }
 
-.aurora-copy {
+.destination-copy {
   max-width: 33rem;
 }
 
-.aurora-eyebrow,
-.aurora-status__eyebrow {
+.destination-eyebrow,
+.destination-status__eyebrow {
   margin: 0 0 1rem;
-  color: var(--aurora-aqua);
+  color: var(--destination-aqua);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.28em;
   text-transform: uppercase;
 }
 
-.aurora-copy h2,
-.aurora-status h2 {
+.destination-copy h2,
+.destination-status h2 {
   margin: 0;
-  color: var(--aurora-ivory);
+  color: var(--destination-ivory);
   font-family: "Fontdiner Swanky", Georgia, serif;
   font-size: clamp(3.5rem, 8vw, 8rem);
   font-weight: 400;
@@ -359,15 +398,15 @@ onBeforeUnmount(() => {
   text-wrap: balance;
 }
 
-.aurora-tagline {
+.destination-tagline {
   margin: 1.75rem 0 0;
-  color: var(--aurora-gold);
+  color: var(--destination-gold);
   font-family: "Cherry Cream Soda", system-ui, sans-serif;
   font-size: clamp(1.2rem, 2vw, 1.8rem);
   line-height: 1.25;
 }
 
-.aurora-description {
+.destination-description {
   max-width: 31rem;
   margin: 1.5rem 0 0;
   color: rgba(255, 244, 223, 0.84);
@@ -375,18 +414,18 @@ onBeforeUnmount(() => {
   line-height: 1.65;
 }
 
-.aurora-hero-image {
+.destination-hero-image {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   aspect-ratio: 1.55;
-  border: 2px solid var(--aurora-gold);
+  border: 2px solid var(--destination-gold);
   border-radius: 48% 8% 8% 8% / 12% 12% 42% 8%;
-  background: var(--aurora-deep-teal);
+  background: var(--destination-deep-teal);
   box-shadow: 1rem 1rem 0 rgba(4, 25, 34, 0.25);
 }
 
-.aurora-hero-image::after {
+.destination-hero-image::after {
   position: absolute;
   inset: 0;
   border: 1px solid rgba(113, 214, 208, 0.65);
@@ -395,19 +434,19 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-.aurora-hero-image :deep(img),
-.aurora-card__image :deep(img) {
+.destination-hero-image :deep(img),
+.destination-card__image :deep(img) {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.aurora-attractions {
+.destination-attractions {
   margin-top: clamp(5rem, 10vw, 10rem);
 }
 
-.aurora-attractions__heading {
+.destination-attractions__heading {
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -415,51 +454,51 @@ onBeforeUnmount(() => {
   margin-bottom: 1.5rem;
 }
 
-.aurora-attractions h3 {
+.destination-attractions h3 {
   margin: 0;
-  color: var(--aurora-ivory);
+  color: var(--destination-ivory);
   font-family: "Cherry Cream Soda", system-ui, sans-serif;
   font-size: clamp(1.8rem, 3vw, 3rem);
   font-weight: 400;
 }
 
-.aurora-controls {
+.destination-controls {
   display: flex;
   align-items: center;
   gap: 0.7rem;
 }
 
-.aurora-control {
+.destination-control {
   display: grid;
   width: 3rem;
   height: 3rem;
   place-items: center;
-  border: 1px solid var(--aurora-gold);
+  border: 1px solid var(--destination-gold);
   border-radius: 50%;
   background: transparent;
-  color: var(--aurora-gold);
+  color: var(--destination-gold);
   cursor: pointer;
   font-size: 1.4rem;
 }
 
-.aurora-control:hover:not(:disabled),
-.aurora-control:focus-visible {
-  background: var(--aurora-gold);
-  color: var(--aurora-deep-teal);
+.destination-control:hover:not(:disabled),
+.destination-control:focus-visible {
+  background: var(--destination-gold);
+  color: var(--destination-deep-teal);
 }
 
-.aurora-control:focus-visible,
-.aurora-carousel:focus-visible {
-  outline: 3px solid var(--aurora-aqua);
+.destination-control:focus-visible,
+.destination-carousel:focus-visible {
+  outline: 3px solid var(--destination-aqua);
   outline-offset: 4px;
 }
 
-.aurora-control:disabled {
+.destination-control:disabled {
   cursor: not-allowed;
   opacity: 0.4;
 }
 
-.aurora-position {
+.destination-position {
   min-width: 4.5rem;
   color: rgba(255, 244, 223, 0.72);
   font-size: 0.8rem;
@@ -467,7 +506,7 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.aurora-carousel {
+.destination-carousel {
   display: flex;
   gap: 1.25rem;
   width: 100vw;
@@ -478,76 +517,76 @@ onBeforeUnmount(() => {
   scroll-padding-inline: 1.5rem;
   scroll-snap-type: x mandatory;
   scrollbar-width: thin;
-  scrollbar-color: var(--aurora-gold) transparent;
+  scrollbar-color: var(--destination-gold) transparent;
 }
 
-.aurora-card {
+.destination-card {
   flex: 0 0 clamp(17rem, 29vw, 28rem);
   overflow: hidden;
   scroll-snap-align: center;
   border: 1px solid rgba(234, 199, 141, 0.5);
   border-radius: 44% 5% 7% 7% / 9% 7% 6% 12%;
-  background: var(--aurora-deep-teal);
+  background: var(--destination-deep-teal);
   box-shadow: 0.7rem 0.7rem 0 rgba(4, 25, 34, 0.18);
   transition: border-color 180ms ease, transform 180ms ease;
 }
 
-.aurora-card.is-selected {
-  border: 2px solid var(--aurora-gold);
+.destination-card.is-selected {
+  border: 2px solid var(--destination-gold);
   transform: translateY(-0.35rem);
 }
 
-.aurora-card__image {
+.destination-card__image {
   height: clamp(15rem, 27vw, 25rem);
   overflow: hidden;
   background: #124858;
 }
 
-.aurora-card__image--empty {
+.destination-card__image--empty {
   display: grid;
   place-items: center;
-  color: var(--aurora-aqua);
+  color: var(--destination-aqua);
   font-size: 0.7rem;
   letter-spacing: 0.2em;
 }
 
-.aurora-card__body {
+.destination-card__body {
   min-height: 12rem;
   padding: 1.25rem 1.5rem 1.5rem;
 }
 
-.aurora-card__number {
+.destination-card__number {
   margin: 0 0 0.8rem;
-  color: var(--aurora-gold);
+  color: var(--destination-gold);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.2em;
 }
 
-.aurora-card h4 {
+.destination-card h4 {
   margin: 0;
-  color: var(--aurora-ivory);
+  color: var(--destination-ivory);
   font-family: "Cherry Cream Soda", system-ui, sans-serif;
   font-size: 1.45rem;
   font-weight: 400;
   line-height: 1.15;
 }
 
-.aurora-attractions__subtitle {
+.destination-attractions__subtitle {
   margin: 0.6rem 0 0;
   color: rgba(255, 244, 223, 0.72);
   font-size: 0.98rem;
   line-height: 1.4;
 }
 
-.aurora-card__body > p:last-child {
+.destination-card__body > p:last-child {
   margin: 0.8rem 0 0;
   color: rgba(255, 244, 223, 0.76);
   font-size: 0.95rem;
   line-height: 1.5;
 }
 
-.aurora-status {
+.destination-status {
   display: grid;
   min-height: 55svh;
   place-content: center;
@@ -556,17 +595,17 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.aurora-status h2 {
+.destination-status h2 {
   font-size: clamp(3rem, 7vw, 6.5rem);
 }
 
-.aurora-status > p:last-child {
+.destination-status > p:last-child {
   margin: 1.5rem auto 0;
   color: rgba(255, 244, 223, 0.8);
   line-height: 1.6;
 }
 
-.aurora-status--compact {
+.destination-status--compact {
   min-height: auto;
   margin: 3rem 0 0;
   color: rgba(255, 244, 223, 0.75);
@@ -574,41 +613,41 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 800px) {
-  .aurora-section__inner {
+  .destination-section__inner {
     width: min(100% - 2rem, 40rem);
   }
 
-  .aurora-intro {
+  .destination-intro {
     grid-template-columns: 1fr;
   }
 
-  .aurora-copy h2 {
+  .destination-copy h2 {
     max-width: 8ch;
   }
 
-  .aurora-hero-image {
+  .destination-hero-image {
     aspect-ratio: 1.35;
   }
 
-  .aurora-attractions__heading {
+  .destination-attractions__heading {
     align-items: start;
     flex-direction: column;
     gap: 1.25rem;
   }
 
-  .aurora-carousel {
+  .destination-carousel {
     padding-right: 1rem;
     padding-left: 1rem;
     scroll-padding-inline: 1rem;
   }
 
-  .aurora-card {
+  .destination-card {
     flex-basis: min(82vw, 26rem);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora-card {
+  .destination-card {
     transition: none;
   }
 }

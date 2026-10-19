@@ -36,7 +36,8 @@
       <p class="hero-mark" aria-hidden="true">CPV <span>✦</span> 1958</p>
     </main>
 
-    <AuroraCitySection />
+    <DestinationSection />
+    <PearlwaterCoastSection />
   </div>
 </template>
 
