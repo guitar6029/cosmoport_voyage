@@ -64,7 +64,7 @@ Copy `.env.example` to `.env` for local development and fill in the values. The 
 
 ### Sanity Studio
 
-The standalone Studio lives in `studio/` and remains independent from the Nuxt application. Copy `studio/.env.example` to `studio/.env` and provide the existing Sanity project ID and dataset values.
+The standalone Studio lives in `studio/` and remains independent from the Nuxt application. Its project and dataset are configured in `studio/sanity.config.ts` and `studio/sanity.cli.ts`.
 
 ```bash
 cd studio
