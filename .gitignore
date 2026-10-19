@@ -7,6 +7,9 @@ node_modules/
 dist/
 coverage/
 
+# Sanity Studio generated files
+.sanity/
+
 # Logs and local tooling
 *.log
 *.local
