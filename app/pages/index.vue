@@ -1,15 +1,3 @@
-<script setup lang="ts">
-import { SITE_DESCRIPTION, SITE_TITLE } from "../site";
-
-useSeoMeta({
-  title: SITE_TITLE,
-  description: SITE_DESCRIPTION,
-  ogTitle: SITE_TITLE,
-  ogDescription: SITE_DESCRIPTION,
-  ogType: "website",
-});
-</script>
-
 <template>
   <main class="min-h-screen p-8">
     <section aria-labelledby="page-title" class="mx-auto max-w-3xl">
