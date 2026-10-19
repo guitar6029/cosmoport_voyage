@@ -15,10 +15,10 @@
 
 - CosmoPort Voyage is being rebuilt as an interactive fictional space-tourism website.
 - Visual direction: 1950s Space Age retrofuturism / Atompunk.
-- Frontend: Vue 3, TypeScript, Vite, Tailwind CSS v4, and DaisyUI.
-- Content management: Sanity CMS (planned integration).
-- Python, FastAPI, and MongoDB are legacy components scheduled for removal in a separate cleanup task.
-- Do not remove legacy infrastructure without explicit instructions.
+- The application lives at the repository root and uses Nuxt 4, Vue 3, TypeScript, Tailwind CSS v4, and DaisyUI v5.
+- Vitest is used for testing.
+- Sanity CMS is planned for future integration.
+- Python, FastAPI, and MongoDB have been removed from the project.
 
 ## Development standards
 
@@ -31,9 +31,11 @@
 
 ## Validation
 
-- Inspect `package.json` before choosing build or test commands.
+- Inspect the root `package.json` before choosing commands.
 - If Node/npm is unavailable, check whether `nvm use 22.23.3` is appropriate.
-- Run relevant existing checks for modified code.
+- Install dependencies with `npm ci`.
+- Run the test suite with `npm run test`.
+- Run the production build with `npm run build`.
 - Report what passed, failed, or could not be verified.
 - Once CI is established, ensure required checks pass before merging.
 
