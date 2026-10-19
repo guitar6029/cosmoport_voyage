@@ -34,6 +34,21 @@ Visual references and ingredients:
 
 Avoid copying specific brands, characters, artwork, or protected iconography from Fallout or other existing properties. The world should have its own identity.
 
+### Image treatments, medium, and cinematic language
+
+Visual consistency does **not** mean every image must look like it was made with the same medium. We can show the same fictional world through several intentional treatments:
+
+- **Vintage print illustration:** gouache/ink, paper texture, simplified shadows, matte commercial art for brochures, packaging, and period ads.
+- **Polished retro illustration:** smooth painterly gradients, clearer dimensional lighting, luminous pastels, selective glossy chrome for CosmoPort's main marketing.
+- **Retro studio editorial:** sculpted portrait/product lighting, photographed-or-CG realism, controlled reflections and lacquer finishes for characters and product campaigns.
+- **Cinematic realism:** convincing physical environments and materials, motivated light sources, camera/lens depth, atmospheric haze, and film grading for immersive destination previews and future motion work.
+
+Medium, surface gloss/roughness, lighting/exposure, camera framing, texture, and color treatment are separate art-direction choices. A glossy surface is not synonymous with photorealism; a film still is not the same as a studio product photograph. Preserve approved character faces, outfits, vehicle silhouettes, logos, and recognizable locations as treatments change.
+
+**CosmoPort proposal:** polished retro illustration as the primary website language; vintage print for fictional sponsor advertisements; cinematic realism for selective destination reveals. Start with one recurring character, one rocketliner, and approved master references before widening the asset library.
+
+See [CosmoPort Visual Style Guide](./COSMOPORT-VISUAL-STYLE-GUIDE.md) for image-treatment vocabulary, lighting/material/camera brief fields, example prompts, continuity checks, and the minimal production workflow. These are documentation notes—not new MVP features, backend work, or Sanity document types.
+
 ## Setting foundations — working concepts
 
 | Element | Current idea | Status |
