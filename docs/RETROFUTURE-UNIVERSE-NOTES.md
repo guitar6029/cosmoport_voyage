@@ -127,6 +127,65 @@ If spin-offs materialize, they can be separate repositories and independently de
 
 This makes the universe a coherent collection of projects rather than one enormous application.
 
+## Interactive business ideas — 2026-10-20 brainstorm
+
+> **Idea parking lot, not a roadmap or approved canon.** Everything here is optional. The goal is a collection of entertaining, connected experiences, not a real-world SaaS platform or a commitment to build every business.
+
+### The visitor promise
+
+CosmoPort can eventually be one attraction in a wider, curated retrofuturistic universe: fictional businesses that visitors can actually *play with*. Fun, humor, nostalgia, discovery, and memorable interactions are valid outcomes. Some experiences may teach real integration or engineering skills; none needs enterprise complexity merely to justify its existence.
+
+A visitor might plan an imaginary vacation, tune a radio, configure a robot, explore a diner, or order an absurdly cheerful soda delivery. Each experience should offer at least one satisfying interaction or takeaway, not just more images and text.
+
+### Candidate attractions and technical experiments
+
+| Working experience | Small, entertaining interaction | Distinct visual approach | Optional skills to explore |
+| --- | --- | --- | --- |
+| **AstroPop Soda Co.** | Choose flavors and a daily, weekly, every-two-weeks, or monthly visit from a fictional soda delivery person; receive a period-style order slip. | Pencil-and-ink characters, halftone print, soda packaging, cheerful 1950s advertisements. | Reactive forms, plan selection, validation; optionally payment-provider **test mode** and subscription webhooks in a later, explicitly approved task. |
+| **Atomic Diner** | Wander one small retro diner, talk to a few characters, order food, and play a jukebox. | Pixel art or a deliberately stylized 2D game world with warm neon and Googie interiors. | Canvas or a small game framework, dialogue trees, game state, lightweight audio. No multiplayer needed. |
+| **Tomorrow's Gazette** | Read fictional news, sign up for an imaginary newspaper route, and assign or rearrange a handful of delivery stops. | Newsprint, monochrome photography, editorial columns, hand-inked cartoons. | Client-side route state first; optionally a tiny CRUD API or persistence if a clear interaction requires it. |
+| **Mike & Mike's RoboFactory** | Mix robot bodies, heads, tools, colors, and dubious household upgrades; generate an absurd product specification or order form. | Retro product catalog, exploded technical diagrams, polished showroom illustrations. | Configurator state, conditional options, optional on-demand Three.js preview; a playful small-scale storefront parody. |
+| **Tomorrow Homes Realty** | Browse fictional properties, filter homes, inspect floor plans, and take an exaggerated sales tour with domestic robots. | Mid-century real-estate brochures, staged family photography, optimistic suburban ads. | Search/filter UI, floor-plan interactions, optional 3D tours or mock inquiry forms. |
+| **CosmoPort / Galaxy Wave Radio** | Tune in to laid-back Space Age lounge music, adjust volume, and encounter station IDs or fictional commercials. | Bakelite knobs, glowing radio dials, analog broadcast graphics. | HTML audio, playback state, user-initiated sound and accessible controls; no autoplay with sound. |
+
+These are **working names and experiments**. The original seeds—Atomic Cluster Cereal, Starline Motors, Galaxy Wave Broadcasting, and other companies—remain possible future attractions. Naming an idea here neither changes the approved brand direction nor starts implementation.
+
+### One era, several artistic lenses
+
+The connective tissue is the same optimistic 1950s-inspired spacefaring society, recurring companies, recognizable products, and gently absurd corporate culture. The individual applications need **not** share an identical visual theme:
+
+- **CosmoPort Voyage:** glossy, cinematic, destination-focused travel imagery and luxury brochures.
+- **AstroPop:** matte commercial illustration, pencil/ink, imperfect printing, expressive delivery characters.
+- **Atomic Diner:** a cohesive pixel-art or illustrated game treatment rather than photorealistic travel imagery.
+- **Gazette:** traditional newspaper layouts, halftones, advertisements, and retro editorial typography.
+- **RoboFactory and real estate:** product-showroom, technical-catalog, or staged commercial photography treatments.
+- **Radio:** tactile vintage hardware, broadcast dials, and animated but restrained feedback.
+
+Treatments differ by fictional business, while lore, era, and recurring designs keep them connected. Preserve readability, responsiveness, reduced-motion preferences, and sensible asset budgets.
+
+### Possible central portal and deployment evolution
+
+If a second experience becomes real, the root page could eventually become a **World's Fair-style directory or entertainment portal** connecting the fictional businesses, while the current CosmoPort travel homepage moves into a dedicated Voyage section. This is a future design exploration, **not authorization to change today's routes or homepage**.
+
+1. **Start together:** keep small experiences as separately styled routes/features in the existing Nuxt application. Load game engines, 3D viewers, audio, and large assets only when visitors enter the corresponding experience.
+2. **Keep boundaries light:** each attraction owns its specific components and assets; shared navigation or lore links can be simple. No common database, authentication system, event broker, or microfrontend framework is required.
+3. **Split selectively later:** if an attraction develops a distinct build pipeline, dependency footprint, deployment rhythm, or substantial performance demands, it may become its own repository and deployment with a link from the central portal.
+
+Independent visual identity does not require independent infrastructure. Conversely, sharing a fictional universe does not require shared backend services.
+
+### Real integrations without turning everything into SaaS
+
+- A fake newspaper delivery route, fictional order receipt, boarding pass, or robot specification can be fully client-side and still feel complete.
+- When an integration itself is the learning objective, keep it tightly scoped: e.g., a payment provider's sandbox for AstroPop subscription lifecycle/webhook experience, or minimal persistence for Gazette deliveries.
+- **Never charge real money for imaginary goods.** Real payment collection would require a clearly defined real product or service, honest fulfillment terms, and separate approval and planning; it is not part of these ideas.
+- Build one fun, finished interaction per attraction before extending it. Avoid speculative APIs, subscriptions, identities, cross-app state, or infrastructure.
+
+### Current priority and anti-backlog rule
+
+Complete the existing CosmoPort destination experience and its lightweight vacation-finder / itinerary / souvenir boarding-pass loop first. Radio or an illustrative AstroPop micro-experience may be natural next experiments after that, but this page is deliberately **not** a sprint plan.
+
+Choose future work by three questions: *Would a visitor enjoy interacting with it? Can we finish a satisfying small version? Is the technology justified by the experience or learning goal?* If not, leave the idea here for later.
+
 ## CosmoPort remains the first finished product
 
 The initial product goal has not changed:
