@@ -65,6 +65,22 @@ export const destination = defineType({
       },
     }),
     defineField({
+      name: "guideBadgeImage",
+      title: "Guide Badge Image",
+      type: "image",
+      description:
+        "Decorative retro sign displayed above the destination's attraction guide heading.",
+      fields: [
+        defineField({
+          name: "altText",
+          title: "Alt text",
+          type: "string",
+          description: "Accessible text for the guide badge lettering.",
+          validation: (Rule) => Rule.required().max(180),
+        }),
+      ],
+    }),
+    defineField({
       name: "altText",
       title: "Image alt text",
       type: "string",
