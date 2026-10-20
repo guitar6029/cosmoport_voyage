@@ -248,6 +248,9 @@ h1 span {
 
 @media (max-width: 900px) {
   .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
   }
 
@@ -310,13 +313,23 @@ h1 span {
 
   .hero-description {
     max-width: 27rem;
+    color: #fff4df;
     font-size: clamp(1.0625rem, 4vw, 1.1875rem);
+    text-shadow: none;
   }
 
   .hero-description-panel {
     width: min(100%, 34rem);
     margin: 2rem auto 0;
     padding: 2.75rem 2.5rem;
+    border: 2px solid #d8ad67;
+    border-radius: 1.5rem 0.5rem 1.5rem 0.5rem;
+    background: #103947;
+    box-shadow: 0 0.75rem 1.5rem rgba(4, 25, 34, 0.3);
+  }
+
+  .hero-text-panel {
+    display: none;
   }
 
   .hero-actions {
