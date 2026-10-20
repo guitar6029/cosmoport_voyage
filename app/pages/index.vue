@@ -282,8 +282,15 @@ h1 span {
   }
 
   h1 {
-    max-width: 12ch;
-    font-size: clamp(3rem, 14vw, 5rem);
+    width: min(12ch, 100%);
+    max-width: 100%;
+    font-size: clamp(2.75rem, 12.5vw, 5rem);
+  }
+
+  #hero-supporting-title {
+    max-width: 19ch;
+    font-size: clamp(1.35rem, 6vw, 1.75rem);
+    line-height: 1.2;
   }
 
   .hero-description {
