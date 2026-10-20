@@ -9,7 +9,7 @@
       <div class="hero-scrim" aria-hidden="true"></div>
 
       <section class="hero-content" aria-labelledby="hero-title">
-        <div class="flex flex-col gap-1">
+        <div class="hero-heading flex flex-col gap-1">
           <p class="hero-kicker">CosmoPort Voyage presents</p>
           <div class="flex flex-col gap-2 max-w-2xl">
             <h1 id="hero-title" class="hero-title">
@@ -59,10 +59,13 @@
 
 
 #hero-supporting-title {
-  font-size: 2rem;
+  display: block;
+  max-width: 22ch;
+  font-size: clamp(1.5rem, 3.2vw, 2rem);
   font-family: "Cherry Cream Soda", system-ui;
   font-weight: 400;
   font-style: normal;
+  line-height: 1.15;
 }
 
 
@@ -243,6 +246,24 @@ h1 span {
   color: #f5a24b;
 }
 
+@media (max-width: 900px) {
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-heading {
+    align-items: center;
+  }
+
+  .hero-description-panel {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
 @media (min-width: 1800px) {
   .hero-image {
     object-position: center 39%;
@@ -274,24 +295,41 @@ h1 span {
 
   .hero-kicker {
     margin-bottom: 1.25rem;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
   }
 
   h1 {
-    max-width: 12ch;
-    font-size: clamp(3rem, 14vw, 5rem);
+    width: min(12ch, 100%);
+    max-width: 100%;
+    font-size: clamp(2.75rem, 12.5vw, 5rem);
+  }
+
+  #hero-supporting-title {
+    max-width: 19ch;
+    font-size: clamp(1.35rem, 6vw, 1.75rem);
+    line-height: 1.2;
   }
 
   .hero-description {
     max-width: 27rem;
+    color: #fff4df;
     font-size: clamp(1.0625rem, 4vw, 1.1875rem);
+    text-shadow: none;
   }
 
   .hero-description-panel {
     width: min(100%, 34rem);
     margin: 2rem auto 0;
     padding: 2.75rem 2.5rem;
+    border: 2px solid #d8ad67;
+    border-radius: 1.5rem 0.5rem 1.5rem 0.5rem;
+    background: #103947;
+    box-shadow: 0 0.75rem 1.5rem rgba(4, 25, 34, 0.3);
+  }
+
+  .hero-text-panel {
+    display: none;
   }
 
   .hero-actions {
