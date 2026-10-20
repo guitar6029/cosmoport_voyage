@@ -3,7 +3,7 @@
     <main id="hero" class="hero-shell">
       <img
         class="hero-image"
-        src="/images/hero/seaside_spaceport.png"
+        src="/images/hero/hero-world.png"
         alt="A silver rocketliner above a futuristic seaside spaceport resort"
       />
       <div class="hero-scrim" aria-hidden="true"></div>
