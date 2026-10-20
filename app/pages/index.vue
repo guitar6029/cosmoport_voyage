@@ -38,6 +38,7 @@
 
     <DestinationSection />
     <PearlwaterCoastSection />
+    <SaffronExpanseSection />
   </div>
 </template>
 

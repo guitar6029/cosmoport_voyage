@@ -10,7 +10,7 @@ interface DestinationSectionProps {
   guideSubtitle?: string;
   fallbackName?: string;
   sectionId?: string;
-  theme?: "destination" | "pearlwater";
+  theme?: "destination" | "pearlwater" | "saffron";
 }
 
 const props = withDefaults(defineProps<DestinationSectionProps>(), {
@@ -356,6 +356,16 @@ onBeforeUnmount(() => {
 
 .destination-section--pearlwater .destination-tagline {
   color: #f18d77;
+}
+
+.destination-section--saffron {
+  --destination-teal: #a9553d;
+  --destination-deep-teal: #382e37;
+  --destination-aqua: #348d91;
+  --destination-ivory: #f1d2a0;
+  --destination-gold: #d78a42;
+  --destination-background-start: #713c32;
+  --destination-background-end: #a9553d;
 }
 
 .destination-section__inner {
