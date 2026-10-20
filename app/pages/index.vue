@@ -59,10 +59,13 @@
 
 
 #hero-supporting-title {
-  font-size: 2rem;
+  display: block;
+  max-width: 22ch;
+  font-size: clamp(1.5rem, 3.2vw, 2rem);
   font-family: "Cherry Cream Soda", system-ui;
   font-weight: 400;
   font-style: normal;
+  line-height: 1.15;
 }
 
 
@@ -274,8 +277,8 @@ h1 span {
 
   .hero-kicker {
     margin-bottom: 1.25rem;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
   }
 
   h1 {

@@ -579,7 +579,7 @@ onBeforeUnmount(() => {
   font-family: "Cherry Cream Soda", system-ui, sans-serif;
   font-size: 1.45rem;
   font-weight: 400;
-  line-height: 1.15;
+  line-height: 1.25;
 }
 
 .destination-attractions__subtitle {
@@ -631,8 +631,22 @@ onBeforeUnmount(() => {
     grid-template-columns: 1fr;
   }
 
-  .destination-copy h2 {
+  .destination-copy h2,
+  .destination-status h2 {
     max-width: 8ch;
+    font-size: clamp(3rem, 13vw, 5.5rem);
+    line-height: 0.92;
+  }
+
+  .destination-eyebrow,
+  .destination-status__eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+  }
+
+  .destination-card__number {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
   }
 
   .destination-hero-image {
