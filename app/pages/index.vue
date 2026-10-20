@@ -9,7 +9,7 @@
       <div class="hero-scrim" aria-hidden="true"></div>
 
       <section class="hero-content" aria-labelledby="hero-title">
-        <div class="flex flex-col gap-1">
+        <div class="hero-heading flex flex-col gap-1">
           <p class="hero-kicker">CosmoPort Voyage presents</p>
           <div class="flex flex-col gap-2 max-w-2xl">
             <h1 id="hero-title" class="hero-title">
@@ -244,6 +244,21 @@ h1 span {
 
 .hero-mark span {
   color: #f5a24b;
+}
+
+@media (max-width: 900px) {
+  .hero-content {
+    text-align: center;
+  }
+
+  .hero-heading {
+    align-items: center;
+  }
+
+  .hero-description-panel {
+    margin-right: auto;
+    margin-left: auto;
+  }
 }
 
 @media (min-width: 1800px) {
