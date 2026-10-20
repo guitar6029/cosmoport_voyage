@@ -28,6 +28,7 @@ interface SanityImage {
   asset?: {
     _ref?: string;
   };
+  altText?: string;
 }
 
 interface DestinationHighlight {
@@ -44,6 +45,7 @@ interface DestinationContent {
   description?: string;
   heroImage?: SanityImage;
   altText?: string;
+  guideBadgeImage?: SanityImage;
   highlights?: DestinationHighlight[];
 }
 
@@ -56,6 +58,10 @@ const destinationQuery = `*[
   description,
   heroImage,
   altText,
+  guideBadgeImage {
+    asset,
+    altText
+  },
   highlights[] {
     _key,
     title,
@@ -253,7 +259,19 @@ onBeforeUnmount(() => {
         <div v-if="highlights.length" class="destination-attractions">
           <div class="destination-attractions__heading">
             <div>
-              <p class="destination-eyebrow">{{ props.guideLabel }}</p>
+              <div
+                v-if="imageAssetId(destination?.guideBadgeImage)"
+                class="destination-guide-badge"
+              >
+                <SanityImage
+                  :asset-id="imageAssetId(destination?.guideBadgeImage)"
+                  :alt="destination?.guideBadgeImage?.altText || props.guideLabel"
+                  width="520"
+                  height="170"
+                  sizes="sm:280px md:400px"
+                />
+              </div>
+              <p v-else class="destination-eyebrow">{{ props.guideLabel }}</p>
               <h3>{{ props.guideTitle }}</h3>
               <p class="destination-attractions__subtitle">{{ props.guideSubtitle }}</p>
             </div>
@@ -464,6 +482,18 @@ onBeforeUnmount(() => {
   margin-bottom: 1.5rem;
 }
 
+.destination-guide-badge {
+  width: min(100%, 400px);
+  margin: 0 0 1rem;
+}
+
+.destination-guide-badge :deep(img) {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
 .destination-attractions h3 {
   margin: 0;
   color: var(--destination-ivory);
@@ -657,6 +687,10 @@ onBeforeUnmount(() => {
     align-items: start;
     flex-direction: column;
     gap: 1.25rem;
+  }
+
+  .destination-guide-badge {
+    width: min(100%, 280px);
   }
 
   .destination-carousel {
