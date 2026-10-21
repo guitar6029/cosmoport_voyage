@@ -11,6 +11,7 @@
     </section>
 
     <AstroPopFlavorSection />
+    <AstroPopPackYourPopSection />
   </main>
 </template>
 
