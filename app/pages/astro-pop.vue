@@ -34,7 +34,7 @@
 
 .astropop-hero__image {
   display: block;
-  width: min(100%, 104rem);
+  width: min(100%, 124rem);
   max-height: calc(100svh - 5.5rem);
   height: auto;
   object-fit: contain;
