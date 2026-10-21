@@ -13,6 +13,7 @@
     <AstroPopFlavorSection />
     <AstroPopPackYourPopSection />
     <AstroPopDeliverySection />
+    <AstroPopDeliveryPlansSection />
   </main>
 </template>
 

@@ -14,5 +14,6 @@ describe("AstroPop delivery section", () => {
       "/images/astro-pop/delivery/AstroPop%20Delivers_%20Retro%20Soda%20Adventure.png",
     );
     expect(html).toContain("View Plans");
+    expect(html).toContain('href="#astropop-delivery-plans"');
   });
 });
