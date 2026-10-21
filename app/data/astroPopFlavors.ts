@@ -77,4 +77,4 @@ export const ASTROPOP_FLAVORS = [
       alt: "Vintage Neptune Berry Fizz advertisement showing Astro Kid leaning against a blue AstroPop soda bottle.",
     },
   },
-] satisfies readonly AstroPopFlavor[];
+] as const satisfies readonly AstroPopFlavor[];
