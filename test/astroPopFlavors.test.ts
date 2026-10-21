@@ -13,6 +13,8 @@ describe("AstroPop flavor lineup", () => {
       expect(flavor.theme).toBeTruthy();
       expect(flavor.artwork.label).toBeTruthy();
       expect(flavor.artwork.pose).toBeTruthy();
+      expect(flavor.artwork.src).toMatch(/^\/images\/astro-pop\/drinks\/.+\.png$/);
+      expect(flavor.artwork.alt).toContain(flavor.name);
     }
   });
 });

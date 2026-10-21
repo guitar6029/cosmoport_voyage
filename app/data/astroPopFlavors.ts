@@ -7,6 +7,8 @@ export type AstroPopTheme =
 export interface AstroPopArtwork {
   label: string;
   pose: string;
+  src: string;
+  alt: string;
 }
 
 export interface AstroPopFlavor {
@@ -29,6 +31,8 @@ export const ASTROPOP_FLAVORS = [
     artwork: {
       label: "Bottle and Astro Kid artwork",
       pose: "Astro Kid hugging a bottle",
+      src: "/images/astro-pop/drinks/AstroPop Atomic Cherry Fizz.png",
+      alt: "Vintage Atomic Cherry Fizz advertisement showing Astro Kid hugging a red AstroPop soda bottle.",
     },
   },
   {
@@ -41,6 +45,8 @@ export const ASTROPOP_FLAVORS = [
     artwork: {
       label: "Bottle and Astro Kid artwork",
       pose: "Astro Kid pointing toward a sunburst",
+      src: "/images/astro-pop/drinks/Solar Citrus Spark Retro Poster.png",
+      alt: "Vintage Solar Citrus Spark advertisement showing Astro Kid pointing toward a sunburst beside an orange AstroPop soda bottle.",
     },
   },
   {
@@ -53,6 +59,8 @@ export const ASTROPOP_FLAVORS = [
     artwork: {
       label: "Bottle and Astro Kid artwork",
       pose: "Astro Kid floating beside a bottle",
+      src: "/images/astro-pop/drinks/AstroPop Lunar Lime Lift Retro Ad.png",
+      alt: "Vintage Lunar Lime Lift advertisement showing Astro Kid floating beside a green AstroPop soda bottle.",
     },
   },
   {
@@ -65,6 +73,8 @@ export const ASTROPOP_FLAVORS = [
     artwork: {
       label: "Bottle and Astro Kid artwork",
       pose: "Astro Kid leaning against a bottle",
+      src: "/images/astro-pop/drinks/Neptune Berry Fizz Space Adventure.png",
+      alt: "Vintage Neptune Berry Fizz advertisement showing Astro Kid leaning against a blue AstroPop soda bottle.",
     },
   },
 ] satisfies readonly AstroPopFlavor[];

@@ -15,20 +15,18 @@ defineProps<{
     <div class="flavor-card__ornament flavor-card__ornament--top" aria-hidden="true">✦</div>
     <header class="flavor-card__header">
       <p class="flavor-card__brand">AstroPop Soda Co. · Future flavor</p>
-      <h3 :id="`${flavor.id}-title`">{{ flavor.name }}</h3>
-      <p class="flavor-card__slogan">{{ flavor.slogan }}</p>
+      <h3 :id="`${flavor.id}-title`" class="sr-only">{{ flavor.name }}</h3>
     </header>
 
-    <div
-      class="flavor-card__artwork"
-      role="img"
-      :aria-label="`${flavor.artwork.label}: ${flavor.artwork.pose}`"
-    >
+    <div class="flavor-card__artwork">
       <span class="flavor-card__artwork-burst flavor-card__artwork-burst--one" aria-hidden="true">✦</span>
       <span class="flavor-card__artwork-burst flavor-card__artwork-burst--two" aria-hidden="true">✦</span>
-      <span class="flavor-card__artwork-label">Artwork placeholder</span>
-      <strong>{{ flavor.artwork.label }}</strong>
-      <span>{{ flavor.artwork.pose }}</span>
+      <img
+        class="flavor-card__artwork-image"
+        :src="flavor.artwork.src"
+        :alt="flavor.artwork.alt"
+        loading="lazy"
+      />
     </div>
 
     <p class="flavor-card__description">{{ flavor.description }}</p>
@@ -103,28 +101,9 @@ defineProps<{
   text-transform: uppercase;
 }
 
-.flavor-card h3 {
-  max-width: 13ch;
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.9rem, 3vw, 2.8rem);
-  line-height: 0.93;
-  text-wrap: balance;
-}
-
-.flavor-card__slogan {
-  margin: 0.8rem 0 0;
-  color: var(--card-accent);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
-  font-style: italic;
-  font-weight: 700;
-  line-height: 1.15;
-}
-
 .flavor-card__artwork {
   display: flex;
-  min-height: 20rem;
+  min-height: 0;
   align-items: center;
   justify-content: center;
   isolation: isolate;
@@ -132,12 +111,21 @@ defineProps<{
   margin: 1.5rem 0;
   border: 2px dashed var(--card-accent);
   border-radius: 48% 52% 45% 55% / 15% 18% 12% 16%;
-  padding: 2rem 1.5rem;
+  padding: 0;
   background:
     radial-gradient(circle at 50% 55%, rgba(255, 250, 222, 0.7), transparent 40%),
     var(--card-art);
   text-align: center;
   transform: rotate(-1deg);
+}
+
+.flavor-card__artwork-image {
+  display: block;
+  width: calc(100% + 1rem);
+  height: auto;
+  max-width: none;
+  margin-inline: -0.5rem;
+  object-fit: contain;
 }
 
 .flavor-card__artwork::before,
@@ -157,35 +145,6 @@ defineProps<{
 .flavor-card__artwork::after {
   right: 1.25rem;
   bottom: 1rem;
-}
-
-.flavor-card__artwork-label,
-.flavor-card__artwork strong,
-.flavor-card__artwork > span:last-child {
-  display: block;
-}
-
-.flavor-card__artwork-label {
-  margin-bottom: 0.5rem;
-  color: var(--card-accent);
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.flavor-card__artwork strong {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.35rem;
-  line-height: 1.1;
-}
-
-.flavor-card__artwork > span:last-child {
-  max-width: 20ch;
-  margin-top: 0.45rem;
-  font-size: 0.9rem;
-  font-style: italic;
-  line-height: 1.3;
 }
 
 .flavor-card__artwork-burst {
@@ -247,13 +206,25 @@ defineProps<{
   bottom: 1.2rem;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 @media (max-width: 700px) {
   .flavor-card {
     min-height: 36rem;
   }
 
   .flavor-card__artwork {
-    min-height: 17rem;
+    min-height: 0;
   }
 }
 </style>
