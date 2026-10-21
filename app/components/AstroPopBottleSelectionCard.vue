@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import type { AstroPopFlavor } from "../data/astroPopFlavors";
+import type { AstroPopFlavorId } from "../stores/astroPopCrate";
 
-defineProps<{
+const props = defineProps<{
   flavor: AstroPopFlavor;
+  disabled?: boolean;
+}>();
+
+const emit = defineEmits<{
+  add: [flavorId: AstroPopFlavorId];
 }>();
 </script>
 
@@ -19,7 +25,12 @@ defineProps<{
 
     <h3 class="bottle-selection-card__title">{{ flavor.name }}</h3>
 
-    <button class="bottle-selection-card__button" type="button" disabled>
+    <button
+      class="bottle-selection-card__button"
+      type="button"
+      :disabled="props.disabled"
+      @click="emit('add', flavor.id)"
+    >
       Add Bottle
     </button>
   </article>
@@ -105,12 +116,16 @@ defineProps<{
   padding: 0.7rem 1rem;
   background: var(--card-accent);
   color: #fff8e5;
-  cursor: not-allowed;
+  cursor: pointer;
   font-family: "Barlow Condensed", Arial, sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   line-height: 1;
   text-transform: uppercase;
+}
+
+.bottle-selection-card__button:disabled {
+  cursor: not-allowed;
 }
 </style>

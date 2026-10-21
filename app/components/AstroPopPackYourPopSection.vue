@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ASTROPOP_FLAVORS } from "../data/astroPopFlavors";
+import type { AstroPopFlavorId } from "../stores/astroPopCrate";
+import { useAstroPopCrateStore } from "../stores/astroPopCrate";
 import AstroPopBottleSelectionCard from "./AstroPopBottleSelectionCard.vue";
+
+const crateStore = useAstroPopCrateStore();
+
+const addBottle = (flavorId: AstroPopFlavorId) => {
+  crateStore.addItem(flavorId);
+};
 </script>
 
 <template>
@@ -25,6 +33,8 @@ import AstroPopBottleSelectionCard from "./AstroPopBottleSelectionCard.vue";
           v-for="flavor in ASTROPOP_FLAVORS"
           :key="flavor.id"
           :flavor="flavor"
+          :disabled="crateStore.isFull"
+          @add="addBottle"
         />
       </div>
     </div>
