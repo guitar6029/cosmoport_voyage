@@ -6,9 +6,9 @@
       <p class="astropop-delivery-section__copy">
         Fresh bottles from tomorrow, delivered right to your door.
       </p>
-      <button class="astropop-delivery-section__button" type="button">
+      <a class="astropop-delivery-section__button" href="#astropop-delivery-plans">
         View Plans
-      </button>
+      </a>
     </div>
 
     <div class="astropop-delivery-section__artwork">
@@ -87,6 +87,7 @@
 }
 
 .astropop-delivery-section__button {
+  display: inline-block;
   border: 2px solid #5e2730;
   border-radius: 999px;
   padding: 0.85rem 1.5rem;
@@ -98,6 +99,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   line-height: 1;
+  text-decoration: none;
   text-transform: uppercase;
 }
 
