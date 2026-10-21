@@ -11,7 +11,23 @@ export default defineNuxtConfig({
       },
       {
         name: "Cherry Cream Soda",
-        provider: "google"
+        provider: "google",
+      },
+      {
+        name: "Fraunces",
+        provider: "google",
+        weights: [700, 900],
+        styles: ["normal", "italic"],
+      },
+      {
+        name: "Barlow",
+        provider: "google",
+        weights: [400],
+      },
+      {
+        name: "Barlow Condensed",
+        provider: "google",
+        weights: [700],
       }
     ],
   },

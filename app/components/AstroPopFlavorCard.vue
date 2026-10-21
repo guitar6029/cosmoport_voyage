@@ -94,8 +94,9 @@ defineProps<{
 .flavor-card__brand {
   margin: 0 0 0.85rem;
   color: var(--card-accent);
+  font-family: "Barlow Condensed", Arial, sans-serif;
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.13em;
   line-height: 1.3;
   text-transform: uppercase;
@@ -166,7 +167,9 @@ defineProps<{
 .flavor-card__description {
   max-width: 34ch;
   margin: auto 0 0;
+  font-family: "Barlow", Arial, sans-serif;
   font-size: 0.97rem;
+  font-weight: 400;
   line-height: 1.5;
 }
 

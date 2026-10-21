@@ -27,6 +27,7 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
   margin: 0 auto;
   overflow: hidden;
   padding: clamp(4rem, 8vw, 8rem) clamp(1rem, 4vw, 3rem) clamp(5rem, 9vw, 9rem);
+  font-family: "Barlow", Arial, sans-serif;
   color: #3a2c35;
 }
 
@@ -39,8 +40,9 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 .astropop-flavor-section__eyebrow {
   margin: 0 0 1rem;
   color: #a83f2e;
+  font-family: "Barlow Condensed", Arial, sans-serif;
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.18em;
   line-height: 1.3;
   text-transform: uppercase;
@@ -49,8 +51,9 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 .astropop-flavor-section h2 {
   margin: 0;
   color: #3a2c35;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
   font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 900;
   line-height: 0.9;
   text-wrap: balance;
 }
@@ -58,7 +61,7 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 .astropop-flavor-section__subtitle {
   margin: 1rem 0 0;
   color: #167c89;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
   font-size: clamp(1.25rem, 2.5vw, 1.8rem);
   font-style: italic;
   font-weight: 700;
