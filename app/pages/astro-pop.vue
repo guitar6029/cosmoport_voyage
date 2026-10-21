@@ -14,6 +14,7 @@
     <AstroPopPackYourPopSection />
     <AstroPopDeliverySection />
     <AstroPopDeliveryPlansSection />
+    <AstroPopDeliveryTestimonialsSection />
   </main>
 </template>
 
