@@ -1,37 +1,88 @@
 <script setup lang="ts">
 import { ASTROPOP_FLAVORS } from "../data/astroPopFlavors";
+import DecorativeImage from "./DecorativeImage.vue";
 import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 </script>
 
 <template>
-  <section class="astropop-flavor-section" aria-labelledby="astropop-flavors-title">
-    <header class="astropop-flavor-section__header">
-      <p class="astropop-flavor-section__eyebrow">AstroPop Soda Co. · The flavor department</p>
-      <h2 id="astropop-flavors-title">Pick Your Pop!</h2>
-      <p class="astropop-flavor-section__subtitle">Four Marvelous Flavors from the Future!</p>
-    </header>
+  <section class="astropop-flavor-section border-t-8 border-b-8 border-t-[#a83f2e]" aria-labelledby="astropop-flavors-title">
+    <DecorativeImage
+      class="astropop-flavor-section__cap"
+      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      style="top: -6rem; left: -5rem; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
+    />
+    <DecorativeImage
+      class="astropop-flavor-section__cap"
+      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      style="top: 95%; left: 5rem; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
+    />
+    <DecorativeImage
+      class="astropop-flavor-section__cap"
+      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      style="top: 50%; left: 95%; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
+    />
+    <DecorativeImage
+      class="astropop-flavor-section__cap"
+      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      style="top: 30%; left: 10%; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
+    />
 
-    <div class="astropop-flavor-grid">
-      <AstroPopFlavorCard
-        v-for="flavor in ASTROPOP_FLAVORS"
-        :key="flavor.id"
-        :flavor="flavor"
-      />
+    <DecorativeImage
+      class="astropop-flavor-section__bottle_opener"
+      src="/images/astro-pop/accents/Vintage AstroPop Soda Bottle Opener.png"
+      style="top: 30%; left: 75%; opacity: 1; transform: rotate(25deg); z-index: 0;"
+    />
+
+
+    <div class="astropop-flavor-section__content">
+      <header class="astropop-flavor-section__header">
+        <p class="astropop-flavor-section__eyebrow">AstroPop Soda Co. · The flavor department</p>
+        <h2 id="astropop-flavors-title">Pick Your Pop!</h2>
+        <p class="astropop-flavor-section__subtitle">Four Marvelous Flavors from the Future!</p>
+      </header>
+
+      <div class="astropop-flavor-grid">
+        <AstroPopFlavorCard
+          v-for="flavor in ASTROPOP_FLAVORS"
+          :key="flavor.id"
+          :flavor="flavor"
+        />
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
 .astropop-flavor-section {
-  width: min(100%, 80rem);
-  margin: 0 auto;
-  overflow: hidden;
-  padding: clamp(4rem, 8vw, 8rem) clamp(1rem, 4vw, 3rem) clamp(5rem, 9vw, 9rem);
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+  overflow: clip;
   font-family: "Barlow", Arial, sans-serif;
   color: #3a2c35;
 }
 
+.astropop-flavor-section__content {
+  position: relative;
+  width: min(100%, 80rem);
+  z-index: 1;
+  margin: 0 auto;
+  padding: clamp(4rem, 8vw, 8rem) clamp(1rem, 4vw, 3rem) clamp(5rem, 9vw, 9rem);
+}
+
+.astropop-flavor-section__cap {
+  max-width: min(150px, 45vw);
+}
+
+.astropop-flavor-section__bottle_opener {
+  max-width: min(550px, 75vw);
+}
+
+
+
 .astropop-flavor-section__header {
+  position: relative;
+  z-index: 1;
   max-width: 48rem;
   margin: 0 auto clamp(2.5rem, 5vw, 4.5rem);
   text-align: center;
