@@ -5,12 +5,13 @@
       <h1 id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>
       <img
         class="astropop-hero__image"
-        src="/images/astro-pop/hero/AstroPop Man Delivers Tomorrow.png"
+        src="/images/astro-pop/hero/AstroPopDeliveryMan.png"
         alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket"
       />
     </section>
 
     <AstroPopFlavorSection />
+    <AstroPopPackYourPopSection />
   </main>
 </template>
 
