@@ -9,6 +9,8 @@
         alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket"
       />
     </section>
+
+    <AstroPopFlavorSection />
   </main>
 </template>
 
