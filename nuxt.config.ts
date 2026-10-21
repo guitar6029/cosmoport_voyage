@@ -2,7 +2,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { SITE_DESCRIPTION, SITE_TITLE } from "./app/site";
 
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/sanity", "@nuxt/fonts"],
+  modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt"],
   fonts: {
     families: [
       {
