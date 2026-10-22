@@ -1,7 +1,7 @@
 import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it } from "vitest";
-import DecorativeImage from "../app/components/DecorativeImage.vue";
+import DecorativeImage from "../app/components/shared/DecorativeImage.vue";
 
 describe("DecorativeImage", () => {
   it("renders a decorative image with accessible defaults", async () => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ASTROPOP_FLAVORS } from "../data/astroPopFlavors";
-import DecorativeImage from "./DecorativeImage.vue";
+import { ASTROPOP_FLAVORS } from "../../data/astroPopFlavors";
+import DecorativeImage from "../shared/DecorativeImage.vue";
 import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 </script>
 

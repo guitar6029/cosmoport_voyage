@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AstroPopFlavor } from "../data/astroPopFlavors";
+import type { AstroPopFlavor } from "../../data/astroPopFlavors";
 
 defineProps<{
   flavor: AstroPopFlavor;

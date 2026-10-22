@@ -1,7 +1,7 @@
 import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it } from "vitest";
-import AstroPopDeliveryTestimonialsSection from "../app/components/AstroPopDeliveryTestimonialsSection.vue";
+import AstroPopDeliveryTestimonialsSection from "../app/components/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
 
 const renderSection = () =>
   renderToString(createSSRApp({ render: () => h(AstroPopDeliveryTestimonialsSection) }));

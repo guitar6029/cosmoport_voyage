@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ASTROPOP_FLAVORS } from "../data/astroPopFlavors";
-import type { AstroPopFlavorId } from "../stores/astroPopCrate";
-import { useAstroPopCrateStore } from "../stores/astroPopCrate";
+import { ASTROPOP_FLAVORS } from "../../data/astroPopFlavors";
+import type { AstroPopFlavorId } from "../../stores/astroPopCrate";
+import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
 import AstroPopBottleSelectionCard from "./AstroPopBottleSelectionCard.vue";
 
 const crateStore = useAstroPopCrateStore();

@@ -3,12 +3,7 @@ import { createPinia } from "pinia";
 import { createSSRApp, defineComponent, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it } from "vitest";
-import AstroPopFooter from "../app/components/AstroPopFooter.vue";
-import AstroPopFlavorSection from "../app/components/AstroPopFlavorSection.vue";
-import AstroPopPackYourPopSection from "../app/components/AstroPopPackYourPopSection.vue";
-import AstroPopDeliverySection from "../app/components/AstroPopDeliverySection.vue";
-import AstroPopDeliveryPlansSection from "../app/components/AstroPopDeliveryPlansSection.vue";
-import AstroPopDeliveryTestimonialsSection from "../app/components/AstroPopDeliveryTestimonialsSection.vue";
+import AstroPopFooter from "../app/components/astro-pop/AstroPopFooter.vue";
 import AstroPopPage from "../app/pages/astro-pop.vue";
 
 const NuxtLink = defineComponent({
@@ -26,14 +21,6 @@ const renderPage = () => {
   const app = createSSRApp(AstroPopPage);
   app.use(createPinia());
   app.component("NuxtLink", NuxtLink);
-  Object.entries({
-    AstroPopFooter,
-    AstroPopFlavorSection,
-    AstroPopPackYourPopSection,
-    AstroPopDeliverySection,
-    AstroPopDeliveryPlansSection,
-    AstroPopDeliveryTestimonialsSection,
-  }).forEach(([name, component]) => app.component(name, component));
   return renderToString(app);
 };
 

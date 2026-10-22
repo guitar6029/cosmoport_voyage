@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import DestinationSection from "./DestinationSection.vue";
+</script>
+
 <template>
   <DestinationSection
     slug="saffron-expanse"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AstroPopFlavor } from "../data/astroPopFlavors";
-import type { AstroPopFlavorId } from "../stores/astroPopCrate";
+import type { AstroPopFlavor } from "../../data/astroPopFlavors";
+import type { AstroPopFlavorId } from "../../stores/astroPopCrate";
 
 const props = defineProps<{
   flavor: AstroPopFlavor;
