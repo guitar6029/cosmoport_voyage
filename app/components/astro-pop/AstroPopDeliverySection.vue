@@ -145,7 +145,7 @@ import DecorativeImage from "../shared/DecorativeImage.vue";
 }
 
 .astropop-delivery-section__button:focus-visible {
-  outline: 3px solid #167c89;
+  outline: 3px solid var(--astropop-focus-ring, #167c89);
   outline-offset: 4px;
 }
 

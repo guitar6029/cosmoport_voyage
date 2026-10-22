@@ -123,9 +123,35 @@ const emit = defineEmits<{
   letter-spacing: 0.08em;
   line-height: 1;
   text-transform: uppercase;
+  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, opacity 150ms ease;
+}
+
+.bottle-selection-card__button:focus-visible {
+  outline: 3px solid var(--astropop-focus-ring, #167c89);
+  outline-offset: 4px;
+}
+
+.bottle-selection-card__button:active:not(:disabled) {
+  transform: translate(0.1rem, 0.12rem);
 }
 
 .bottle-selection-card__button:disabled {
+  box-shadow: none;
   cursor: not-allowed;
+  filter: saturate(0.55);
+  opacity: 0.55;
+}
+
+@media (hover: hover) {
+  .bottle-selection-card__button:hover:not(:disabled):not(:active) {
+    box-shadow: 0.16rem 0.18rem 0 var(--card-ink);
+    transform: translate(0.12rem, 0.14rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottle-selection-card__button {
+    transition: none;
+  }
 }
 </style>
