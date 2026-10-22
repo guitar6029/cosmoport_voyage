@@ -32,7 +32,7 @@
 ## Validation
 
 - Inspect the root `package.json` before choosing commands.
-- If Node/npm is unavailable, check whether `nvm use 22.23.3` is appropriate.
+- If Node/npm is unavailable, check whether `nvm use 22.23.4` is appropriate.
 - Install dependencies with `npm ci`.
 - Run the test suite with `npm run test`.
 - Run the production build with `npm run build`.
