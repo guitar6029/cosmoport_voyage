@@ -1,0 +1,130 @@
+{
+  "generatedBy": "scripts/optimize-astro-pop-hero.mjs",
+  "sharpRuntimeVersions": {
+    "aom": "3.15.1",
+    "archive": "3.8.9",
+    "cairo": "1.18.6",
+    "cgif": "0.5.4",
+    "exif": "0.6.26",
+    "expat": "2.8.5",
+    "ffi": "3.8.0",
+    "fontconfig": "2.18.3",
+    "freetype": "2.14.3",
+    "fribidi": "1.0.17",
+    "glib": "2.90.0",
+    "harfbuzz": "14.5.0",
+    "heif": "1.23.5",
+    "highway": "1.4.0",
+    "imagequant": "2.4.1",
+    "lcms": "2.19.1",
+    "mozjpeg": "0826579",
+    "pango": "1.58.2",
+    "pixman": "0.46.4",
+    "png": "1.6.58",
+    "proxy-libintl": "0.5",
+    "rsvg": "2.63.2",
+    "tiff": "4.7.2",
+    "uhdr": "2.0.2",
+    "vips": "8.18.7",
+    "webp": "1.6.0",
+    "xml2": "2.15.4",
+    "zlib-ng": "2.3.3",
+    "sharp": "0.35.5"
+  },
+  "source": {
+    "path": "public/images/astro-pop/hero/AstroPopDeliveryMan.png",
+    "bytes": 2658187,
+    "humanSize": "2.54 MiB",
+    "dimensions": "1448x1086",
+    "format": "png",
+    "sha256": "1ef724fc116e193087e86cd944f984a6f443fcd2861c5e1a68ce0dbee2326d6c"
+  },
+  "candidates": [
+    {
+      "id": "desktop-webp-q80",
+      "filename": "astro-pop-delivery-man-1448w-q80.webp",
+      "width": 1448,
+      "format": "webp",
+      "options": {
+        "quality": 80,
+        "effort": 6
+      },
+      "path": "artwork/astro-pop/experiments/hero/astro-pop-delivery-man-1448w-q80.webp",
+      "bytes": 287246,
+      "humanSize": "0.27 MiB",
+      "dimensions": "1448x1086",
+      "reductionPercent": 89.19,
+      "sha256": "880c5f03697a359206ac977b3e32e35cb04243045e8fd40d806a81a0249bbcb0",
+      "conversionMs": 519.45
+    },
+    {
+      "id": "desktop-webp-q90",
+      "filename": "astro-pop-delivery-man-1448w-q90.webp",
+      "width": 1448,
+      "format": "webp",
+      "options": {
+        "quality": 90,
+        "effort": 6
+      },
+      "path": "artwork/astro-pop/experiments/hero/astro-pop-delivery-man-1448w-q90.webp",
+      "bytes": 432084,
+      "humanSize": "0.41 MiB",
+      "dimensions": "1448x1086",
+      "reductionPercent": 83.75,
+      "sha256": "633ae04697846f8de22fe461d3e6474fc95db49538242ec5e6b9ed13dadc6a62",
+      "conversionMs": 626.71
+    },
+    {
+      "id": "tablet-webp-q80",
+      "filename": "astro-pop-delivery-man-960w-q80.webp",
+      "width": 960,
+      "format": "webp",
+      "options": {
+        "quality": 80,
+        "effort": 6
+      },
+      "path": "artwork/astro-pop/experiments/hero/astro-pop-delivery-man-960w-q80.webp",
+      "bytes": 165396,
+      "humanSize": "0.16 MiB",
+      "dimensions": "960x720",
+      "reductionPercent": 93.78,
+      "sha256": "6117eec0b54acd94b2123caa4e7ce3d43061351e7a1c7a4e946f0ecc5a6f98ad",
+      "conversionMs": 282.31
+    },
+    {
+      "id": "mobile-webp-q80",
+      "filename": "astro-pop-delivery-man-640w-q80.webp",
+      "width": 640,
+      "format": "webp",
+      "options": {
+        "quality": 80,
+        "effort": 6
+      },
+      "path": "artwork/astro-pop/experiments/hero/astro-pop-delivery-man-640w-q80.webp",
+      "bytes": 91496,
+      "humanSize": "0.09 MiB",
+      "dimensions": "640x480",
+      "reductionPercent": 96.56,
+      "sha256": "8ab658f967e3d5bf882e117b811ec6b83c750eba7286d74e8f3762c507a212ab",
+      "conversionMs": 158.89
+    },
+    {
+      "id": "desktop-avif-q55",
+      "filename": "astro-pop-delivery-man-1448w-q55.avif",
+      "width": 1448,
+      "format": "avif",
+      "options": {
+        "quality": 55,
+        "effort": 6,
+        "chromaSubsampling": "4:4:4"
+      },
+      "path": "artwork/astro-pop/experiments/hero/astro-pop-delivery-man-1448w-q55.avif",
+      "bytes": 169980,
+      "humanSize": "0.16 MiB",
+      "dimensions": "1448x1086",
+      "reductionPercent": 93.61,
+      "sha256": "742bfe24d134542a0c11e5f7a628de05322450860c00a42fd783ab3119fa21ea",
+      "conversionMs": 20599.36
+    }
+  ]
+}
