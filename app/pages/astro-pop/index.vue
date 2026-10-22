@@ -34,6 +34,7 @@ import AstroPopCartLink from "../../components/astro-pop/AstroPopCartLink.vue";
 
 <style scoped>
 .astropop-page {
+  --astropop-focus-ring: #167c89;
   min-height: 100vh;
   min-height: 100svh;
   background: #e8d3ad;
@@ -85,7 +86,7 @@ import AstroPopCartLink from "../../components/astro-pop/AstroPopCartLink.vue";
 }
 
 .astropop-home-link:focus-visible {
-  outline: 3px solid #a83f2e;
+  outline: 3px solid var(--astropop-focus-ring);
   outline-offset: 4px;
 }
 

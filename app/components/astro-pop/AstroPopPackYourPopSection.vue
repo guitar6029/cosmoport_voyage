@@ -116,7 +116,7 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
 }
 
 .astropop-pack-your-pop-section__manifest-link:focus-visible {
-  outline: 3px solid #a83f2e;
+  outline: 3px solid var(--astropop-focus-ring, #167c89);
   outline-offset: 4px;
 }
 
