@@ -47,7 +47,7 @@ const testimonials = [
       </header>
 
       <div class="astropop-testimonials__clippings">
-        <figure
+        <div
           v-for="testimonial in testimonials"
           :key="testimonial.name"
           class="astropop-testimonial"
@@ -60,7 +60,7 @@ const testimonials = [
               decoding="async"
             />
           </div>
-          <div class="astropop-testimonial__message">
+          <figure class="astropop-testimonial__message">
             <blockquote>
               <p>“{{ testimonial.quote }}”</p>
             </blockquote>
@@ -68,8 +68,8 @@ const testimonials = [
               <span class="astropop-testimonial__name">{{ testimonial.name }}</span>
               <span class="astropop-testimonial__role">{{ testimonial.role }}</span>
             </figcaption>
-          </div>
-        </figure>
+          </figure>
+        </div>
       </div>
     </div>
   </section>
@@ -201,6 +201,7 @@ const testimonials = [
   position: relative;
   min-width: 0;
   padding: clamp(1.15rem, 2.5vw, 1.75rem);
+  margin: 0;
   background: #fff4da;
   border: 2px solid #5e2730;
   border-radius: 1.5rem;
