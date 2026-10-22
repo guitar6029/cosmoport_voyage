@@ -1,13 +1,22 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { ASTROPOP_FLAVORS } from "../../data/astroPopFlavors";
 import type { AstroPopFlavorId } from "../../stores/astroPopCrate";
 import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
 import AstroPopBottleSelectionCard from "./AstroPopBottleSelectionCard.vue";
 
 const crateStore = useAstroPopCrateStore();
+const announcement = ref("");
+
+onMounted(() => {
+  crateStore.restoreFromStorage();
+});
 
 const addBottle = (flavorId: AstroPopFlavorId) => {
-  crateStore.addItem(flavorId);
+  const flavor = ASTROPOP_FLAVORS.find((item) => item.id === flavorId);
+  if (crateStore.addItem(flavorId) && flavor) {
+    announcement.value = `${flavor.name} added to your order manifest. ${crateStore.totalBottles} of 6 bottles selected.`;
+  }
 };
 </script>
 
@@ -17,6 +26,7 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
     aria-labelledby="pack-your-pop-title"
   >
     <h2 id="pack-your-pop-title" class="sr-only">Pack Your Pop!</h2>
+    <p class="sr-only" aria-live="polite">{{ announcement }}</p>
 
     <div class="astropop-pack-your-pop-section__layout">
       <div class="astropop-pack-your-pop-section__artwork">
@@ -38,6 +48,10 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
         />
       </div>
     </div>
+
+    <NuxtLink class="astropop-pack-your-pop-section__manifest-link" to="/astro-pop/cart">
+      Review order manifest · {{ crateStore.totalBottles }} of 6 bottles
+    </NuxtLink>
   </section>
 </template>
 
@@ -61,6 +75,27 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
 .astropop-pack-your-pop-section__selection-grid {
   min-width: 0;
   flex: 1 1 0%;
+}
+
+.astropop-pack-your-pop-section__manifest-link {
+  justify-self: center;
+  border-bottom: 2px solid currentColor;
+  color: #6d2e35;
+  font-family: "Barlow Condensed", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.astropop-pack-your-pop-section__manifest-link:hover,
+.astropop-pack-your-pop-section__manifest-link:focus-visible {
+  color: #167c89;
+}
+
+.astropop-pack-your-pop-section__manifest-link:focus-visible {
+  outline: 3px solid #a83f2e;
+  outline-offset: 4px;
 }
 
 .astropop-pack-your-pop-section__artwork {
