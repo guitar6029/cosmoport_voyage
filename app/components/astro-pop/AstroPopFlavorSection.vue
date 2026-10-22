@@ -14,11 +14,6 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
     <DecorativeImage
       class="astropop-flavor-section__cap"
       src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
-      style="top: 95%; left: 5rem; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
-    />
-    <DecorativeImage
-      class="astropop-flavor-section__cap"
-      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
       style="top: 50%; left: 95%; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
     />
     <DecorativeImage

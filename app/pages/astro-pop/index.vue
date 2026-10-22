@@ -6,6 +6,7 @@ import AstroPopDeliveryPlansSection from "../../components/astro-pop/AstroPopDel
 import AstroPopDeliveryTestimonialsSection from "../../components/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
 import AstroPopFooter from "../../components/astro-pop/AstroPopFooter.vue";
 import AstroPopCartLink from "../../components/astro-pop/AstroPopCartLink.vue";
+import DecorativeImage from "../../components/shared/DecorativeImage.vue";
 </script>
 
 <template>
@@ -22,8 +23,16 @@ import AstroPopCartLink from "../../components/astro-pop/AstroPopCartLink.vue";
         />
       </section>
 
-      <AstroPopFlavorSection />
-      <AstroPopPackYourPopSection />
+      <div class="astropop-flavor-pack-transition">
+        <AstroPopFlavorSection class="astropop-flavor-pack-transition__section" />
+        <div class="astropop-flavor-pack-transition__artwork" aria-hidden="true">
+          <DecorativeImage
+            class="astropop-flavor-pack-transition__cap"
+            src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+          />
+        </div>
+        <AstroPopPackYourPopSection class="astropop-flavor-pack-transition__section" />
+      </div>
       <AstroPopDeliverySection />
       <AstroPopDeliveryPlansSection />
       <AstroPopDeliveryTestimonialsSection />
@@ -37,6 +46,31 @@ import AstroPopCartLink from "../../components/astro-pop/AstroPopCartLink.vue";
   min-height: 100vh;
   min-height: 100svh;
   background: #e8d3ad;
+}
+
+.astropop-flavor-pack-transition {
+  position: relative;
+  isolation: isolate;
+}
+
+.astropop-flavor-pack-transition__section {
+  position: relative;
+  z-index: 1;
+}
+
+.astropop-flavor-pack-transition__artwork {
+  position: relative;
+  z-index: 0;
+  height: 0;
+  overflow: visible;
+}
+
+.astropop-flavor-pack-transition__cap {
+  top: clamp(-4rem, -5vw, -2.5rem);
+  left: clamp(1.25rem, 5vw, 5rem);
+  width: min(150px, 45vw);
+  opacity: 0.45;
+  transform: rotate(-15deg);
 }
 
 :global(html:has(.astropop-page)) {
