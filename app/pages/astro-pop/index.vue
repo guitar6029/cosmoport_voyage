@@ -5,8 +5,8 @@ import AstroPopDeliverySection from "../../components/astro-pop/AstroPopDelivery
 import AstroPopDeliveryPlansSection from "../../components/astro-pop/AstroPopDeliveryPlansSection.vue";
 import AstroPopDeliveryTestimonialsSection from "../../components/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
 import AstroPopFooter from "../../components/astro-pop/AstroPopFooter.vue";
-import AstroPopCartLink from "../../components/astro-pop/AstroPopCartLink.vue";
 import DecorativeImage from "../../components/shared/DecorativeImage.vue";
+import AstroPopNav from "../../components/astro-pop/AstroPopNav.vue";
 </script>
 
 <template>
@@ -14,8 +14,12 @@ import DecorativeImage from "../../components/shared/DecorativeImage.vue";
     <main class="astropop-page">
       <section class="astropop-hero" aria-labelledby="astropop-title">
         <NuxtLink class="astropop-home-link" to="/">← Universe directory</NuxtLink>
-        <AstroPopCartLink class="astropop-cart-link" />
         <h1 id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>
+
+        <div class="astropop-nav">
+          <AstroPopNav />
+        </div>
+
         <img
           class="astropop-hero__image"
           src="/images/astro-pop/hero/AstroPopDeliveryMan.png"
@@ -46,6 +50,10 @@ import DecorativeImage from "../../components/shared/DecorativeImage.vue";
   min-height: 100vh;
   min-height: 100svh;
   background: #e8d3ad;
+}
+
+.astropop-nav {
+  width: min(100%, 72rem);
 }
 
 .astropop-flavor-pack-transition {
@@ -85,10 +93,13 @@ import DecorativeImage from "../../components/shared/DecorativeImage.vue";
 
 .astropop-hero {
   position: relative;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: clamp(0.5rem, 2vh, 1.25rem);
   min-height: 100vh;
   min-height: 100svh;
-  place-items: center;
   overflow: hidden;
   padding: 4.5rem 1rem 1rem;
   background:
@@ -98,8 +109,9 @@ import DecorativeImage from "../../components/shared/DecorativeImage.vue";
 
 .astropop-hero__image {
   display: block;
-  width: min(100%, 124rem);
-  max-height: calc(100svh - 5.5rem);
+  width: auto;
+  max-width: min(100%, 124rem);
+  max-height: calc(100svh - 9.5rem);
   height: auto;
   object-fit: contain;
 }
@@ -113,13 +125,6 @@ import DecorativeImage from "../../components/shared/DecorativeImage.vue";
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 700;
   text-decoration: none;
-}
-
-.astropop-cart-link {
-  position: absolute;
-  z-index: 1;
-  top: 1rem;
-  right: 1.25rem;
 }
 
 .astropop-home-link:hover,
@@ -147,7 +152,7 @@ import DecorativeImage from "../../components/shared/DecorativeImage.vue";
 
 @media (max-width: 600px) {
   .astropop-hero {
-    padding-inline: 0.5rem;
+    padding: 4.25rem 0.5rem 0.5rem;
   }
 
   .astropop-hero__image {
