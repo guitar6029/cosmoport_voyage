@@ -95,9 +95,9 @@ defineProps<{
   margin: 0 0 0.85rem;
   color: var(--card-accent);
   font-family: "Barlow Condensed", Arial, sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.1em;
   line-height: 1.3;
   text-transform: uppercase;
 }

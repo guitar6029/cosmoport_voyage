@@ -138,9 +138,9 @@ const deliveryPlans: DeliveryPlan[] = [
   margin: 0 0 0.75rem;
   color: #a83f2e;
   font-family: "Barlow Condensed", Arial, sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   line-height: 1.3;
   text-transform: uppercase;
 }
@@ -227,9 +227,9 @@ const deliveryPlans: DeliveryPlan[] = [
   background: #167c89;
   color: #fff8e5;
   font-family: "Barlow Condensed", Arial, sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   line-height: 1;
   text-transform: uppercase;
 }

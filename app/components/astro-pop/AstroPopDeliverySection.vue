@@ -93,9 +93,9 @@ import DecorativeImage from "../shared/DecorativeImage.vue";
   margin: 0 0 0.9rem;
   color: #a83f2e;
   font-family: "Barlow Condensed", Arial, sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   line-height: 1.3;
   text-transform: uppercase;
 }
