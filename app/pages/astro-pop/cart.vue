@@ -32,6 +32,14 @@ const decreaseQuantity = (flavorId: AstroPopFlavorId, name: string) => {
 
 const updateQuantity = (event: Event, flavorId: AstroPopFlavorId, currentQuantity: number, name: string) => {
   const input = event.target as HTMLInputElement;
+  const inputValue = input.value.trim();
+
+  if (inputValue === "") {
+    input.value = String(currentQuantity);
+    announcement.value = `Enter a whole-number quantity for ${name}.`;
+    return;
+  }
+
   const quantity = Number(input.value);
 
   if (crateStore.setItemQuantity(flavorId, quantity)) {
@@ -42,7 +50,7 @@ const updateQuantity = (event: Event, flavorId: AstroPopFlavorId, currentQuantit
   }
 
   input.value = String(currentQuantity);
-  announcement.value = `Please select between 0 and ${currentQuantity + crateStore.remainingCapacity} bottles of ${name}.`;
+  announcement.value = `Please select a whole number between 0 and ${currentQuantity + crateStore.remainingCapacity} bottles of ${name}.`;
 };
 
 const removeItem = (flavorId: AstroPopFlavorId, name: string) => {

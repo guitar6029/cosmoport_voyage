@@ -7,6 +7,7 @@ import AstroPopBottleSelectionCard from "./AstroPopBottleSelectionCard.vue";
 
 const crateStore = useAstroPopCrateStore();
 const announcement = ref("");
+const confirmation = ref("");
 
 onMounted(() => {
   crateStore.restoreFromStorage();
@@ -16,6 +17,7 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
   const flavor = ASTROPOP_FLAVORS.find((item) => item.id === flavorId);
   if (crateStore.addItem(flavorId) && flavor) {
     announcement.value = `${flavor.name} added to your order manifest. ${crateStore.totalBottles} of 6 bottles selected.`;
+    confirmation.value = `${flavor.name} added · ${crateStore.totalBottles} of 6 bottles`;
   }
 };
 </script>
@@ -52,6 +54,9 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
     <NuxtLink class="astropop-pack-your-pop-section__manifest-link" to="/astro-pop/cart">
       Review order manifest · {{ crateStore.totalBottles }} of 6 bottles
     </NuxtLink>
+    <p v-if="confirmation" class="astropop-pack-your-pop-section__confirmation" aria-hidden="true">
+      {{ confirmation }}
+    </p>
   </section>
 </template>
 
@@ -91,6 +96,23 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
 .astropop-pack-your-pop-section__manifest-link:hover,
 .astropop-pack-your-pop-section__manifest-link:focus-visible {
   color: #167c89;
+}
+
+.astropop-pack-your-pop-section__confirmation {
+  width: fit-content;
+  max-width: 100%;
+  margin: 1rem auto 0;
+  border: 1px solid #4f9470;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  background: #eaf1c9;
+  color: #285748;
+  font-family: "Barlow Condensed", Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  text-align: center;
 }
 
 .astropop-pack-your-pop-section__manifest-link:focus-visible {

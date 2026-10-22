@@ -30,6 +30,8 @@ describe("AstroPop cart page", () => {
 
     expect(html).toContain("Your rocket crate is ready for liftoff.");
     expect(html).toContain("Choose your flavors");
+    expect(html).toContain('href="/astro-pop"');
+    expect(html).toContain('href="/astro-pop#pack-your-pop-title"');
     expect(html).not.toContain("Bottle roster");
   });
 
@@ -41,5 +43,6 @@ describe("AstroPop cart page", () => {
     expect(html).toContain("2 of 6 bottles");
     expect(html).toContain("Checkout · Coming soon");
     expect(html).toContain("disabled");
+    expect(html).toContain('href="/astro-pop#pack-your-pop-title"');
   });
 });

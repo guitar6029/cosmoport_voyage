@@ -190,7 +190,11 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
       items,
       (currentItems) => {
         if (hasRestored.value) {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(currentItems));
+          try {
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(currentItems));
+          } catch {
+            // Persistence is optional; the in-memory cart remains usable.
+          }
         }
       },
       { deep: true, flush: "sync" },

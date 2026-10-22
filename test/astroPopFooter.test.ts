@@ -4,7 +4,7 @@ import { createSSRApp, defineComponent, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it } from "vitest";
 import AstroPopFooter from "../app/components/astro-pop/AstroPopFooter.vue";
-import AstroPopPage from "../app/pages/astro-pop.vue";
+import AstroPopPage from "../app/pages/astro-pop/index.vue";
 
 const NuxtLink = defineComponent({
   props: { to: { type: String, required: true } },

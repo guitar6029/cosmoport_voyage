@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { createPinia, setActivePinia } from "pinia";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
@@ -40,5 +40,18 @@ describe("AstroPop cart persistence", () => {
     store.restoreFromStorage();
     expect(store.items).toEqual([{ flavorId: ASTROPOP_FLAVORS[0].id, quantity: 6 }]);
     expect(store.isFull).toBe(true);
+  });
+
+  it("keeps the in-memory cart usable when storage writes fail", () => {
+    const storageError = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("Storage unavailable");
+    });
+    const store = useAstroPopCrateStore();
+
+    store.restoreFromStorage();
+    expect(() => store.addItem(ASTROPOP_FLAVORS[0].id)).not.toThrow();
+    expect(store.items).toEqual([{ flavorId: ASTROPOP_FLAVORS[0].id, quantity: 1 }]);
+
+    storageError.mockRestore();
   });
 });

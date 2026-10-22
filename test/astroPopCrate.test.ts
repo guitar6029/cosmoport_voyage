@@ -136,6 +136,7 @@ describe("AstroPop crate store", () => {
     expect(store.totalBottles).toBe(6);
     expect(store.setItemQuantity(citrusFlavor.id, 3)).toBe(false);
     expect(store.setItemQuantity(citrusFlavor.id, -1)).toBe(false);
+    expect(store.setItemQuantity(citrusFlavor.id, 1.5)).toBe(false);
     expect(store.items).toEqual([
       { flavorId: cherryFlavor.id, quantity: 4 },
       { flavorId: citrusFlavor.id, quantity: 2 },

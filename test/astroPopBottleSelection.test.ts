@@ -92,6 +92,7 @@ describe("AstroPop Pack Your Pop section", () => {
     ]);
     expect(crateStore.totalBottles).toBe(6);
     expect(buttons.every((button) => button.disabled)).toBe(true);
+    expect(container.textContent).toContain("Atomic Cherry Fizz added · 6 of 6 bottles");
 
     buttons[2]?.click();
     await nextTick();

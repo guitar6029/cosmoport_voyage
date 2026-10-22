@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import AstroPopFlavorSection from "../components/astro-pop/AstroPopFlavorSection.vue";
-import AstroPopPackYourPopSection from "../components/astro-pop/AstroPopPackYourPopSection.vue";
-import AstroPopDeliverySection from "../components/astro-pop/AstroPopDeliverySection.vue";
-import AstroPopDeliveryPlansSection from "../components/astro-pop/AstroPopDeliveryPlansSection.vue";
-import AstroPopDeliveryTestimonialsSection from "../components/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
-import AstroPopFooter from "../components/astro-pop/AstroPopFooter.vue";
-import AstroPopCartLink from "../components/astro-pop/AstroPopCartLink.vue";
+import AstroPopFlavorSection from "../../components/astro-pop/AstroPopFlavorSection.vue";
+import AstroPopPackYourPopSection from "../../components/astro-pop/AstroPopPackYourPopSection.vue";
+import AstroPopDeliverySection from "../../components/astro-pop/AstroPopDeliverySection.vue";
+import AstroPopDeliveryPlansSection from "../../components/astro-pop/AstroPopDeliveryPlansSection.vue";
+import AstroPopDeliveryTestimonialsSection from "../../components/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
+import AstroPopFooter from "../../components/astro-pop/AstroPopFooter.vue";
+import AstroPopCartLink from "../../components/astro-pop/AstroPopCartLink.vue";
 </script>
 
 <template>
