@@ -34,10 +34,19 @@ import AstroPopCartLink from "../../components/astro-pop/AstroPopCartLink.vue";
 
 <style scoped>
 .astropop-page {
-  --astropop-focus-ring: #167c89;
   min-height: 100vh;
   min-height: 100svh;
   background: #e8d3ad;
+}
+
+:global(html:has(.astropop-page)) {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(html:has(.astropop-page)) {
+    scroll-behavior: auto;
+  }
 }
 
 .astropop-hero {

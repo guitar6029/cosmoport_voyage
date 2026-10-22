@@ -6,7 +6,7 @@ import DecorativeImage from "../shared/DecorativeImage.vue";
   <div class="astropop-delivery-section-container decorative-container bg-[#efd099]">
     <section class="astropop-delivery-section" aria-labelledby="astropop-delivery-title">
       <div class="astropop-delivery-section__content">
-        <p class="astropop-delivery-section__eyebrow">Delivery Service</p>
+        <p class="astropop-eyebrow astropop-delivery-section__eyebrow">Delivery Service</p>
         <h2 id="astropop-delivery-title">AstroPop Delivers!</h2>
         <p class="astropop-delivery-section__copy">
           Fresh bottles from tomorrow, delivered right to your door.
@@ -70,7 +70,6 @@ import DecorativeImage from "../shared/DecorativeImage.vue";
   background:
     radial-gradient(circle at 82% 18%, rgba(255, 249, 225, 0.8), transparent 35%),
     #fff0d2;
-  /* box-shadow: 0.5rem 0.55rem 0 #5e2730; */
   color: #3a2c35;
 }
 
@@ -92,12 +91,9 @@ import DecorativeImage from "../shared/DecorativeImage.vue";
 .astropop-delivery-section__eyebrow {
   margin: 0 0 0.9rem;
   color: #a83f2e;
-  font-family: "Barlow Condensed", Arial, sans-serif;
   font-size: 0.8rem;
-  font-weight: 700;
   letter-spacing: 0.14em;
   line-height: 1.3;
-  text-transform: uppercase;
 }
 
 .astropop-delivery-section h2 {

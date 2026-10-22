@@ -38,9 +38,6 @@ const emit = defineEmits<{
 
 <style scoped>
 .bottle-selection-card {
-  --card-accent: #b43f35;
-  --card-ink: #4b2830;
-  --card-paper: #fff3d6;
   display: flex;
   width: 100%;
   min-width: 0;
@@ -54,30 +51,6 @@ const emit = defineEmits<{
   box-shadow: 0.35rem 0.4rem 0 var(--card-ink);
   color: var(--card-ink);
   text-align: center;
-}
-
-.bottle-selection-card--atomic-cherry {
-  --card-accent: #b63a3c;
-  --card-ink: #5e2730;
-  --card-paper: #fff0d2;
-}
-
-.bottle-selection-card--solar-citrus {
-  --card-accent: #d97b1f;
-  --card-ink: #75431e;
-  --card-paper: #fff1bd;
-}
-
-.bottle-selection-card--lunar-lime {
-  --card-accent: #4f9470;
-  --card-ink: #285748;
-  --card-paper: #eaf1c9;
-}
-
-.bottle-selection-card--neptune-berry {
-  --card-accent: #167c89;
-  --card-ink: #174d5a;
-  --card-paper: #dff1e8;
 }
 
 .bottle-selection-card__image-wrap {
