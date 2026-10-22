@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@utility decorative-container {
+  position: relative;
+  overflow: hidden;
+}

@@ -5,7 +5,7 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 </script>
 
 <template>
-  <section class="astropop-flavor-section border-t-8 border-b-8 border-t-[#a83f2e]" aria-labelledby="astropop-flavors-title">
+  <section class="astropop-flavor-section decorative-container" aria-labelledby="astropop-flavors-title">
     <DecorativeImage
       class="astropop-flavor-section__cap"
       src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
@@ -54,10 +54,8 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 
 <style scoped>
 .astropop-flavor-section {
-  position: relative;
   width: 100%;
   isolation: isolate;
-  overflow: clip;
   font-family: "Barlow", Arial, sans-serif;
   color: #3a2c35;
 }

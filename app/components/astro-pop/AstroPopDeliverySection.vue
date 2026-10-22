@@ -1,29 +1,63 @@
-<template>
-  <section class="astropop-delivery-section" aria-labelledby="astropop-delivery-title">
-    <div class="astropop-delivery-section__content">
-      <p class="astropop-delivery-section__eyebrow">Delivery Service</p>
-      <h2 id="astropop-delivery-title">AstroPop Delivers!</h2>
-      <p class="astropop-delivery-section__copy">
-        Fresh bottles from tomorrow, delivered right to your door.
-      </p>
-      <a class="astropop-delivery-section__button" href="#astropop-delivery-plans">
-        View Plans
-      </a>
-    </div>
+<script setup lang="ts">
+import DecorativeImage from "../shared/DecorativeImage.vue";
+</script>
 
-    <div class="astropop-delivery-section__artwork">
-      <img
-        class="astropop-delivery-section__image"
-        src="/images/astro-pop/delivery/AstroPop Delivers_ Retro Soda Adventure.png"
-        alt="Retro AstroPop delivery adventure with a soda delivery rocket"
-        loading="lazy"
-      />
-    </div>
-  </section>
+<template>
+  <div class="astropop-delivery-section-container decorative-container bg-[#efd099]">
+    <section class="astropop-delivery-section" aria-labelledby="astropop-delivery-title">
+      <div class="astropop-delivery-section__content">
+        <p class="astropop-delivery-section__eyebrow">Delivery Service</p>
+        <h2 id="astropop-delivery-title">AstroPop Delivers!</h2>
+        <p class="astropop-delivery-section__copy">
+          Fresh bottles from tomorrow, delivered right to your door.
+        </p>
+        <a class="astropop-delivery-section__button" href="#astropop-delivery-plans">
+          View Plans
+        </a>
+      </div>
+
+      <div class="astropop-delivery-section__artwork">
+        <img
+          class="astropop-delivery-section__image"
+          src="/images/astro-pop/delivery/AstroPop Delivers_ Retro Soda Adventure.png"
+          alt="Retro AstroPop delivery adventure with a soda delivery rocket"
+          loading="lazy"
+        />
+      </div>
+    </section>
+
+    <DecorativeImage
+      class="astropop-flavor-section__cap"
+      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      style="top: 90%; left: -5rem; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
+    />
+
+    <DecorativeImage
+      class="astropop-flavor-section__cap"
+      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      style="top: 10%; left: 95%; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
+    />
+
+    <DecorativeImage
+      class="astropop-flavor-section__delivery_card"
+      src="/images/astro-pop/accents/AstroPop Soda Co. Delivery Note.png"
+      style="top: 10%; left: 5%; width: 550px; opacity: 0.45; transform: rotate(-45deg); z-index: 0;"
+    />
+
+
+
+  </div>
 </template>
 
 <style scoped>
+.astropop-flavor-section__delivery_card {
+  max-width: min(550px, 75vw);
+}
+
+
 .astropop-delivery-section {
+  position: relative;
+  z-index: 1;
   display: flex;
   width: min(100% - 2rem, 80rem);
   min-width: 0;
@@ -36,7 +70,7 @@
   background:
     radial-gradient(circle at 82% 18%, rgba(255, 249, 225, 0.8), transparent 35%),
     #fff0d2;
-  box-shadow: 0.5rem 0.55rem 0 #5e2730;
+  /* box-shadow: 0.5rem 0.55rem 0 #5e2730; */
   color: #3a2c35;
 }
 
@@ -47,6 +81,8 @@
 }
 
 .astropop-delivery-section__content {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
