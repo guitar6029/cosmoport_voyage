@@ -22,52 +22,52 @@
   text-transform: uppercase;
 }
 
-:where(.flavor-card, .bottle-selection-card) {
+.astropop-page :where(.flavor-card, .bottle-selection-card) {
   --card-accent: #b43f35;
   --card-ink: #4b2830;
   --card-paper: #fff3d6;
 }
 
-:where(.flavor-card) {
+.astropop-page .flavor-card {
   --card-art: #efb9a4;
 }
 
-:where(.flavor-card--atomic-cherry, .bottle-selection-card--atomic-cherry) {
+.astropop-page :where(.flavor-card--atomic-cherry, .bottle-selection-card--atomic-cherry) {
   --card-accent: #b63a3c;
   --card-ink: #5e2730;
   --card-paper: #fff0d2;
 }
 
-:where(.flavor-card--solar-citrus, .bottle-selection-card--solar-citrus) {
+.astropop-page :where(.flavor-card--solar-citrus, .bottle-selection-card--solar-citrus) {
   --card-accent: #d97b1f;
   --card-ink: #75431e;
   --card-paper: #fff1bd;
 }
 
-:where(.flavor-card--lunar-lime, .bottle-selection-card--lunar-lime) {
+.astropop-page :where(.flavor-card--lunar-lime, .bottle-selection-card--lunar-lime) {
   --card-accent: #4f9470;
   --card-ink: #285748;
   --card-paper: #eaf1c9;
 }
 
-:where(.flavor-card--neptune-berry, .bottle-selection-card--neptune-berry) {
+.astropop-page :where(.flavor-card--neptune-berry, .bottle-selection-card--neptune-berry) {
   --card-accent: #167c89;
   --card-ink: #174d5a;
   --card-paper: #dff1e8;
 }
 
-.flavor-card--atomic-cherry {
+.astropop-page .flavor-card--atomic-cherry {
   --card-art: #efb4a5;
 }
 
-.flavor-card--solar-citrus {
+.astropop-page .flavor-card--solar-citrus {
   --card-art: #f6c85f;
 }
 
-.flavor-card--lunar-lime {
+.astropop-page .flavor-card--lunar-lime {
   --card-art: #a8d69b;
 }
 
-.flavor-card--neptune-berry {
+.astropop-page .flavor-card--neptune-berry {
   --card-art: #86c8c2;
 }
