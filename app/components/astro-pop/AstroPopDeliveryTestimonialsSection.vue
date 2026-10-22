@@ -33,48 +33,89 @@ const testimonials = [
     class="astropop-testimonials"
     aria-labelledby="astropop-testimonials-title"
   >
-    <header class="astropop-testimonials__header">
-      <p class="astropop-testimonials__eyebrow">GOOD NEWS TRAVELS FAST!</p>
-      <h2 id="astropop-testimonials-title">The Neighborhood Is Talking!</h2>
-      <p class="astropop-testimonials__subtitle">Everybody's buzzing about AstroPop!</p>
-    </header>
+    <img
+      class="astropop-testimonials__sign"
+      src="/images/astro-pop/testimonials/TheNeighborhoodIsTalkingSign.png"
+      alt=""
+      aria-hidden="true"
+    />
+    <div class="astropop-testimonials__content">
+      <header class="astropop-testimonials__header">
+        <h2 id="astropop-testimonials-title" class="astropop-testimonials__title">The Neighborhood Is Talking!</h2>
+        <p class="astropop-testimonials__eyebrow">GOOD NEWS TRAVELS FAST!</p>
+        <p class="astropop-testimonials__subtitle">Everybody's buzzing about AstroPop!</p>
+      </header>
 
-    <div class="astropop-testimonials__clippings">
-      <figure
-        v-for="testimonial in testimonials"
-        :key="testimonial.name"
-        class="astropop-testimonial"
-      >
-        <div class="astropop-testimonial__portrait">
-          <img
-            :src="testimonial.portrait"
-            :alt="testimonial.portraitAlt"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-        <blockquote>
-          <p>“{{ testimonial.quote }}”</p>
-        </blockquote>
-        <figcaption>
-          <span class="astropop-testimonial__name">{{ testimonial.name }}</span>
-          <span class="astropop-testimonial__role">{{ testimonial.role }}</span>
-        </figcaption>
-      </figure>
+      <div class="astropop-testimonials__clippings">
+        <figure
+          v-for="testimonial in testimonials"
+          :key="testimonial.name"
+          class="astropop-testimonial"
+        >
+          <div class="astropop-testimonial__portrait">
+            <img
+              :src="testimonial.portrait"
+              :alt="testimonial.portraitAlt"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div class="astropop-testimonial__message">
+            <blockquote>
+              <p>“{{ testimonial.quote }}”</p>
+            </blockquote>
+            <figcaption>
+              <span class="astropop-testimonial__name">{{ testimonial.name }}</span>
+              <span class="astropop-testimonial__role">{{ testimonial.role }}</span>
+            </figcaption>
+          </div>
+        </figure>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
 .astropop-testimonials {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  color: #5e2730;
+  overflow: visible;
+  background-image:
+    linear-gradient(180deg, rgba(255, 244, 214, 0.18), rgba(255, 244, 214, 0.08)),
+    url("/images/astro-pop/testimonials/RetroFuturisticSuburbanUtopia.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 0 0 3rem 3rem;
+}
+
+.astropop-testimonials__sign {
+  position: absolute;
+  z-index: 1;
+  top: clamp(-6rem, -8vw, -4rem);
+  left: max(0.5rem, calc((100% - 80rem) / 2));
+  display: block;
+  width: clamp(18rem, 40vw, 31rem);
+  height: auto;
+  pointer-events: none;
+}
+
+.astropop-testimonials__content {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
   width: min(100% - 2rem, 80rem);
   min-width: 0;
   margin: 0 auto;
   padding: 0 clamp(0.5rem, 2vw, 2rem) clamp(4rem, 8vw, 7rem);
-  color: #5e2730;
 }
 
 .astropop-testimonials__header {
+  padding-top: clamp(8.25rem, 15vw, 12rem);
   text-align: center;
 }
 
@@ -88,13 +129,16 @@ const testimonials = [
   line-height: 1.4;
 }
 
-.astropop-testimonials h2 {
-  margin: 0;
-  font-family: "Fraunces", Georgia, "Times New Roman", serif;
-  font-size: clamp(2.1rem, 4.5vw, 3.75rem);
-  font-weight: 900;
-  line-height: 1.05;
-  text-wrap: balance;
+.astropop-testimonials__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .astropop-testimonials__subtitle {
@@ -108,46 +152,103 @@ const testimonials = [
 }
 
 .astropop-testimonials__clippings {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vw, 2.75rem);
   margin-top: clamp(2rem, 4vw, 3rem);
 }
 
 .astropop-testimonial {
-  display: flex;
+  display: grid;
   min-width: 0;
-  flex-direction: column;
+  width: min(100%, 49rem);
+  grid-template-columns: clamp(7rem, 15vw, 10.5rem) minmax(0, 1fr);
+  gap: clamp(0.8rem, 2vw, 1.5rem);
+  align-items: center;
   margin: 0;
-  border: 1px solid #5e2730;
-  border-top: 5px double #5e2730;
-  padding: clamp(1.25rem, 2.5vw, 2rem);
-  background: #fff4da;
-  box-shadow: 0.2rem 0.25rem 0 rgba(94, 39, 48, 0.18);
+}
+
+.astropop-testimonial:nth-child(2) {
+  align-self: flex-end;
+  grid-template-columns: minmax(0, 1fr) clamp(7rem, 15vw, 10.5rem);
+}
+
+.astropop-testimonial:nth-child(2) .astropop-testimonial__portrait {
+  order: 2;
 }
 
 .astropop-testimonial__portrait {
   display: flex;
-  height: clamp(15rem, 23vw, 19rem);
-  align-items: flex-end;
+  aspect-ratio: 1;
   justify-content: center;
-  margin: 0 0 1.25rem;
+  overflow: hidden;
+  border: clamp(0.3rem, 0.8vw, 0.5rem) solid #f7c656;
+  border-radius: 50%;
+  background: #1b7987;
+  box-shadow: 0.25rem 0.3rem 0 #5e2730, inset 0 0 0 0.18rem #fff4da;
 }
 
 .astropop-testimonial__portrait img {
   display: block;
   width: 100%;
   height: 100%;
-  max-width: 100%;
-  object-fit: contain;
-  object-position: center bottom;
+  object-fit: cover;
+  object-position: center;
+}
+
+.astropop-testimonial__message {
+  position: relative;
+  min-width: 0;
+  padding: clamp(1.15rem, 2.5vw, 1.75rem);
+  background: #fff4da;
+  border: 2px solid #5e2730;
+  border-radius: 1.5rem;
+  box-shadow: 0.28rem 0.32rem 0 rgba(94, 39, 48, 0.22);
+}
+
+.astropop-testimonial__message::before,
+.astropop-testimonial__message::after {
+  position: absolute;
+  top: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  content: "";
+  background: #fff4da;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.astropop-testimonial__message::before {
+  left: -0.72rem;
+  border-bottom: 2px solid #5e2730;
+  border-left: 2px solid #5e2730;
+}
+
+.astropop-testimonial__message::after {
+  z-index: 1;
+  left: -0.55rem;
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.astropop-testimonial:nth-child(2) .astropop-testimonial__message::before {
+  right: -0.72rem;
+  left: auto;
+  border-top: 2px solid #5e2730;
+  border-right: 2px solid #5e2730;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.astropop-testimonial:nth-child(2) .astropop-testimonial__message::after {
+  right: -0.55rem;
+  left: auto;
 }
 
 .astropop-testimonial blockquote {
-  flex: 1;
-  margin: 0 0 1.75rem;
+  margin: 0;
   font-family: "Fraunces", Georgia, "Times New Roman", serif;
-  font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
   font-weight: 500;
   line-height: 1.5;
 }
@@ -158,7 +259,8 @@ const testimonials = [
 
 .astropop-testimonial figcaption {
   border-top: 1px solid rgba(168, 63, 46, 0.45);
-  padding-top: 1rem;
+  padding-top: 0.85rem;
+  margin-top: 1rem;
 }
 
 .astropop-testimonial__name {
@@ -181,15 +283,63 @@ const testimonials = [
   text-transform: uppercase;
 }
 
-@media (max-width: 959px) {
-  .astropop-testimonials__clippings {
-    grid-template-columns: 1fr;
-    max-width: 34rem;
-    margin-inline: auto;
+@media (max-width: 639px) {
+  .astropop-testimonials__content {
+    width: 100%;
+    padding-inline: 1rem;
   }
 
-  .astropop-testimonial__portrait {
-    height: clamp(13rem, 62vw, 20rem);
+  .astropop-testimonials {
+    border-radius: 0 0 2rem 2rem;
+  }
+
+  .astropop-testimonials__sign {
+    top: -2.75rem;
+    left: 0.5rem;
+    width: clamp(18rem, 82vw, 22rem);
+  }
+
+  .astropop-testimonials__header {
+    padding-top: 9rem;
+  }
+
+  .astropop-testimonials__clippings {
+    gap: 1.5rem;
+  }
+
+  .astropop-testimonial,
+  .astropop-testimonial:nth-child(2) {
+    width: 100%;
+    grid-template-columns: 5.6rem minmax(0, 1fr);
+    gap: 0.8rem;
+    align-self: auto;
+  }
+
+  .astropop-testimonial:nth-child(2) .astropop-testimonial__portrait {
+    order: 0;
+  }
+
+  .astropop-testimonial:nth-child(2) .astropop-testimonial__message::before {
+    right: auto;
+    left: -0.72rem;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 2px solid #5e2730;
+    border-left: 2px solid #5e2730;
+  }
+
+  .astropop-testimonial:nth-child(2) .astropop-testimonial__message::after {
+    right: auto;
+    left: -0.55rem;
+  }
+
+  .astropop-testimonial__message {
+    padding: 1rem;
+    border-radius: 1.15rem;
+  }
+
+  .astropop-testimonial blockquote {
+    font-size: 1rem;
   }
 }
 </style>
