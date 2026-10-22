@@ -10,9 +10,10 @@ Astro Pop has a cohesive, distinctive 1950s soda-advertising identity. Its illus
 The most valuable improvements are practical rather than visual redesigns:
 
 1. establish a small Astro Pop token layer and reuse the shared flavor palette;
-2. give every custom button and interactive control a deliberate visible focus treatment and consistent hover/pressed feedback;
+2. make focus and interaction feedback consistent, while preserving the cart’s existing focus, hover, and disabled treatments;
 3. reduce the 53.60 MiB all-PNG image inventory with responsive modern formats; and
-4. move repeated decoration positioning out of template `style` attributes.
+4. move repeated decoration positioning out of template `style` attributes; and
+5. raise the smallest all-caps labels where they are hard to read.
 
 No confirmed horizontal overflow was found in browser-based checks at the requested width overrides (360, 390, 768, 1024, 1440, and 1920 px). The full-page captures intentionally did not load below-the-fold `loading="lazy"` images until their sections enter the viewport, so those captures were not used to judge whether lazy images render correctly.
 
@@ -138,6 +139,16 @@ Tailwind is already installed and `bg-[#efd099]` is used at `AstroPopDeliverySec
 - **Recommendation:** Treat a two-column 640–959 px variant as an optional experiment only; retain the current one-column mobile behavior if artwork and pricing readability suffer.
 - **Scope:** Medium
 
+### Typography
+
+**Observed in browser and confirmed in source.** The display-face hierarchy is strong, but the smallest condensed uppercase copy becomes difficult to read at mobile scale, particularly when its letter spacing is retained. The delivery-plan badge is decorative but still conveys useful differentiation.
+
+- **Severity:** Medium
+- **Location:** Flavor-card brand `AstroPopFlavorCard.vue:94-103` (`0.68rem`); flavor-section eyebrow `AstroPopFlavorSection.vue:89-98` (`0.72rem`); delivery-plan eyebrow `AstroPopDeliveryPlansSection.vue:137-145` (`0.75rem`); featured-plan badge `AstroPopDeliveryPlansSection.vue:217-235` (`0.7rem`); bottle CTA `AstroPopBottleSelectionCard.vue:111-126` (`0.85rem`)
+- **Problem:** At 360 and 390 px, the 0.68–0.75rem uppercase labels are visually subordinate to a degree that impairs quick reading. Letter spacing is appropriate to the period style, but compounds the issue at these sizes. The large headings and body copy remain readable and do not need a global type-scale rewrite.
+- **Recommendation:** Establish a readable Astro Pop label floor of `0.75rem` for non-essential decorative copy and `0.8rem` for labels/badges that communicate state or an offer. Keep Barlow Condensed and the uppercase aesthetic, but modestly reduce letter spacing at the narrowest breakpoint rather than shrinking the font. Verify final contrast and legibility with real-device testing.
+- **Scope:** Small
+
 ### Testimonials and footer
 
 **Observed in browser.** The testimonial composition is attractive, text remains readable against the neighborhood background, and the footer supplies good destination links. The testimonial heading is visually supplied by the sign while remaining available to assistive technology, which is a thoughtful pattern.
@@ -166,22 +177,31 @@ The existing caps, opener, delivery note, stars, and testimonial sign are suffic
 
 The Astro Pop landing page was opened in a local Nuxt development server and checked with browser viewport overrides for **360, 390, 768, 1024, 1440, and 1920 px**. For every check, `documentElement.scrollWidth` did not exceed the reported viewport width. The hero image stayed contained, and the flavor grid, pack controls, delivery plans, testimonials, and footer changed layout without clipping. Full-page visual captures were reviewed at mobile and desktop sizes.
 
+The cart route was also checked in the same browser at **360, 390, 768, 1024, 1440, and 1920 px**, in both states below:
+
+| State | What was verified | Result |
+| --- | --- | --- |
+| Empty cart | Header/back link, empty-message card, and “Choose your flavors” CTA | No horizontal overflow at all six widths. At 360/390 px, the back link correctly switches from absolute to normal flow; CTA rendered 48 px high. |
+| Populated cart (one bottle added through the site’s Add Bottle control) | Roster, quantity stepper, summary, and disabled checkout button | No horizontal overflow at all six widths. At 360/390 px, content remains a single column and the 136 px quantity control fits. At 768 px and above, the roster and summary use the intended two-column layout. A populated 360 px full-page capture was visually reviewed. |
+
+**Limitations:** This verifies local-browser rendering and structural measurements, not real-device touch behavior, screen-reader output, zoom/reflow at 200%, or keyboard traversal of every control. The populated case used one line item; it does not verify a full six-bottle/multiple-flavor roster. Lazy below-the-fold imagery was not judged from full-page screenshots until it entered the viewport.
+
 The following are source-code observations, not claims of assistive-technology testing:
 
 ### A11Y-1 — Focus treatment is inconsistent across interactive elements
 
 - **Severity:** Medium
-- **Location:** Explicit focus styles: `app/pages/astro-pop/index.vue:81-90`, `AstroPopCartLink.vue:41-49`, `AstroPopDeliverySection.vue:142-150`, `AstroPopFooter.vue:125-135`, `AstroPopPackYourPopSection.vue:96-121`; absent in `AstroPopBottleSelectionCard.vue:111-130` and cart sub-controls at `app/pages/astro-pop/cart.vue:149-153`
-- **Problem:** Some links have high-visibility outlines, while bottle buttons, quantity controls, remove action, and cart CTA rely partly or entirely on inherited/browser behavior. Keyboard navigation should look intentional and consistent across both landing and cart routes.
-- **Recommendation:** Define a single high-contrast focus-ring custom property/class and apply it to all Astro Pop links, buttons, and form inputs. Test in keyboard-only navigation after implementation.
+- **Location:** Landing-page focus styles: `app/pages/astro-pop/index.vue:81-90`, `AstroPopCartLink.vue:41-49`, `AstroPopDeliverySection.vue:142-150`, `AstroPopFooter.vue:125-135`, `AstroPopPackYourPopSection.vue:96-121`; cart-wide focus rule: `app/pages/astro-pop/cart.vue:156`; bottle button: `AstroPopBottleSelectionCard.vue:111-130`
+- **Problem:** The cart already applies a teal `:focus-visible` outline to its buttons, inputs, and links, while several landing-page links use individually authored outlines. The genuinely missing authored treatment is on the Pack Your Pop bottle button: it has no component-level `:focus-visible` style. This is inconsistency, not an absence of cart focus support.
+- **Recommendation:** Define one Astro Pop focus-ring token/class, preserve the cart’s existing teal ring where it meets contrast requirements, and apply the same intentional treatment to Bottle Selection controls and other landing-page actions. Keyboard-test both routes after implementation.
 - **Scope:** Small
 
 ### A11Y-2 — Interactive state feedback is incomplete
 
 - **Severity:** Medium
-- **Location:** `AstroPopBottleSelectionCard.vue:111-130`; `app/pages/astro-pop/cart.vue:149-153`
-- **Problem:** Several controls have `cursor: pointer` or disabled cursors but lack an authored hover/active/disabled visual state. This affects mouse, keyboard, and low-vision affordance.
-- **Recommendation:** Pair focus work with discernible state changes that do not rely on color alone (for example, hard-shadow offset, underline, and a contrast-safe color change). Use `@media (hover: hover)` for hover-only decoration.
+- **Location:** Missing Bottle Selection states: `AstroPopBottleSelectionCard.vue:111-130`; existing cart quantity and CTA states: `app/pages/astro-pop/cart.vue:151-153`; cart remove action: `app/pages/astro-pop/cart.vue:149`
+- **Problem:** The cart already provides a quantity-button hover background, disabled quantity color/cursor, and a disabled checkout opacity/cursor. The Bottle Selection button genuinely lacks authored hover, active, focus, and visually distinct disabled treatments; the cart remove action also lacks a hover treatment. State feedback is therefore inconsistent rather than wholly missing.
+- **Recommendation:** Preserve cart states, add clear Bottle Selection hover/active/disabled styles, and add a modest hover/active cue to Remove bottle. Pair color changes with a non-color change (for example, hard-shadow offset or underline) and use `@media (hover: hover)` for hover-only decoration.
 - **Scope:** Small
 
 ### A11Y-3 — Reduced-motion handling is good but narrowly scoped
@@ -237,11 +257,12 @@ The following are source-code observations, not claims of assistive-technology t
 
 These are ordered as small, independently reviewable PRs. They do not include Cloudflare migration, music, Supabase, or payments.
 
-1. **PR: Astro Pop interaction accessibility** — Add shared focus-ring and state styles for links, bottle buttons, cart quantity controls, remove action, and disabled buttons. Keyboard-test both `/astro-pop` and `/astro-pop/cart`. **Small.**
-2. **PR: Astro Pop CSS vocabulary** — Add the small token layer; deduplicate flavor palette modifiers; reformat cart CSS; remove the commented declaration; relocate smooth-scroll ownership. Preserve all existing art-directed layouts. **Small/Medium.**
-3. **PR: Responsive decoration rules** — Replace inline decorative style strings with data-backed modifier classes and scoped breakpoint rules. Compare 360, 768, 1024, and 1440 px screenshots. **Small.**
-4. **PR: Astro Pop image delivery** — Create responsive AVIF/WebP derivatives with PNG fallback, add `picture`/`sizes`, intrinsic dimensions, and hero fetch priority. Validate visual fidelity and measure production LCP/transfer size. **Large.**
-5. **PR: Optional interaction polish** — If desired after accessibility validation, add subtle motion or a fine-pointer-only themed cursor with reduced-motion, touch, forced-colors, and native-cursor fallbacks. **Medium.**
-6. **Optional experiment: tablet plan grid** — Test a two-column delivery-plan variant at 640–959 px only if product feedback shows the current single-column sequence is too long. **Medium.**
+1. **PR: Astro Pop focus and state consistency** — Preserve the cart’s current focus, quantity-hover, and disabled treatments; add the same intentional focus and state feedback to Bottle Selection controls and a restrained hover/active cue to Remove bottle. Keyboard-test both `/astro-pop` and `/astro-pop/cart`. **Small.**
+2. **PR: Astro Pop label legibility** — Raise the smallest eyebrow/badge text to the documented floor and tune narrow-screen tracking without changing the display/body hierarchy. Check 360 and 390 px on a real device where possible. **Small.**
+3. **PR: Astro Pop CSS vocabulary** — Add the small token layer; deduplicate flavor palette modifiers; reformat cart CSS; remove the commented declaration; relocate smooth-scroll ownership. Preserve all existing art-directed layouts. **Small/Medium.**
+4. **PR: Responsive decoration rules** — Replace inline decorative style strings with data-backed modifier classes and scoped breakpoint rules. Compare 360, 768, 1024, and 1440 px screenshots. **Small.**
+5. **PR: Astro Pop image delivery** — Create responsive AVIF/WebP derivatives with PNG fallback, add `picture`/`sizes`, intrinsic dimensions, and hero fetch priority. Validate visual fidelity and measure production LCP/transfer size. **Large.**
+6. **PR: Optional interaction polish** — If desired after accessibility validation, add subtle motion or a fine-pointer-only themed cursor with reduced-motion, touch, forced-colors, and native-cursor fallbacks. **Medium.**
+7. **Optional experiment: tablet plan grid** — Test a two-column delivery-plan variant at 640–959 px only if product feedback shows the current single-column sequence is too long. **Medium.**
 
-The recommended first task is **PR 1, Astro Pop interaction accessibility**: it is low-risk, narrowly scoped, and improves the purchase-path controls before visual-system or asset work.
+The recommended first task is **PR 1, Astro Pop focus and state consistency**: it is low-risk, preserves the cart’s existing support, and improves the purchase-path controls before visual-system or asset work.
