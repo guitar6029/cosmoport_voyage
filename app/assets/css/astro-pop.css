@@ -1,0 +1,73 @@
+:where(.astropop-page, .astropop-cart-page, .astropop-footer) {
+  --astropop-ink: #3a2c35;
+  --astropop-cream: #fff8e5;
+  --astropop-paper: #fff0d2;
+  --astropop-card-ink: #4b2830;
+  --astropop-input: #fffdf1;
+  --astropop-red: #a83f2e;
+  --astropop-teal: #167c89;
+  --astropop-gold: #e6c486;
+  --astropop-muted-gold: #c89c75;
+  --astropop-body-font: "Barlow", Arial, sans-serif;
+  --astropop-display-font: "Fraunces", Georgia, serif;
+  --astropop-label-font: "Barlow Condensed", Arial, sans-serif;
+  --astropop-border-width: 2px;
+  --astropop-card-radius: 1rem 0.35rem 1rem 0.35rem;
+  --astropop-focus-ring: var(--astropop-teal);
+}
+
+.astropop-eyebrow {
+  font-family: var(--astropop-label-font);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+:where(.flavor-card, .bottle-selection-card) {
+  --card-accent: #b43f35;
+  --card-ink: #4b2830;
+  --card-paper: #fff3d6;
+}
+
+:where(.flavor-card) {
+  --card-art: #efb9a4;
+}
+
+:where(.flavor-card--atomic-cherry, .bottle-selection-card--atomic-cherry) {
+  --card-accent: #b63a3c;
+  --card-ink: #5e2730;
+  --card-paper: #fff0d2;
+}
+
+:where(.flavor-card--solar-citrus, .bottle-selection-card--solar-citrus) {
+  --card-accent: #d97b1f;
+  --card-ink: #75431e;
+  --card-paper: #fff1bd;
+}
+
+:where(.flavor-card--lunar-lime, .bottle-selection-card--lunar-lime) {
+  --card-accent: #4f9470;
+  --card-ink: #285748;
+  --card-paper: #eaf1c9;
+}
+
+:where(.flavor-card--neptune-berry, .bottle-selection-card--neptune-berry) {
+  --card-accent: #167c89;
+  --card-ink: #174d5a;
+  --card-paper: #dff1e8;
+}
+
+.flavor-card--atomic-cherry {
+  --card-art: #efb4a5;
+}
+
+.flavor-card--solar-citrus {
+  --card-art: #f6c85f;
+}
+
+.flavor-card--lunar-lime {
+  --card-art: #a8d69b;
+}
+
+.flavor-card--neptune-berry {
+  --card-art: #86c8c2;
+}

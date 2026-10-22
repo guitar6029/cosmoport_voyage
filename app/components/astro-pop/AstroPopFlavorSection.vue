@@ -36,7 +36,7 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 
     <div class="astropop-flavor-section__content">
       <header class="astropop-flavor-section__header">
-        <p class="astropop-flavor-section__eyebrow">AstroPop Soda Co. · The flavor department</p>
+        <p class="astropop-eyebrow astropop-flavor-section__eyebrow">AstroPop Soda Co. · The flavor department</p>
         <h2 id="astropop-flavors-title">Pick Your Pop!</h2>
         <p class="astropop-flavor-section__subtitle">Four Marvelous Flavors from the Future!</p>
       </header>
@@ -89,12 +89,9 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 .astropop-flavor-section__eyebrow {
   margin: 0 0 1rem;
   color: #a83f2e;
-  font-family: "Barlow Condensed", Arial, sans-serif;
   font-size: 0.8rem;
-  font-weight: 700;
   letter-spacing: 0.14em;
   line-height: 1.3;
-  text-transform: uppercase;
 }
 
 .astropop-flavor-section h2 {

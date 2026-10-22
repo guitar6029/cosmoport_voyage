@@ -2,7 +2,7 @@
   <footer class="astropop-footer" aria-labelledby="astropop-footer-title">
     <div class="astropop-footer__inner">
       <div class="astropop-footer__header">
-        <p class="astropop-footer__eyebrow">A LITTLE SPARKLE IN EVERY BOTTLE</p>
+        <p class="astropop-eyebrow astropop-footer__eyebrow">A LITTLE SPARKLE IN EVERY BOTTLE</p>
         <h2 id="astropop-footer-title">Stay Fizzy, Folks!</h2>
         <p class="astropop-footer__tagline">
           AstroPop Soda Co. — Bringing Tomorrow to Your Doorstep!
@@ -57,9 +57,7 @@
 .astropop-footer__eyebrow {
   margin: 0 0 1.25rem;
   color: #e6c486;
-  font-family: "Barlow Condensed", Arial, sans-serif;
   font-size: 0.85rem;
-  font-weight: 700;
   letter-spacing: 0.16em;
   line-height: 1.5;
 }

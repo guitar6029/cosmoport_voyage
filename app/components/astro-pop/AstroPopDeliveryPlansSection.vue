@@ -52,7 +52,7 @@ const deliveryPlans: DeliveryPlan[] = [
     aria-labelledby="astropop-delivery-plans-title"
   >
     <div class="astropop-delivery-plans__accent" aria-hidden="true">✦</div>
-    <p class="astropop-delivery-plans__eyebrow">Delivery Headquarters</p>
+    <p class="astropop-eyebrow astropop-delivery-plans__eyebrow">Delivery Headquarters</p>
     <h2 id="astropop-delivery-plans-title">The Astro Delivery Plans</h2>
     <p class="astropop-delivery-plans__subtitle">As much AstroPop as your heart desires!</p>
 
@@ -89,16 +89,6 @@ const deliveryPlans: DeliveryPlan[] = [
 </template>
 
 <style scoped>
-:global(html) {
-  scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :global(html) {
-    scroll-behavior: auto;
-  }
-}
-
 .astropop-delivery-plans {
   position: relative;
   width: min(100% - 2rem, 80rem);
@@ -137,12 +127,9 @@ const deliveryPlans: DeliveryPlan[] = [
 .astropop-delivery-plans__eyebrow {
   margin: 0 0 0.75rem;
   color: #a83f2e;
-  font-family: "Barlow Condensed", Arial, sans-serif;
   font-size: 0.8rem;
-  font-weight: 700;
   letter-spacing: 0.14em;
   line-height: 1.3;
-  text-transform: uppercase;
 }
 
 .astropop-delivery-plans h2 {

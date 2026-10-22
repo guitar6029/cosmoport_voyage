@@ -37,10 +37,6 @@ defineProps<{
 
 <style scoped>
 .flavor-card {
-  --card-accent: #b43f35;
-  --card-ink: #4b2830;
-  --card-paper: #fff3d6;
-  --card-art: #efb9a4;
   position: relative;
   display: flex;
   width: 100%;
@@ -55,34 +51,6 @@ defineProps<{
   background: var(--card-paper);
   box-shadow: 0.5rem 0.55rem 0 var(--card-ink);
   color: var(--card-ink);
-}
-
-.flavor-card--atomic-cherry {
-  --card-accent: #b63a3c;
-  --card-ink: #5e2730;
-  --card-paper: #fff0d2;
-  --card-art: #efb4a5;
-}
-
-.flavor-card--solar-citrus {
-  --card-accent: #d97b1f;
-  --card-ink: #75431e;
-  --card-paper: #fff1bd;
-  --card-art: #f6c85f;
-}
-
-.flavor-card--lunar-lime {
-  --card-accent: #4f9470;
-  --card-ink: #285748;
-  --card-paper: #eaf1c9;
-  --card-art: #a8d69b;
-}
-
-.flavor-card--neptune-berry {
-  --card-accent: #167c89;
-  --card-ink: #174d5a;
-  --card-paper: #dff1e8;
-  --card-art: #86c8c2;
 }
 
 .flavor-card__header {

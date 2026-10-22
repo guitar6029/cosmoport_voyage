@@ -42,7 +42,7 @@ const testimonials = [
     <div class="astropop-testimonials__content">
       <header class="astropop-testimonials__header">
         <h2 id="astropop-testimonials-title" class="astropop-testimonials__title">The Neighborhood Is Talking!</h2>
-        <p class="astropop-testimonials__eyebrow">GOOD NEWS TRAVELS FAST!</p>
+        <p class="astropop-eyebrow astropop-testimonials__eyebrow">GOOD NEWS TRAVELS FAST!</p>
         <p class="astropop-testimonials__subtitle">Everybody's buzzing about AstroPop!</p>
       </header>
 
@@ -122,9 +122,7 @@ const testimonials = [
 .astropop-testimonials__eyebrow {
   margin: 0 0 0.85rem;
   color: #a83f2e;
-  font-family: "Barlow Condensed", Arial, sans-serif;
   font-size: 0.8rem;
-  font-weight: 700;
   letter-spacing: 0.16em;
   line-height: 1.4;
 }
