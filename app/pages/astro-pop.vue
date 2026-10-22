@@ -1,21 +1,24 @@
 <template>
-  <main class="astropop-page">
-    <section class="astropop-hero" aria-labelledby="astropop-title">
-      <NuxtLink class="astropop-home-link" to="/">← Universe directory</NuxtLink>
-      <h1 id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>
-      <img
-        class="astropop-hero__image"
-        src="/images/astro-pop/hero/AstroPopDeliveryMan.png"
-        alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket"
-      />
-    </section>
+  <div>
+    <main class="astropop-page">
+      <section class="astropop-hero" aria-labelledby="astropop-title">
+        <NuxtLink class="astropop-home-link" to="/">← Universe directory</NuxtLink>
+        <h1 id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>
+        <img
+          class="astropop-hero__image"
+          src="/images/astro-pop/hero/AstroPopDeliveryMan.png"
+          alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket"
+        />
+      </section>
 
-    <AstroPopFlavorSection />
-    <AstroPopPackYourPopSection />
-    <AstroPopDeliverySection />
-    <AstroPopDeliveryPlansSection />
-    <AstroPopDeliveryTestimonialsSection />
-  </main>
+      <AstroPopFlavorSection />
+      <AstroPopPackYourPopSection />
+      <AstroPopDeliverySection />
+      <AstroPopDeliveryPlansSection />
+      <AstroPopDeliveryTestimonialsSection />
+    </main>
+    <AstroPopFooter />
+  </div>
 </template>
 
 <style scoped>
