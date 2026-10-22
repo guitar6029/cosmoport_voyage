@@ -17,7 +17,7 @@ This repository currently contains the minimal Nuxt frontend foundation with the
 
 ### Prerequisites
 
-- Node.js 22.23.3
+- Node.js 22.23.4
 - npm
 
 ### Install dependencies
