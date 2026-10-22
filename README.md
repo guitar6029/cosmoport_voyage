@@ -49,9 +49,16 @@ npm run build
 ## Project Structure
 
 - `app/app.vue` – Nuxt application shell
-- `app/pages/index.vue` – accessible placeholder homepage
+- `app/pages/index.vue` – universe directory linking to both experiences
+- `app/pages/astro-pop.vue` – AstroPop Soda Co. page
+- `app/pages/cosmoport-voyage.vue` – CosmoPort Voyage page
+- `app/components/astro-pop/` – AstroPop sections and cards
+- `app/components/cosmoport-voyage/` – CosmoPort destination sections
+- `app/components/shared/` – brand-independent UI components
 - `app/site.ts` – shared site metadata
-- `assets/css/main.css` – Tailwind and DaisyUI entrypoint
+- `app/assets/css/main.css` – Tailwind and DaisyUI entrypoint
+
+Pages and components explicitly import their component dependencies. Keep brand-specific components in their respective folders and reusable, brand-independent components in `shared/`.
 
 ## Sanity setup
 

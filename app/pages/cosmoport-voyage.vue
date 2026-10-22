@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import DestinationSection from "../components/cosmoport-voyage/DestinationSection.vue";
+import PearlwaterCoastSection from "../components/cosmoport-voyage/PearlwaterCoastSection.vue";
+import SaffronExpanseSection from "../components/cosmoport-voyage/SaffronExpanseSection.vue";
+</script>
+
 <template>
   <div>
     <main id="hero" class="hero-shell">

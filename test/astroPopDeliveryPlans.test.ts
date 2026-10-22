@@ -2,7 +2,7 @@ import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
-import AstroPopDeliveryPlansSection from "../app/components/AstroPopDeliveryPlansSection.vue";
+import AstroPopDeliveryPlansSection from "../app/components/astro-pop/AstroPopDeliveryPlansSection.vue";
 
 describe("AstroPop delivery plans section", () => {
   it("renders its heading and supporting copy", async () => {

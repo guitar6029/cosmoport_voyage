@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { getWrappedIndex } from "../utils/carouselNavigation";
+import { getWrappedIndex } from "../../utils/carouselNavigation";
 
 interface DestinationSectionProps {
   slug?: string;
