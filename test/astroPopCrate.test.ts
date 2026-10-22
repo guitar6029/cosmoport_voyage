@@ -125,4 +125,25 @@ describe("AstroPop crate store", () => {
     expect(store.remainingCapacity).toBe(1);
     expect(store.isFull).toBe(false);
   });
+
+  it("sets quantities through manual entry without exceeding the shared capacity", () => {
+    const store = useAstroPopCrateStore();
+
+    store.addItem(cherryFlavor.id, 2);
+    store.addItem(citrusFlavor.id, 2);
+
+    expect(store.setItemQuantity(cherryFlavor.id, 4)).toBe(true);
+    expect(store.totalBottles).toBe(6);
+    expect(store.setItemQuantity(citrusFlavor.id, 3)).toBe(false);
+    expect(store.setItemQuantity(citrusFlavor.id, -1)).toBe(false);
+    expect(store.setItemQuantity(citrusFlavor.id, 1.5)).toBe(false);
+    expect(store.items).toEqual([
+      { flavorId: cherryFlavor.id, quantity: 4 },
+      { flavorId: citrusFlavor.id, quantity: 2 },
+    ]);
+
+    expect(store.setItemQuantity(cherryFlavor.id, 0)).toBe(true);
+    expect(store.items).toEqual([{ flavorId: citrusFlavor.id, quantity: 2 }]);
+    expect(store.remainingCapacity).toBe(4);
+  });
 });
