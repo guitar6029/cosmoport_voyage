@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "images:hero": "node scripts/optimize-astro-pop-hero.mjs"
   },
   "dependencies": {
     "@nuxt/fonts": "^1.0.1",
@@ -21,6 +22,7 @@
     "@types/node": "^26.6.5",
     "@vitejs/plugin-vue": "^6.0.10",
     "daisyui": "^5.4.3",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.1.16",
     "typescript": "~5.9.3",
     "vitest": "^3.2.4"
