@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Astro Pop hero image comparison</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; background: #f8edcf; color: #3a2c35; }
+      body { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+      h1 { margin-bottom: .25rem; }
+      .note { max-width: 70ch; line-height: 1.5; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+      figure { margin: 0; border: 2px solid #5e2730; border-radius: .75rem; overflow: hidden; background: #fff8e5; }
+      img { display: block; width: 100%; height: auto; background: #e8d3ad; }
+      figcaption { padding: .8rem 1rem 1rem; line-height: 1.45; }
+      code { font-size: .9em; }
+    </style>
+  </head>
+  <body>
+    <h1>Astro Pop hero: visual comparison</h1>
+    <p class="note">Compare lettering/logo edges, faces, bottle labels, gradients, and halftone texture at the same displayed width. This is a review aid, not a declaration of artistic approval. See <code>manifest.json</code> for measured bytes and SHA-256 values.</p>
+    <main class="grid">
+      <figure><img src="../../../../public/images/astro-pop/hero/AstroPopDeliveryMan.png" alt="Original Astro Pop hero PNG" /><figcaption><strong>Original PNG</strong><br />1448×1086</figcaption></figure>
+      <figure><img src="astro-pop-delivery-man-1448w-q80.webp" alt="Astro Pop hero WebP quality 80" /><figcaption><strong>Desktop WebP</strong><br />1448px, quality 80</figcaption></figure>
+      <figure><img src="astro-pop-delivery-man-1448w-q90.webp" alt="Astro Pop hero WebP quality 90" /><figcaption><strong>Desktop WebP</strong><br />1448px, quality 90</figcaption></figure>
+      <figure><img src="astro-pop-delivery-man-960w-q80.webp" alt="Astro Pop hero WebP 960 pixels wide quality 80" /><figcaption><strong>Tablet WebP</strong><br />960px, quality 80</figcaption></figure>
+      <figure><img src="astro-pop-delivery-man-640w-q80.webp" alt="Astro Pop hero WebP 640 pixels wide quality 80" /><figcaption><strong>Mobile WebP</strong><br />640px, quality 80</figcaption></figure>
+      <figure><img src="astro-pop-delivery-man-1448w-q55.avif" alt="Astro Pop hero AVIF quality 55" /><figcaption><strong>Desktop AVIF</strong><br />1448px, quality 55, 4:4:4 chroma</figcaption></figure>
+    </main>
+  </body>
+</html>
