@@ -17,6 +17,10 @@ describe("AstroPop neighborhood testimonials", () => {
     expect(html.match(/<figure\b/g)).toHaveLength(3);
     expect(html.match(/<blockquote\b/g)).toHaveLength(3);
     expect(html.match(/<figcaption\b/g)).toHaveLength(3);
+    const speechBubbles = html.match(/<figure\b[\s\S]*?<\/figure>/g) ?? [];
+    expect(speechBubbles.every((bubble) =>
+      /<figure\b[^>]*><blockquote\b[\s\S]*?<\/blockquote><figcaption\b[\s\S]*?<\/figcaption><\/figure>/.test(bubble),
+    )).toBe(true);
   });
 
   it.each([
@@ -37,15 +41,16 @@ describe("AstroPop neighborhood testimonials", () => {
     ],
   ])("places %s's accessible portrait above the quote", async (name, source, alt) => {
     const html = await renderSection();
-    const figures = html.match(/<figure\b[\s\S]*?<\/figure>/g) ?? [];
-    const figure = figures.find((markup) => markup.includes(name));
+    const portraitIndex = html.indexOf(`src="${source}"`);
+    const quoteIndex = html.indexOf("<blockquote", portraitIndex);
+    const nameIndex = html.indexOf(name, quoteIndex);
 
-    expect(figure).toBeDefined();
-    expect(figure).toContain(`src="${source}"`);
-    expect(figure).toContain(`alt="${alt}"`);
-    expect(figure).toContain('loading="lazy"');
-    expect(figure).toContain('decoding="async"');
-    expect(figure!.indexOf("<img")).toBeLessThan(figure!.indexOf("<blockquote"));
+    expect(portraitIndex).toBeGreaterThan(-1);
+    expect(html).toContain(`alt="${alt}"`);
+    expect(html).toContain('loading="lazy"');
+    expect(html).toContain('decoding="async"');
+    expect(portraitIndex).toBeLessThan(quoteIndex);
+    expect(quoteIndex).toBeLessThan(nameIndex);
   });
 
   it.each([
