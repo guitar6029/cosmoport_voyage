@@ -1,5 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 import { SITE_DESCRIPTION, SITE_TITLE } from "./app/site";
+import astroPopDatabaseHealth from "./server/dev-handlers/astroPopDatabaseHealth";
 
 export default defineNuxtConfig({
   modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt"],
@@ -34,6 +35,14 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   vite: {
     plugins: [tailwindcss()],
+  },
+  nitro: {
+    devHandlers: [
+      {
+        route: "/api/astro-pop/db-health",
+        handler: astroPopDatabaseHealth,
+      },
+    ],
   },
   sanity: {
     projectId: process.env.SANITY_PROJECT_ID,
