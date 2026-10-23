@@ -1,4 +1,4 @@
-:where(.astropop-page, .astropop-cart-page, .astropop-footer) {
+:where(.astropop-page, .astropop-cart-page, .astropop-checkout-success, .astropop-footer) {
   --astropop-ink: #3a2c35;
   --astropop-cream: #fff8e5;
   --astropop-paper: #fff0d2;
