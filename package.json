@@ -9,9 +9,7 @@
     "dev": "nuxt dev",
     "build": "nuxt build",
     "test": "vitest run",
-    "doppler:dev": "doppler run -p cosmoport-universe -c dev -- npm run dev",
-    "doppler:stg": "doppler run -p cosmoport-universe -c stg -- npm run dev",
-    "doppler:prd": "doppler run -p cosmoport-universe -c prd -- npm run dev"
+    "doppler:dev": "doppler run -p cosmoport-universe -c dev -- npm run dev"
   },
   "dependencies": {
     "@nuxt/fonts": "^1.0.1",
