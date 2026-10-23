@@ -196,9 +196,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
           to="/astro-pop#pack-your-pop-title"
           >Continue shopping</NuxtLink
         >
-        <button class="astropop-cart-page__button" type="button" disabled>
-          Checkout · Coming soon
-        </button>
+       <AstroPopCheckoutButton />
       </aside>
     </div>
   </main>

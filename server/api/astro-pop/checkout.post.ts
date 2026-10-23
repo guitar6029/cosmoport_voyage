@@ -98,7 +98,10 @@ export default defineEventHandler(async (event) => {
         mode: 'payment',
         line_items: lineItems,
         success_url: new URL('/astro-pop?checkout=success', appUrl).toString(),
-        cancel_url: new URL('/astro-pop?checkout=cancelled', appUrl).toString(),
+        cancel_url: new URL(
+            '/astro-pop/cart?checkout=cancelled',
+            appUrl
+        ).toString(),
     })
 
     return { url: session.url }
