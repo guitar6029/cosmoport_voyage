@@ -63,7 +63,13 @@ export async function persistAstroPopOrder(
       unit_price_cents: item.unitPriceCents,
     })),
   );
-  const rows = await sql<{ id: string }[]>`
+
+
+  if (order.items.length === 0) {
+    throw new Error("Cannot persist an order without items");
+  }
+
+  const rows = await sql`
     WITH inserted_order AS (
       INSERT INTO public.orders (
         clerk_user_id,
