@@ -3,10 +3,16 @@ import type { useAstroPopCrateStore } from "../stores/astroPopCrate";
 
 export const PENDING_ASTROPOP_CHECKOUT_STORAGE_KEY =
   "astropop-pending-checkout";
+export const COMPLETED_ASTROPOP_CHECKOUT_STORAGE_KEY =
+  "astropop-completed-checkout";
 
 export interface PendingAstroPopCheckout {
   sessionId: string;
   cartItems: AstroPopCrateItem[];
+}
+
+export interface CompletedAstroPopCheckout {
+  sessionId: string;
 }
 
 const cloneItems = (items: AstroPopCrateItem[]) =>
@@ -68,6 +74,34 @@ export const clearPendingAstroPopCheckout = () => {
   window.sessionStorage.removeItem(PENDING_ASTROPOP_CHECKOUT_STORAGE_KEY);
 };
 
+export const saveCompletedAstroPopCheckout = (sessionId: string) => {
+  window.sessionStorage.setItem(
+    COMPLETED_ASTROPOP_CHECKOUT_STORAGE_KEY,
+    JSON.stringify({ sessionId }),
+  );
+};
+
+export const getCompletedAstroPopCheckout = (): CompletedAstroPopCheckout | null => {
+  try {
+    const completed: unknown = JSON.parse(
+      window.sessionStorage.getItem(COMPLETED_ASTROPOP_CHECKOUT_STORAGE_KEY) ?? "null",
+    );
+
+    if (
+      !completed ||
+      typeof completed !== "object" ||
+      !("sessionId" in completed) ||
+      typeof completed.sessionId !== "string"
+    ) {
+      return null;
+    }
+
+    return { sessionId: completed.sessionId };
+  } catch {
+    return null;
+  }
+};
+
 type AstroPopCrateStore = Pick<
   ReturnType<typeof useAstroPopCrateStore>,
   "hasRestored" | "items" | "restoreFromStorage" | "clearCrate"
@@ -77,12 +111,12 @@ export const completeVerifiedAstroPopCheckout = (
   crateStore: AstroPopCrateStore,
   pendingCheckout: PendingAstroPopCheckout,
   verification: { sessionId: string; verified: boolean },
-) => {
+) : "cleared" | "preserved" | null => {
   if (
     !verification.verified ||
     verification.sessionId !== pendingCheckout.sessionId
   ) {
-    return false;
+    return null;
   }
 
   if (!crateStore.hasRestored) {
@@ -90,11 +124,10 @@ export const completeVerifiedAstroPopCheckout = (
   }
 
   if (!pendingCheckoutMatchesCart(pendingCheckout, crateStore.items)) {
-    return false;
+    return "preserved";
   }
 
   crateStore.clearCrate();
   window.localStorage.removeItem("astropop-crate");
-  clearPendingAstroPopCheckout();
-  return true;
+  return "cleared";
 };

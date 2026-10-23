@@ -5,8 +5,11 @@ import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 import {
   PENDING_ASTROPOP_CHECKOUT_STORAGE_KEY,
+  COMPLETED_ASTROPOP_CHECKOUT_STORAGE_KEY,
   completeVerifiedAstroPopCheckout,
+  getCompletedAstroPopCheckout,
   getPendingAstroPopCheckout,
+  saveCompletedAstroPopCheckout,
   savePendingAstroPopCheckout,
 } from "../app/utils/astroPopCheckout";
 
@@ -41,10 +44,10 @@ describe("AstroPop checkout success", () => {
         sessionId,
         verified: true,
       }),
-    ).toBe(true);
+    ).toBe("cleared");
     expect(store.items).toEqual([]);
     expect(window.localStorage.getItem("astropop-crate")).toBeNull();
-    expect(window.sessionStorage.getItem(PENDING_ASTROPOP_CHECKOUT_STORAGE_KEY)).toBeNull();
+    expect(window.sessionStorage.getItem(PENDING_ASTROPOP_CHECKOUT_STORAGE_KEY)).not.toBeNull();
   });
 
   it("preserves the cart when verification fails or the cart changed", () => {
@@ -58,7 +61,7 @@ describe("AstroPop checkout success", () => {
         sessionId,
         verified: false,
       }),
-    ).toBe(false);
+    ).toBeNull();
     expect(window.localStorage.getItem("astropop-crate")).toEqual(JSON.stringify(checkoutItems));
 
     store.restoreFromStorage();
@@ -68,7 +71,14 @@ describe("AstroPop checkout success", () => {
         sessionId,
         verified: true,
       }),
-    ).toBe(false);
+    ).toBe("preserved");
     expect(store.items).toHaveLength(2);
+  });
+
+  it("retains a completed session marker for refreshes without trusting it as payment proof", () => {
+    saveCompletedAstroPopCheckout(sessionId);
+
+    expect(getCompletedAstroPopCheckout()).toEqual({ sessionId });
+    expect(window.sessionStorage.getItem(COMPLETED_ASTROPOP_CHECKOUT_STORAGE_KEY)).not.toBeNull();
   });
 });
