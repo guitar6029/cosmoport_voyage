@@ -1,6 +1,10 @@
 import Stripe from "stripe";
+import { persistAstroPopOrder } from "../../utils/astroPopDatabase";
+import { getAstroPopOrderFromStripe } from "../../utils/astroPopOrderPersistence";
+import { constructAstroPopStripeEvent } from "../../utils/astroPopStripeWebhook";
 
 const STRIPE_SESSION_COMPLETED = 'checkout.session.completed';
+const STRIPE_ASYNC_PAYMENT_SUCCEEDED = 'checkout.session.async_payment_succeeded';
 const STRIPE_PAYMENT_STATUS_PAID = 'paid';
 
 export default defineEventHandler(async (event) => {
@@ -31,7 +35,8 @@ export default defineEventHandler(async (event) => {
     let stripeEvent: Stripe.Event;
 
     try {
-        stripeEvent = stripe.webhooks.constructEvent(
+        stripeEvent = constructAstroPopStripeEvent(
+            stripe,
             rawBody,
             signature,
             webhookSecret
@@ -43,12 +48,25 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    //if completed
-    if (stripeEvent.type === STRIPE_SESSION_COMPLETED) {
+    if (
+        stripeEvent.type === STRIPE_SESSION_COMPLETED ||
+        stripeEvent.type === STRIPE_ASYNC_PAYMENT_SUCCEEDED
+    ) {
         const session = stripeEvent.data.object;
 
         if (session.payment_status === STRIPE_PAYMENT_STATUS_PAID) {
-            console.log('stripe payment confirmed:', session.id);
+            try {
+                const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+                    expand: ['data.price.product'],
+                });
+                const order = getAstroPopOrderFromStripe(session, lineItems.data);
+                await persistAstroPopOrder(order);
+            } catch {
+                throw createError({
+                    status: 500,
+                    statusText: 'Astro Pop order persistence failed',
+                });
+            }
         }
     }
 
