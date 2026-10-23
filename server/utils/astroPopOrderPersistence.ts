@@ -11,8 +11,12 @@ export class AstroPopOrderValidationError extends Error {
   }
 }
 
-const isPositiveInteger = (value: number | null | undefined): value is number =>
-  Number.isInteger(value) && value > 0;
+const isPositiveInteger = (value: number | null | undefined): value is number => {
+
+  if (value === undefined || value === null) return false;
+
+  return Number.isInteger(value) && value > 0;
+}
 
 const getPaymentIntentId = (paymentIntent: Stripe.Checkout.Session["payment_intent"]) => {
   if (!paymentIntent) {
@@ -51,8 +55,11 @@ export function getAstroPopOrderFromStripe(
 
   const items = lineItems.map((lineItem): AstroPopOrderItem => {
     const product = lineItem.price?.product;
+
     const flavorId =
-      typeof product === "object" && product !== null
+      typeof product === "object" &&
+        product !== null &&
+        "metadata" in product
         ? product.metadata?.[ASTROPOP_FLAVOR_METADATA_KEY]
         : undefined;
 
