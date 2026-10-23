@@ -6,7 +6,7 @@ export default defineConfig({
   fullyParallel: true,
   use: {
     baseURL: "http://127.0.0.1:3000",
-    trace: "on-first-retry",
+    trace: "retain-on-failure",
   },
   webServer: {
     command: "npm run dev -- --host 127.0.0.1 --port 3000",

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const cartItems = [{ flavorId: "atomic-cherry-fizz", quantity: 2 }];
+const cartInitializationKey = "astropop-e2e-cart-initialized";
 
 const configureCheckout = async (
   page: Page,
@@ -16,11 +17,13 @@ const configureCheckout = async (
 };
 
 const seedCartAndOpenCart = async (page: Page) => {
+  await page.addInitScript(`
+    if (!window.sessionStorage.getItem(${JSON.stringify(cartInitializationKey)})) {
+      window.localStorage.setItem("astropop-crate", ${JSON.stringify(JSON.stringify(cartItems))});
+      window.sessionStorage.setItem(${JSON.stringify(cartInitializationKey)}, "true");
+    }
+  `);
   await page.goto("/astro-pop/cart");
-  await page.evaluate((items) => {
-    window.localStorage.setItem("astropop-crate", JSON.stringify(items));
-  }, cartItems);
-  await page.reload();
   await expect(page.getByText("2 of 6 bottles")).toBeVisible();
 };
 
