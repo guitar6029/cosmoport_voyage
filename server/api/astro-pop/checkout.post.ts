@@ -29,8 +29,8 @@ export default defineEventHandler(async () => {
                 quantity: 1,
             },
         ],
-        success_url: 'http://localhost:3000/astro-pop?checkout=success',
-        cancel_url: 'http://localhost:3000/astro-pop?checkout=cancelled',
+        success_url: new URL('/astro-pop?checkout=success', appUrl).toString(),
+        cancel_url: new URL('/astro-pop?checkout=cancelled', appUrl).toString(),
     })
 
     return { url: session.url }
