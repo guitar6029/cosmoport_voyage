@@ -2,12 +2,14 @@
 import Stripe from 'stripe'
 
 export default defineEventHandler(async () => {
+
+    const appUrl = process.env.COSMOPORT_APP_URL;
     const secretKey = process.env.ASTROPOP_STRIPE_SECRET_KEY
 
-    if (!secretKey) {
+    if (!appUrl || !secretKey) {
         throw createError({
-            statusCode: 500,
-            statusMessage: 'Stripe is not configured',
+            status: 500,
+            statusText: 'Stripe checkout configuration is missing',
         })
     }
 
