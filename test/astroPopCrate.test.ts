@@ -146,4 +146,22 @@ describe("AstroPop crate store", () => {
     expect(store.items).toEqual([{ flavorId: citrusFlavor.id, quantity: 2 }]);
     expect(store.remainingCapacity).toBe(4);
   });
+
+  it("rejects cart mutations while checkout initialization is locked", () => {
+    const store = useAstroPopCrateStore();
+    store.addItem(cherryFlavor.id, 2);
+
+    expect(store.lockCheckout()).toBe(true);
+    expect(store.lockCheckout()).toBe(false);
+    expect(store.addItem(citrusFlavor.id)).toBe(false);
+    expect(store.decrementItem(cherryFlavor.id)).toBe(false);
+    expect(store.removeItem(cherryFlavor.id)).toBe(false);
+    expect(store.setItemQuantity(cherryFlavor.id, 1)).toBe(false);
+    expect(store.clearCrate()).toBe(false);
+    expect(store.items).toEqual([{ flavorId: cherryFlavor.id, quantity: 2 }]);
+
+    store.unlockCheckout();
+    expect(store.addItem(citrusFlavor.id)).toBe(true);
+    expect(store.isCheckoutLocked).toBe(false);
+  });
 });

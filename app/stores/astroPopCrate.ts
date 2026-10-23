@@ -24,6 +24,7 @@ const isValidQuantity = (quantity: number) =>
 export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
   const items = ref<AstroPopCrateItem[]>([]);
   const hasRestored = ref(false);
+  const isCheckoutLocked = ref(false);
 
   const totalBottles = computed(() =>
     items.value.reduce((total, item) => total + item.quantity, 0),
@@ -34,6 +35,10 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
   const isEmpty = computed(() => items.value.length === 0);
 
   const addItem = (flavorId: AstroPopFlavorId, quantity = 1): boolean => {
+    if (isCheckoutLocked.value) {
+      return false;
+    }
+
     if (!isValidFlavorId(flavorId) || !isValidQuantity(quantity)) {
       return false;
     }
@@ -56,6 +61,10 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
   };
 
   const decrementItem = (flavorId: AstroPopFlavorId): boolean => {
+    if (isCheckoutLocked.value) {
+      return false;
+    }
+
     const itemIndex = items.value.findIndex(
       (item) => item.flavorId === flavorId,
     );
@@ -80,6 +89,10 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
   };
 
   const removeItem = (flavorId: AstroPopFlavorId): boolean => {
+    if (isCheckoutLocked.value) {
+      return false;
+    }
+
     const itemIndex = items.value.findIndex(
       (item) => item.flavorId === flavorId,
     );
@@ -96,6 +109,10 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
     flavorId: AstroPopFlavorId,
     quantity: number,
   ): boolean => {
+    if (isCheckoutLocked.value) {
+      return false;
+    }
+
     if (!isValidFlavorId(flavorId) || !Number.isInteger(quantity) || quantity < 0) {
       return false;
     }
@@ -128,6 +145,10 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
   };
 
   const clearCrate = (): boolean => {
+    if (isCheckoutLocked.value) {
+      return false;
+    }
+
     if (isEmpty.value) {
       return false;
     }
@@ -137,7 +158,7 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
   };
 
   const restoreFromStorage = (): boolean => {
-    if (typeof window === "undefined" || hasRestored.value) {
+    if (typeof window === "undefined" || hasRestored.value || isCheckoutLocked.value) {
       return false;
     }
 
@@ -185,6 +206,19 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
     }
   };
 
+  const lockCheckout = (): boolean => {
+    if (isCheckoutLocked.value) {
+      return false;
+    }
+
+    isCheckoutLocked.value = true;
+    return true;
+  };
+
+  const unlockCheckout = () => {
+    isCheckoutLocked.value = false;
+  };
+
   if (typeof window !== "undefined") {
     watch(
       items,
@@ -208,11 +242,14 @@ export const useAstroPopCrateStore = defineStore("astroPopCrate", () => {
     isFull,
     isEmpty,
     hasRestored,
+    isCheckoutLocked,
     addItem,
     decrementItem,
     removeItem,
     setItemQuantity,
     clearCrate,
     restoreFromStorage,
+    lockCheckout,
+    unlockCheckout,
   };
 });

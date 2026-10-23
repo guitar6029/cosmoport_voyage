@@ -11,8 +11,16 @@ const checkoutError = ref('');
 
 
 const handleCheckout = async () => {
-    if (crateStore.isEmpty || isCheckingOut.value) return
+    if (crateStore.isEmpty || isCheckingOut.value || crateStore.isCheckoutLocked) return
 
+    const checkoutItems = Object.freeze(
+        crateStore.items.map((item) => Object.freeze({
+            flavorId: item.flavorId,
+            quantity: item.quantity,
+        })),
+    )
+
+    if (!crateStore.lockCheckout()) return
     isCheckingOut.value = true;
     checkoutError.value = '';
 
@@ -20,10 +28,7 @@ const handleCheckout = async () => {
         const response = await $fetch('/api/astro-pop/checkout', {
             method: "POST",
             body: {
-                items: crateStore.items.map(item => ({
-                    flavorId: item.flavorId,
-                    quantity: item.quantity
-                })),
+                items: checkoutItems,
             },
         })
 
@@ -32,12 +37,13 @@ const handleCheckout = async () => {
             throw new Error('Checkout URL missing');
         }
 
-        savePendingAstroPopCheckout(response.sessionId, crateStore.items)
+        savePendingAstroPopCheckout(response.sessionId, checkoutItems)
         window.location.assign(response.url)
     } catch {
         // noty TODO
         checkoutError.value = 'Unable to start checkout. Please try again.'
         isCheckingOut.value = false;
+        crateStore.unlockCheckout()
     }
 }
 
@@ -47,7 +53,7 @@ const handleCheckout = async () => {
  <button
   class="astropop-cart-page__button"
   type="button"
-  :disabled="crateStore.isEmpty || isCheckingOut"
+  :disabled="crateStore.isEmpty || isCheckingOut || crateStore.isCheckoutLocked"
   @click="handleCheckout"
 >
   {{ isCheckingOut ? 'Preparing checkout...' : 'Proceed to Checkout' }}

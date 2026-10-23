@@ -66,4 +66,26 @@ describe("AstroPop cart manual quantity input", () => {
     app.unmount();
     container.remove();
   });
+
+  it("disables cart mutation controls while checkout initialization is locked", async () => {
+    const { app, container, store } = mountCart();
+    store.lockCheckout();
+    await nextTick();
+
+    expect(container.querySelector<HTMLInputElement>("#quantity-atomic-cherry-fizz")?.disabled).toBe(true);
+    expect(
+      container.querySelector<HTMLButtonElement>(".astropop-cart-item__remove")?.disabled,
+    ).toBe(true);
+    expect(
+      [...container.querySelectorAll<HTMLButtonElement>(".astropop-cart-item__quantity-controls button")]
+        .every((button) => button.disabled),
+    ).toBe(true);
+
+    store.unlockCheckout();
+    await nextTick();
+    expect(container.querySelector<HTMLInputElement>("#quantity-atomic-cherry-fizz")?.disabled).toBe(false);
+
+    app.unmount();
+    container.remove();
+  });
 });

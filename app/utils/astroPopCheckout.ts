@@ -15,14 +15,14 @@ export interface CompletedAstroPopCheckout {
   sessionId: string;
 }
 
-const cloneItems = (items: AstroPopCrateItem[]) =>
+const cloneItems = (items: readonly AstroPopCrateItem[]) =>
   items.map((item) => ({ ...item })).sort((left, right) =>
     left.flavorId.localeCompare(right.flavorId),
   );
 
 export const savePendingAstroPopCheckout = (
   sessionId: string,
-  cartItems: AstroPopCrateItem[],
+  cartItems: readonly AstroPopCrateItem[],
 ) => {
   window.sessionStorage.setItem(
     PENDING_ASTROPOP_CHECKOUT_STORAGE_KEY,
