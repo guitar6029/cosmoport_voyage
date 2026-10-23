@@ -9,6 +9,7 @@
     "dev": "nuxt dev",
     "build": "nuxt build",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "doppler:dev": "doppler run -p cosmoport-universe -c dev -- npm run dev"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "^4.1.16",
     "@types/node": "^26.6.5",
     "@vitejs/plugin-vue": "^6.0.10",
