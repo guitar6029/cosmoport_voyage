@@ -1,7 +1,86 @@
 
+import { z } from 'zod'
 import Stripe from 'stripe'
+import { ASTROPOP_FLAVORS } from '../../../app/data/astroPopFlavors'
+import { MAX_CART_ITEMS, MAX_CRATE_CAPACITY, MAX_QUANTITY_BOTTLES, MIN_CART_ITEMS, MIN_FLAVOR_ID_LENGTH, MIN_QUANTITY_BOTTLES, PRICE_PER_BOTTLE_CENTS } from '~/constants/astro-pop/constants'
 
-export default defineEventHandler(async () => {
+const checkoutSchema = z.object({
+    items: z.array(
+        z.object({
+            flavorId: z.string().min(MIN_FLAVOR_ID_LENGTH),
+            quantity: z.number()
+                .int()
+                .min(MIN_QUANTITY_BOTTLES)
+                .max(MAX_QUANTITY_BOTTLES),
+        })
+    )
+        .min(MIN_CART_ITEMS)
+        .max(MAX_CART_ITEMS),
+})
+    .refine(
+        (cart) =>
+            cart.items.reduce(
+                (total, item) => total + item.quantity,
+                0
+            ) <= MAX_CRATE_CAPACITY,
+        {
+            message: `A rocket crate can hold at most ${MAX_CRATE_CAPACITY} bottles`,
+        }
+    )
+    .refine(
+        (cart) =>
+            new Set(cart.items.map(item => item.flavorId)).size ===
+            cart.items.length,
+        {
+            message: 'Duplicate flavors are not allowed',
+        }
+    )
+
+
+
+
+export default defineEventHandler(async (event) => {
+
+
+    const cart = await readValidatedBody(
+        event,
+        checkoutSchema.safeParse
+    );
+
+    if (!cart.success) {
+        throw createError({
+            status: 400,
+            statusText: 'Invalid checkout cart'
+        })
+    }
+
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = []
+
+
+
+    // validate flavors
+    for (const item of cart.data.items) {
+        const flavor = ASTROPOP_FLAVORS.find((flavor) => flavor.id === item.flavorId)
+        if (!flavor) {
+            throw createError({
+                status: 400,
+                statusText: 'Invalid Astro Pop Flavor'
+            })
+        }
+
+        lineItems.push({
+            price_data: {
+                currency: 'usd',
+                product_data: {
+                    name: flavor.name
+                },
+                unit_amount: PRICE_PER_BOTTLE_CENTS,
+            },
+            quantity: item.quantity
+        })
+
+    }
+
 
     const appUrl = process.env.COSMOPORT_APP_URL;
     const secretKey = process.env.ASTROPOP_STRIPE_SECRET_KEY
@@ -15,23 +94,17 @@ export default defineEventHandler(async () => {
 
     const stripe = new Stripe(secretKey)
 
+    const successUrl = new URL('/astro-pop/checkout/success', appUrl).toString()
+
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
-        line_items: [
-            {
-                price_data: {
-                    currency: 'usd',
-                    product_data: {
-                        name: 'Astro Pop — Test Soda',
-                    },
-                    unit_amount: 119,
-                },
-                quantity: 1,
-            },
-        ],
-        success_url: new URL('/astro-pop?checkout=success', appUrl).toString(),
-        cancel_url: new URL('/astro-pop?checkout=cancelled', appUrl).toString(),
+        line_items: lineItems,
+        success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: new URL(
+            '/astro-pop/cart?checkout=cancelled',
+            appUrl
+        ).toString(),
     })
 
-    return { url: session.url }
+    return { url: session.url, sessionId: session.id }
 })

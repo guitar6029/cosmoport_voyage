@@ -6,6 +6,8 @@ node_modules/
 .output/
 dist/
 coverage/
+test-results/
+playwright-report/
 
 # Sanity Studio generated files
 .sanity/

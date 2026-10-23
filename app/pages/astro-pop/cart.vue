@@ -118,6 +118,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
             <button
               type="button"
               class="astropop-cart-item__remove"
+              :disabled="crateStore.isCheckoutLocked"
               @click="removeItem(item.flavorId, item.flavor.name)"
             >
               Remove bottle
@@ -129,6 +130,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
               <button
                 type="button"
                 :aria-label="`Decrease ${item.flavor.name} quantity`"
+                :disabled="crateStore.isCheckoutLocked"
                 @click="decreaseQuantity(item.flavorId, item.flavor.name)"
               >
                 −
@@ -140,6 +142,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
                 min="0"
                 :max="item.quantity + crateStore.remainingCapacity"
                 :value="item.quantity"
+                :disabled="crateStore.isCheckoutLocked"
                 @change="
                   updateQuantity(
                     $event,
@@ -152,7 +155,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
               <button
                 type="button"
                 :aria-label="`Increase ${item.flavor.name} quantity`"
-                :disabled="crateStore.isFull"
+                :disabled="crateStore.isFull || crateStore.isCheckoutLocked"
                 @click="increaseQuantity(item.flavorId, item.flavor.name)"
               >
                 +
@@ -196,9 +199,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
           to="/astro-pop#pack-your-pop-title"
           >Continue shopping</NuxtLink
         >
-        <button class="astropop-cart-page__button" type="button" disabled>
-          Checkout · Coming soon
-        </button>
+       <AstroPopCheckoutButton />
       </aside>
     </div>
   </main>
