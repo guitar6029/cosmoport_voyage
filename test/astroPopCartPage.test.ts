@@ -3,6 +3,7 @@ import { renderToString } from "vue/server-renderer";
 import { createPinia } from "pinia";
 import { describe, expect, it } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
+import AstroPopCheckoutButton from "../app/components/astro-pop/AstroPopCheckoutButton.vue";
 import AstroPopCartPage from "../app/pages/astro-pop/cart.vue";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
@@ -16,6 +17,7 @@ const renderCart = async (addBottles = false) => {
       return () => h("a", { href: props.to }, slots.default?.());
     },
   }));
+  app.component("AstroPopCheckoutButton", AstroPopCheckoutButton);
 
   if (addBottles) {
     useAstroPopCrateStore(pinia).addItem(ASTROPOP_FLAVORS[0].id, 2);
@@ -35,14 +37,13 @@ describe("AstroPop cart page", () => {
     expect(html).not.toContain("Bottle roster");
   });
 
-  it("renders selected bottles, capacity, and disabled future checkout", async () => {
+  it("renders selected bottles, capacity, and the checkout control", async () => {
     const html = await renderCart(true);
 
     expect(html).toContain(ASTROPOP_FLAVORS[0].name);
     expect(html).toContain(ASTROPOP_FLAVORS[0].bottleImage);
     expect(html).toContain("2 of 6 bottles");
-    expect(html).toContain("Checkout · Coming soon");
-    expect(html).toContain("disabled");
+    expect(html).toContain("Proceed to Checkout");
     expect(html).toContain('href="/astro-pop#pack-your-pop-title"');
   });
 });

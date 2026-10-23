@@ -94,15 +94,17 @@ export default defineEventHandler(async (event) => {
 
     const stripe = new Stripe(secretKey)
 
+    const successUrl = new URL('/astro-pop/checkout/success', appUrl).toString()
+
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: lineItems,
-        success_url: new URL('/astro-pop?checkout=success', appUrl).toString(),
+        success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: new URL(
             '/astro-pop/cart?checkout=cancelled',
             appUrl
         ).toString(),
     })
 
-    return { url: session.url }
+    return { url: session.url, sessionId: session.id }
 })

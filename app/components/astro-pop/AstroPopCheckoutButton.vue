@@ -2,6 +2,7 @@
 
 import {ref} from 'vue';
 import { useAstroPopCrateStore } from '../../stores/astroPopCrate';
+import { savePendingAstroPopCheckout } from '../../utils/astroPopCheckout';
 
 const crateStore  = useAstroPopCrateStore();
 
@@ -26,11 +27,12 @@ const handleCheckout = async () => {
             },
         })
 
-        if (!response.url){
+        if (!response.url || !response.sessionId){
             // noty here TODO
             throw new Error('Checkout URL missing');
         }
 
+        savePendingAstroPopCheckout(response.sessionId, crateStore.items)
         window.location.assign(response.url)
     } catch {
         // noty TODO
