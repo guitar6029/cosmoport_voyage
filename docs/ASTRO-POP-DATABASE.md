@@ -18,11 +18,11 @@ SQL directly with a PostgreSQL client.
      -f database/migrations/202610230001_create_astro_pop_orders.sql
    ```
 
-The migration enables `pgcrypto` for UUID generation, then creates
-`public.orders` before `public.order_items` so the latter can enforce its
-foreign key. The table creation is deliberately not idempotent: a failed repeat
-run signals that the schema already exists and should be investigated rather
-than silently changed.
+PostgreSQL 18 provides `gen_random_uuid()` natively, so the migration creates
+`public.orders` before `public.order_items` without enabling an extension. This
+allows the latter table to enforce its foreign key. The table creation is
+deliberately not idempotent: a failed repeat run signals that the schema already
+exists and should be investigated rather than silently changed.
 
 ## Existing Neon development database
 
