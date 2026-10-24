@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { createSSRApp, h, ref } from "vue";
-import { createApp, nextTick } from "vue";
+import { createApp as createVueApp, nextTick } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { createPinia, setActivePinia } from "pinia";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -9,8 +9,19 @@ import AstroPopBottleSelectionCard from "../app/components/astro-pop/AstroPopBot
 import AstroPopPackYourPopSection from "../app/components/astro-pop/AstroPopPackYourPopSection.vue";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
+const NuxtLinkStub = {
+  props: { to: { type: String, required: true } },
+  template: '<a :href="to"><slot /></a>',
+};
+
+const withNuxtLink = <T extends { component: (name: string, component: unknown) => T }>(app: T) =>
+  app.component("NuxtLink", NuxtLinkStub);
+
 const renderComponent = (component: typeof AstroPopBottleSelectionCard, props = {}) =>
-  renderToString(createSSRApp({ render: () => h(component, props) }));
+  renderToString(withNuxtLink(createSSRApp({ render: () => h(component, props) })));
+
+const createTestApp = (...args: Parameters<typeof createVueApp>) =>
+  withNuxtLink(createVueApp(...args));
 
 describe("AstroPop bottle selection card", () => {
   afterEach(() => {
@@ -26,15 +37,25 @@ describe("AstroPop bottle selection card", () => {
     expect(html).toContain(`alt=\"${flavor.name} AstroPop bottle\"`);
     expect(html).toContain(flavor.name.split(" ")[0]);
     expect(html).toContain(flavor.name.split(" ").slice(1).join(" "));
+    expect(html).toContain("View Details");
+    expect(html).toContain(`href="/astro-pop/flavors/${flavor.id}"`);
     expect(html).toContain("Add Bottle");
     expect(html).not.toContain("disabled");
+  });
+
+  it("links every selection card to its flavor detail page", async () => {
+    for (const flavor of ASTROPOP_FLAVORS) {
+      const html = await renderComponent(AstroPopBottleSelectionCard, { flavor });
+
+      expect(html).toContain(`href="/astro-pop/flavors/${flavor.id}"`);
+    }
   });
 
   it("emits the selected flavor ID when Add Bottle is clicked", async () => {
     const flavor = ASTROPOP_FLAVORS[0];
     const emittedFlavorIds: string[] = [];
     const container = document.createElement("div");
-    const app = createApp(AstroPopBottleSelectionCard, {
+    const app = createTestApp(AstroPopBottleSelectionCard, {
       flavor,
       onAdd: (flavorId: string) => emittedFlavorIds.push(flavorId),
     });
@@ -54,7 +75,7 @@ describe("AstroPop bottle selection card", () => {
     const flavor = ASTROPOP_FLAVORS[0];
     const successToken = ref(0);
     const container = document.createElement("div");
-    const app = createApp({
+    const app = createTestApp({
       setup: () => () => h(AstroPopBottleSelectionCard, { flavor, successToken: successToken.value }),
     });
 
@@ -88,7 +109,7 @@ describe("AstroPop Pack Your Pop section", () => {
   it("renders one selection card for every AstroPop flavor", async () => {
     setActivePinia(createPinia());
     const html = await renderToString(
-      createSSRApp({ render: () => h(AstroPopPackYourPopSection) }),
+      withNuxtLink(createSSRApp({ render: () => h(AstroPopPackYourPopSection) })),
     );
 
     expect(html.match(/class="bottle-selection-card /g)).toHaveLength(
@@ -106,7 +127,7 @@ describe("AstroPop Pack Your Pop section", () => {
     setActivePinia(pinia);
     const crateStore = useAstroPopCrateStore(pinia);
     const container = document.createElement("div");
-    const app = createApp(AstroPopPackYourPopSection);
+    const app = createTestApp(AstroPopPackYourPopSection);
 
     app.use(pinia);
     document.body.appendChild(container);
@@ -146,7 +167,7 @@ describe("AstroPop Pack Your Pop section", () => {
     setActivePinia(pinia);
     const crateStore = useAstroPopCrateStore(pinia);
     const container = document.createElement("div");
-    const app = createApp(AstroPopPackYourPopSection);
+    const app = createTestApp(AstroPopPackYourPopSection);
 
     app.use(pinia);
     document.body.appendChild(container);
