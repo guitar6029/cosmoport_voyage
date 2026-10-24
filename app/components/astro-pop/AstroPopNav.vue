@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
 
+const route = useRoute();
 const crateStore = useAstroPopCrateStore();
+const isHomepage = computed(() => route.path === "/astro-pop");
 const isMenuOpen = ref(false);
 const isMobileMenu = ref(true);
 const menuTrigger = ref<HTMLButtonElement>();
@@ -106,7 +108,16 @@ onBeforeUnmount(() => {
 
 <template>
   <nav class="navigation" aria-label="AstroPop navigation">
+    <NuxtLink
+      v-if="!isHomepage && !isMobileNavigation()"
+      class="navigation__cap"
+      to="/astro-pop"
+      aria-label="Astro Pop home"
+    >
+      <img src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png" alt="" aria-hidden="true" />
+    </NuxtLink>
     <button
+      v-else
       ref="menuTrigger"
       class="navigation__cap"
       type="button"
@@ -119,10 +130,13 @@ onBeforeUnmount(() => {
     </button>
 
     <div class="navigation__links" aria-label="AstroPop sections">
-      <a href="#astropop-flavors-title">Flavors</a>
-      <a href="#pack-your-pop-title">Pack Your Pop</a>
-      <a href="#astropop-delivery-plans">Delivery</a>
-      <a href="#astropop-delivery-testimonials">Reviews</a>
+      <template v-if="isHomepage">
+        <a href="#astropop-flavors-title">Flavors</a>
+        <a href="#pack-your-pop-title">Pack Your Pop</a>
+        <a href="#astropop-delivery-plans">Delivery</a>
+        <a href="#astropop-delivery-testimonials">Reviews</a>
+      </template>
+      <NuxtLink v-else to="/astro-pop/#astropop-flavors-title">Shop Flavors</NuxtLink>
     </div>
 
     <NuxtLink to="/astro-pop/cart" class="navigation__cart" :aria-label="`Cart, ${crateStore.totalBottles} bottles`">
@@ -136,17 +150,29 @@ onBeforeUnmount(() => {
       <button class="navigation-drawer__backdrop" type="button" aria-label="Close navigation menu" @click="closeMenu()" />
       <aside id="astropop-mobile-menu" ref="drawer" class="navigation-drawer" role="dialog" aria-modal="true" aria-label="AstroPop navigation menu">
         <div class="navigation-drawer__header">
-          <img src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png" alt="" aria-hidden="true" />
+          <NuxtLink
+            v-if="!isHomepage"
+            class="navigation-drawer__home-link"
+            to="/astro-pop"
+            aria-label="Astro Pop home"
+            @click="closeMenu(false)"
+          >
+            <img src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png" alt="" aria-hidden="true" />
+          </NuxtLink>
+          <img v-else src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png" alt="" aria-hidden="true" />
           <button ref="closeButton" class="navigation-drawer__close" type="button" @click="closeMenu()">
             <span aria-hidden="true">×</span><span>Close menu</span>
           </button>
         </div>
         <nav aria-label="AstroPop mobile sections">
-          <a href="#astropop-flavors-title" @click="closeMenu(false)">Flavors</a>
-          <a href="#pack-your-pop-title" @click="closeMenu(false)">Pack Your Pop</a>
-          <a href="#astropop-delivery-plans" @click="closeMenu(false)">Delivery</a>
-          <a href="#astropop-delivery-testimonials" @click="closeMenu(false)">Reviews</a>
-          <a href="#astropop-title" @click="closeMenu(false)">Back to Top</a>
+          <template v-if="isHomepage">
+            <a href="#astropop-flavors-title" @click="closeMenu(false)">Flavors</a>
+            <a href="#pack-your-pop-title" @click="closeMenu(false)">Pack Your Pop</a>
+            <a href="#astropop-delivery-plans" @click="closeMenu(false)">Delivery</a>
+            <a href="#astropop-delivery-testimonials" @click="closeMenu(false)">Reviews</a>
+            <a href="#astropop-title" @click="closeMenu(false)">Back to Top</a>
+          </template>
+          <NuxtLink v-else to="/astro-pop/#astropop-flavors-title" @click="closeMenu(false)">Shop Flavors</NuxtLink>
         </nav>
       </aside>
     </div>
@@ -293,6 +319,11 @@ onBeforeUnmount(() => {
 .navigation-drawer__header img {
   width: 3.5rem;
   height: 3.5rem;
+}
+
+.navigation-drawer__home-link {
+  display: inline-flex;
+  border-radius: 50%;
 }
 
 .navigation-drawer__close {

@@ -13,10 +13,11 @@
         <nav aria-labelledby="astropop-footer-explore-title">
           <h3 id="astropop-footer-explore-title">Explore AstroPop</h3>
           <ul>
-            <li><a href="#astropop-flavors-title">Our Marvelous Flavors</a></li>
-            <li><a href="#pack-your-pop-title">Pack Your Pop</a></li>
-            <li><a href="#astropop-delivery-plans">Delivery Plans</a></li>
-            <li><a href="#astropop-delivery-testimonials">Happy Neighbors</a></li>
+            <li><NuxtLink to="/astro-pop/our-story">Our Story</NuxtLink></li>
+            <li><NuxtLink to="/astro-pop/#astropop-flavors-title">Our Marvelous Flavors</NuxtLink></li>
+            <li><NuxtLink to="/astro-pop/#pack-your-pop-title">Pack Your Pop</NuxtLink></li>
+            <li><NuxtLink to="/astro-pop/#astropop-delivery-plans">Delivery Plans</NuxtLink></li>
+            <li><NuxtLink to="/astro-pop/#astropop-delivery-testimonials">Happy Neighbors</NuxtLink></li>
           </ul>
         </nav>
 
@@ -25,7 +26,7 @@
           <ul>
             <li><NuxtLink to="/">Universe Directory</NuxtLink></li>
             <li><NuxtLink to="/cosmoport-voyage">Cosmoport Voyage</NuxtLink></li>
-            <li><a href="#astropop-title">Back to Top</a></li>
+            <li><a href="#">Back to Top</a></li>
           </ul>
         </nav>
       </div>

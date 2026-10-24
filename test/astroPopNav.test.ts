@@ -1,12 +1,17 @@
 import { createSSRApp, defineComponent, h } from "vue";
 import { createPinia } from "pinia";
 import { renderToString } from "vue/server-renderer";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import AstroPopNav from "../app/components/astro-pop/AstroPopNav.vue";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
-const renderNavigation = async (bottles = 0) => {
+const route = { path: "/astro-pop" };
+
+vi.stubGlobal("useRoute", () => route);
+
+const renderNavigation = async (bottles = 0, path = "/astro-pop") => {
+  route.path = path;
   const pinia = createPinia();
   const app = createSSRApp({ render: () => h(AstroPopNav) });
   app.use(pinia);
@@ -42,5 +47,16 @@ describe("AstroPop navigation", () => {
 
     expect(html).toContain("Cart, 2 bottles");
     expect(html).toContain(">2</span>");
+  });
+
+  it("uses homepage destinations instead of local fragments on secondary AstroPop pages", async () => {
+    const html = await renderNavigation(0, "/astro-pop/our-story");
+
+    expect(html).toContain('href="/astro-pop/#astropop-flavors-title"');
+    expect(html).toContain("Shop Flavors");
+    expect(html).not.toContain('href="#pack-your-pop-title"');
+    expect(html).not.toContain('href="#astropop-delivery-plans"');
+    expect(html).not.toContain('href="#astropop-delivery-testimonials"');
+    expect(html).toContain('href="/astro-pop/cart"');
   });
 });
