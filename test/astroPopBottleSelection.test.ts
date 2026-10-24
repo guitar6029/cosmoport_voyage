@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import { createSSRApp, h } from "vue";
+import { createSSRApp, h, ref } from "vue";
 import { createApp, nextTick } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { createPinia, setActivePinia } from "pinia";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 import AstroPopBottleSelectionCard from "../app/components/astro-pop/AstroPopBottleSelectionCard.vue";
 import AstroPopPackYourPopSection from "../app/components/astro-pop/AstroPopPackYourPopSection.vue";
@@ -13,6 +13,10 @@ const renderComponent = (component: typeof AstroPopBottleSelectionCard, props = 
   renderToString(createSSRApp({ render: () => h(component, props) }));
 
 describe("AstroPop bottle selection card", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("renders the card, bottle image, flavor title, and disabled Add Bottle button", async () => {
     const flavor = ASTROPOP_FLAVORS[0];
     const html = await renderComponent(AstroPopBottleSelectionCard, { flavor });
@@ -44,9 +48,43 @@ describe("AstroPop bottle selection card", () => {
     app.unmount();
     container.remove();
   });
+
+  it("shows and restarts the added confirmation when its success token changes", async () => {
+    vi.useFakeTimers();
+    const flavor = ASTROPOP_FLAVORS[0];
+    const successToken = ref(0);
+    const container = document.createElement("div");
+    const app = createApp({
+      setup: () => () => h(AstroPopBottleSelectionCard, { flavor, successToken: successToken.value }),
+    });
+
+    document.body.appendChild(container);
+    app.mount(container);
+
+    successToken.value += 1;
+    await nextTick();
+    expect(container.querySelector("button")?.textContent).toContain("✓ ADDED!");
+
+    vi.advanceTimersByTime(750);
+    successToken.value += 1;
+    await nextTick();
+    vi.advanceTimersByTime(750);
+    expect(container.querySelector("button")?.textContent).toContain("✓ ADDED!");
+
+    vi.advanceTimersByTime(50);
+    await nextTick();
+    expect(container.querySelector("button")?.textContent).toContain("Add Bottle");
+
+    app.unmount();
+    container.remove();
+  });
 });
 
 describe("AstroPop Pack Your Pop section", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("renders one selection card for every AstroPop flavor", async () => {
     setActivePinia(createPinia());
     const html = await renderToString(
@@ -97,6 +135,39 @@ describe("AstroPop Pack Your Pop section", () => {
     buttons[2]?.click();
     await nextTick();
     expect(crateStore.totalBottles).toBe(6);
+
+    app.unmount();
+    container.remove();
+  });
+
+  it("does not replay added feedback when the crate rejects an addition", async () => {
+    vi.useFakeTimers();
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const crateStore = useAstroPopCrateStore(pinia);
+    const container = document.createElement("div");
+    const app = createApp(AstroPopPackYourPopSection);
+
+    app.use(pinia);
+    document.body.appendChild(container);
+    app.mount(container);
+
+    const buttons = Array.from(
+      container.querySelectorAll<HTMLButtonElement>("button"),
+    );
+
+    for (let index = 0; index < 6; index += 1) {
+      buttons[0]?.click();
+    }
+    await nextTick();
+    vi.advanceTimersByTime(800);
+    await nextTick();
+
+    buttons[1]?.click();
+    await nextTick();
+
+    expect(crateStore.totalBottles).toBe(6);
+    expect(buttons[1]?.textContent).toContain("Add Bottle");
 
     app.unmount();
     container.remove();

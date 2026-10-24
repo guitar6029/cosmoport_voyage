@@ -1,15 +1,41 @@
 <script setup lang="ts">
+import { onBeforeUnmount, ref, watch } from "vue";
 import type { AstroPopFlavor } from "../../data/astroPopFlavors";
 import type { AstroPopFlavorId } from "../../stores/astroPopCrate";
 
 const props = defineProps<{
-  flavor: AstroPopFlavor;
+  flavor: AstroPopFlavor & { id: AstroPopFlavorId };
   disabled?: boolean;
+  successToken?: number;
 }>();
 
 const emit = defineEmits<{
   add: [flavorId: AstroPopFlavorId];
 }>();
+
+const isShowingSuccess = ref(false);
+let successTimer: ReturnType<typeof setTimeout> | undefined;
+
+watch(
+  () => props.successToken,
+  () => {
+    if (successTimer) {
+      clearTimeout(successTimer);
+    }
+
+    isShowingSuccess.value = true;
+    successTimer = setTimeout(() => {
+      isShowingSuccess.value = false;
+      successTimer = undefined;
+    }, 800);
+  },
+);
+
+onBeforeUnmount(() => {
+  if (successTimer) {
+    clearTimeout(successTimer);
+  }
+});
 </script>
 
 <template>
@@ -29,9 +55,11 @@ const emit = defineEmits<{
       class="bottle-selection-card__button"
       type="button"
       :disabled="props.disabled"
-      @click="emit('add', flavor.id)"
+      :class="{ 'bottle-selection-card__button--added': isShowingSuccess }"
+      @click="emit('add', flavor.id )"
     >
-      Add Bottle
+      <span v-if="isShowingSuccess" aria-hidden="true">✓ ADDED!</span>
+      <span v-else>Add Bottle</span>
     </button>
   </article>
 </template>
@@ -115,6 +143,28 @@ const emit = defineEmits<{
   opacity: 0.55;
 }
 
+.bottle-selection-card__button--added {
+  animation: added-pop 800ms ease-out;
+}
+
+@keyframes added-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  28% {
+    transform: scale(1.06);
+  }
+
+  55% {
+    transform: scale(0.98);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 @media (hover: hover) {
   .bottle-selection-card__button:hover:not(:disabled):not(:active) {
     box-shadow: 0.16rem 0.18rem 0 var(--card-ink);
@@ -123,8 +173,10 @@ const emit = defineEmits<{
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bottle-selection-card__button {
+  .bottle-selection-card__button,
+  .bottle-selection-card__button--added {
     transition: none;
+    animation: none;
   }
 }
 </style>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import AstroPopFlavorSection from "../../components/astro-pop/AstroPopFlavorSection.vue";
 import AstroPopPackYourPopSection from "../../components/astro-pop/AstroPopPackYourPopSection.vue";
 import AstroPopDeliverySection from "../../components/astro-pop/AstroPopDeliverySection.vue";
@@ -7,11 +8,19 @@ import AstroPopDeliveryTestimonialsSection from "../../components/astro-pop/Astr
 import AstroPopFooter from "../../components/astro-pop/AstroPopFooter.vue";
 import DecorativeImage from "../../components/shared/DecorativeImage.vue";
 import AstroPopNav from "../../components/astro-pop/AstroPopNav.vue";
+import AstroPopNotificationContainer from "../../components/astro-pop/AstroPopNotificationContainer.vue";
+
+const hasMounted = ref(false);
+
+onMounted(() => {
+  hasMounted.value = true;
+});
 </script>
 
 <template>
   <div>
     <main class="astropop-page">
+      <AstroPopNotificationContainer v-if="hasMounted" />
       <section class="astropop-hero" aria-labelledby="astropop-title">
         <NuxtLink class="astropop-home-link" to="/">← Universe directory</NuxtLink>
         <h1 id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>
