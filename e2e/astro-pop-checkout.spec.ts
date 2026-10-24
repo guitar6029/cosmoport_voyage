@@ -2,6 +2,69 @@ import { expect, test, type Page } from "@playwright/test";
 
 const cartItems = [{ flavorId: "atomic-cherry-fizz", quantity: 2 }];
 const cartInitializationKey = "astropop-e2e-cart-initialized";
+const diagnosticsByPage = new WeakMap<Page, {
+  console: string[];
+  pageErrors: string[];
+  failedRequests: string[];
+  responses: string[];
+}>();
+
+test.beforeEach(({ page }) => {
+  const diagnostics = {
+    console: [] as string[],
+    pageErrors: [] as string[],
+    failedRequests: [] as string[],
+    responses: [] as string[],
+  };
+
+  diagnosticsByPage.set(page, diagnostics);
+  page.on("console", (message) => {
+    diagnostics.console.push(`${message.type()}: ${message.text()}`);
+  });
+  page.on("pageerror", (error) => {
+    diagnostics.pageErrors.push(error.message);
+  });
+  page.on("requestfailed", (request) => {
+    diagnostics.failedRequests.push(
+      `${request.method()} ${request.url()} — ${request.failure()?.errorText ?? "unknown failure"}`,
+    );
+  });
+  page.on("response", (response) => {
+    if (response.url().includes("/astro-pop/cart")) {
+      diagnostics.responses.push(`${response.status()} ${response.url()}`);
+    }
+  });
+});
+
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status === testInfo.expectedStatus) {
+    return;
+  }
+
+  const state = await page.evaluate(() => {
+    const entriesFor = (storage: Storage) => Object.fromEntries(
+      Array.from({ length: storage.length }, (_, index) => storage.key(index))
+        .filter((key): key is string => key?.startsWith("astropop-") ?? false)
+        .map((key) => [key, storage.getItem(key)]),
+    );
+
+    return {
+      url: window.location.href,
+      localStorage: entriesFor(window.localStorage),
+      sessionStorage: entriesFor(window.sessionStorage),
+      bodyText: document.body.innerText,
+      bodyHtml: document.body.innerHTML,
+    };
+  }).catch((error: unknown) => ({ evaluationError: String(error) }));
+
+  await testInfo.attach("checkout-page-diagnostics.json", {
+    body: JSON.stringify({
+      ...state,
+      ...(diagnosticsByPage.get(page) ?? {}),
+    }, null, 2),
+    contentType: "application/json",
+  });
+});
 
 const configureCheckout = async (
   page: Page,

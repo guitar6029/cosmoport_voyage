@@ -1,16 +1,21 @@
 import { env } from 'node:process'
 import { defineConfig, devices } from "@playwright/test";
 
+const port = env.PLAYWRIGHT_PORT ?? "3000";
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: "./e2e",
+  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
+    screenshot: "only-on-failure",
     trace: "retain-on-failure",
   },
   webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 3000",
-    url: "http://127.0.0.1:3000",
+    command: `npm run dev -- --host 127.0.0.1 --port ${port}`,
+    url: `${baseURL}/astro-pop/cart`,
     reuseExistingServer: !env.CI,
     timeout: 120_000,
   },
