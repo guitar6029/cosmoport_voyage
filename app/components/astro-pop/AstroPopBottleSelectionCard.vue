@@ -51,16 +51,24 @@ onBeforeUnmount(() => {
 
     <h3 class="bottle-selection-card__title">{{ flavor.name }}</h3>
 
-    <button
-      class="bottle-selection-card__button"
-      type="button"
-      :disabled="props.disabled"
-      :class="{ 'bottle-selection-card__button--added': isShowingSuccess }"
-      @click="emit('add', flavor.id )"
-    >
-      <span v-if="isShowingSuccess" aria-hidden="true">✓ ADDED!</span>
-      <span v-else>Add Bottle</span>
-    </button>
+    <div class="bottle-selection-card__actions">
+      <NuxtLink
+        class="bottle-selection-card__details-link"
+        :to="`/astro-pop/flavors/${flavor.id}`"
+      >
+        View Details
+      </NuxtLink>
+      <button
+        class="bottle-selection-card__button"
+        type="button"
+        :disabled="props.disabled"
+        :class="{ 'bottle-selection-card__button--added': isShowingSuccess }"
+        @click="emit('add', flavor.id )"
+      >
+        <span v-if="isShowingSuccess" aria-hidden="true">✓ ADDED!</span>
+        <span v-else>Add Bottle</span>
+      </button>
+    </div>
   </article>
 </template>
 
@@ -111,7 +119,6 @@ onBeforeUnmount(() => {
 
 .bottle-selection-card__button {
   width: 100%;
-  margin-top: auto;
   border: 2px solid var(--card-accent);
   border-radius: 999px;
   padding: 0.7rem 1rem;
@@ -125,6 +132,37 @@ onBeforeUnmount(() => {
   line-height: 1;
   text-transform: uppercase;
   transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, opacity 150ms ease;
+}
+
+.bottle-selection-card__actions {
+  display: grid;
+  width: 100%;
+  gap: 0.65rem;
+  margin-top: auto;
+}
+
+.bottle-selection-card__details-link {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--card-accent);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  color: var(--card-accent);
+  font-family: "Barlow Condensed", Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.bottle-selection-card__details-link:focus-visible {
+  outline: 3px solid var(--astropop-focus-ring, #167c89);
+  outline-offset: 4px;
 }
 
 .bottle-selection-card__button:focus-visible {
@@ -170,11 +208,19 @@ onBeforeUnmount(() => {
     box-shadow: 0.16rem 0.18rem 0 var(--card-ink);
     transform: translate(0.12rem, 0.14rem);
   }
+
+  .bottle-selection-card__details-link:hover:not(:active) {
+    box-shadow: 0.16rem 0.18rem 0 var(--card-ink);
+    background: var(--card-accent);
+    color: #fff8e5;
+    transform: translate(0.12rem, 0.14rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .bottle-selection-card__button,
-  .bottle-selection-card__button--added {
+  .bottle-selection-card__button--added,
+  .bottle-selection-card__details-link {
     transition: none;
     animation: none;
   }
