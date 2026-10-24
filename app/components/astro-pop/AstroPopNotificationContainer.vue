@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useAstroPopNotifications } from "../../composables/astro-pop/useAstroPopNotifications";
+import AstroPopNotification from "./AstroPopNotification.vue";
 
-const {notifications} = useAstroPopNotifications();
-
+const { notifications } = useAstroPopNotifications();
 </script>
 
 <template>
@@ -19,7 +19,6 @@ const {notifications} = useAstroPopNotifications();
       v-for="notification in notifications"
       :key="notification.id"
       :type="notification.type"
-      class="pointer-events-auto"
     />
   </div>
 </template>

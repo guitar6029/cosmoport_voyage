@@ -1,11 +1,8 @@
-export type AstroPopNotificationType =
-    | "success"
-    | "error"
-    | "info";
+export type AstroPopNotificationType = "success" | "error" | "info";
 
 export interface AstroPopNotification {
-    id: string;
-    type: AstroPopNotificationType;
+  id: string;
+  type: AstroPopNotificationType;
 }
 
 const DURATION_DEFAULT_MS = 4500;
@@ -13,47 +10,50 @@ const DURATION_DEFAULT_MS = 4500;
 const timers = new Map<string, ReturnType<typeof setTimeout>>();
 
 export function useAstroPopNotifications() {
-    const notifications = useState<AstroPopNotification[]>(
-        "astro-pop-notifications",
-        () => [],
+  const notifications = useState<AstroPopNotification[]>(
+    "astro-pop-notifications",
+    () => [],
+  );
+
+  function dismiss(id: string) {
+    const timer = timers.get(id);
+
+    if (timer) {
+      clearTimeout(timer);
+      timers.delete(id);
+    }
+
+    notifications.value = notifications.value.filter(
+      (notification) => notification.id !== id,
     );
+  }
 
-    function dismiss(id: string) {
-        const timer = timers.get(id);
-
-        if (timer) {
-            clearTimeout(timer);
-            timers.delete(id);
-        }
-
-        notifications.value = notifications.value.filter((notification) => notification.id !== id,);
+  function show(
+    type: AstroPopNotificationType,
+    duration = DURATION_DEFAULT_MS,
+  ) {
+    if (import.meta.server) {
+      return;
     }
 
-    function show(
-        type: AstroPopNotificationType,
-        duration = DURATION_DEFAULT_MS,
-    ) {
-        if (import.meta.server) return;
+    const id = crypto.randomUUID();
 
-        const id = crypto.randomUUID();
+    notifications.value.push({ id, type });
 
-        notifications.value.push({ id, type });
+    if (duration > 0) {
+      const timer = setTimeout(() => {
+        dismiss(id);
+      }, duration);
 
-        if (duration > 0) {
-            const timer = setTimeout(() => {
-                dismiss(id);
-            }, duration);
-
-            timers.set(id, timer);
-        }
-
-        return id;
+      timers.set(id, timer);
     }
 
+    return id;
+  }
 
-    return {
-        notifications,
-        show,
-        dismiss
-    }
+  return {
+    notifications,
+    show,
+    dismiss,
+  };
 }

@@ -81,6 +81,10 @@ describe("AstroPop bottle selection card", () => {
 });
 
 describe("AstroPop Pack Your Pop section", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("renders one selection card for every AstroPop flavor", async () => {
     setActivePinia(createPinia());
     const html = await renderToString(
@@ -131,6 +135,39 @@ describe("AstroPop Pack Your Pop section", () => {
     buttons[2]?.click();
     await nextTick();
     expect(crateStore.totalBottles).toBe(6);
+
+    app.unmount();
+    container.remove();
+  });
+
+  it("does not replay added feedback when the crate rejects an addition", async () => {
+    vi.useFakeTimers();
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const crateStore = useAstroPopCrateStore(pinia);
+    const container = document.createElement("div");
+    const app = createApp(AstroPopPackYourPopSection);
+
+    app.use(pinia);
+    document.body.appendChild(container);
+    app.mount(container);
+
+    const buttons = Array.from(
+      container.querySelectorAll<HTMLButtonElement>("button"),
+    );
+
+    for (let index = 0; index < 6; index += 1) {
+      buttons[0]?.click();
+    }
+    await nextTick();
+    vi.advanceTimersByTime(800);
+    await nextTick();
+
+    buttons[1]?.click();
+    await nextTick();
+
+    expect(crateStore.totalBottles).toBe(6);
+    expect(buttons[1]?.textContent).toContain("Add Bottle");
 
     app.unmount();
     container.remove();
