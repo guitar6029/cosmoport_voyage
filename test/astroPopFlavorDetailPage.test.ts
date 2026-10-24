@@ -7,12 +7,17 @@ import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 import AstroPopFlavorDetailPage from "../app/pages/astro-pop/flavors/[slug].vue";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
-const route = { params: { slug: "" } };
+const route = { path: "/astro-pop/flavors", params: { slug: "" } };
 const useHead = vi.fn();
 
 vi.stubGlobal("useRoute", () => route);
 vi.stubGlobal("useHead", useHead);
 vi.stubGlobal("createError", (options: { statusCode: number; statusMessage: string }) => options);
+vi.stubGlobal("matchMedia", () => ({
+  matches: false,
+  addEventListener: () => undefined,
+  removeEventListener: () => undefined,
+}));
 
 const NuxtLinkStub = {
   props: { to: { type: String, required: true } },
@@ -70,7 +75,7 @@ describe("AstroPop flavor detail page", () => {
     document.body.appendChild(container);
     app.mount(container);
 
-    (container.querySelector("button") as HTMLButtonElement).click();
+    (container.querySelector(".astropop-flavor-hero__add-button") as HTMLButtonElement).click();
     await nextTick();
 
     expect(crateStore.items).toEqual([{ flavorId: flavor.id, quantity: 1 }]);

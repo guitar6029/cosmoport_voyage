@@ -2,9 +2,11 @@ import { existsSync } from "node:fs";
 import { createPinia } from "pinia";
 import { createSSRApp, defineComponent, h } from "vue";
 import { renderToString } from "vue/server-renderer";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import AstroPopFooter from "../app/components/astro-pop/AstroPopFooter.vue";
 import AstroPopPage from "../app/pages/astro-pop/index.vue";
+
+vi.stubGlobal("useRoute", () => ({ path: "/astro-pop" }));
 
 const NuxtLink = defineComponent({
   props: { to: { type: String, required: true } },
@@ -35,7 +37,7 @@ describe("AstroPop footer", () => {
     expect(html).toContain("AstroPop Soda Co. · A proud member of the Cosmoport Universe");
   });
 
-  it("organizes all seven native links into two named navigation landmarks", async () => {
+  it("organizes all eight native links into two named navigation landmarks", async () => {
     const html = await renderFooter();
     const groups = html.match(/<nav\b[\s\S]*?<\/nav>/g) ?? [];
 
@@ -45,6 +47,7 @@ describe("AstroPop footer", () => {
         id: "astropop-footer-explore-title",
         title: "Explore AstroPop",
         links: [
+          ["/astro-pop/our-story", "Our Story"],
           ["#astropop-flavors-title", "Our Marvelous Flavors"],
           ["#pack-your-pop-title", "Pack Your Pop"],
           ["#astropop-delivery-plans", "Delivery Plans"],

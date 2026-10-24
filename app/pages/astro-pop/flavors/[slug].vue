@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import AstroPopNav from "../../../components/astro-pop/AstroPopNav.vue";
 import { ASTROPOP_FLAVORS } from "../../../data/astroPopFlavors";
 import { useAstroPopCrateStore } from "../../../stores/astroPopCrate";
 
@@ -43,6 +44,10 @@ const addBottle = () => {
       <NuxtLink class="astropop-flavor-hero__back-link" to="/astro-pop">
         <span aria-hidden="true">←</span> Back to AstroPop
       </NuxtLink>
+
+      <div class="astropop-flavor-hero__nav">
+        <AstroPopNav />
+      </div>
 
       <div class="astropop-flavor-hero__panel">
         <div class="astropop-flavor-hero__orbit astropop-flavor-hero__orbit--one" aria-hidden="true" />
@@ -125,6 +130,11 @@ const addBottle = () => {
 .astropop-flavor-hero {
   width: min(100%, 84rem);
   margin: 0 auto;
+}
+
+.astropop-flavor-hero__nav {
+  width: min(100%, 72rem);
+  margin: 0 auto 1.5rem;
 }
 
 .astropop-flavor-hero__back-link {

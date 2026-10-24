@@ -13,6 +13,7 @@
         <nav aria-labelledby="astropop-footer-explore-title">
           <h3 id="astropop-footer-explore-title">Explore AstroPop</h3>
           <ul>
+            <li><NuxtLink to="/astro-pop/our-story">Our Story</NuxtLink></li>
             <li><a href="#astropop-flavors-title">Our Marvelous Flavors</a></li>
             <li><a href="#pack-your-pop-title">Pack Your Pop</a></li>
             <li><a href="#astropop-delivery-plans">Delivery Plans</a></li>
