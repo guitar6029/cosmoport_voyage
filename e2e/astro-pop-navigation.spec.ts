@@ -36,6 +36,22 @@ test.describe("AstroPop route-aware navigation", () => {
     await expect(page.locator("#astropop-flavors-title")).toBeInViewport();
   });
 
+  test("takes Our Story footer shortcuts to homepage sections and returns to the current page top", async ({ page }) => {
+    await page.goto("/astro-pop/our-story");
+    const footer = page.getByRole("contentinfo");
+
+    await footer.getByRole("link", { name: "Our Marvelous Flavors" }).click();
+    await expect(page).toHaveURL(/\/astro-pop\/#astropop-flavors-title$/);
+    await expect(page.locator("#astropop-flavors-title")).toBeInViewport();
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/astro-pop\/our-story$/);
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight }));
+    await footer.getByRole("link", { name: "Back to Top" }).click();
+    await expect(page).toHaveURL(/\/astro-pop\/our-story$/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
   test("supports direct flavor anchors, home links, reactive cart labels, and the mobile drawer", async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem("astropop-crate", JSON.stringify([
