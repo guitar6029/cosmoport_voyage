@@ -93,6 +93,7 @@ const addBottle = () => {
   --hero-panel: #e9a99c;
   min-height: 100vh;
   min-height: 100svh;
+  overflow-x: clip;
   padding: clamp(1rem, 3vw, 2rem);
   background:
     radial-gradient(circle at 85% 8%, rgba(255, 248, 229, 0.72), transparent 22rem),
