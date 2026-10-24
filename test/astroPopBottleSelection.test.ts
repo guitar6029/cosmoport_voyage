@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import { createSSRApp, h } from "vue";
+import { createSSRApp, h, ref } from "vue";
 import { createApp, nextTick } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { createPinia, setActivePinia } from "pinia";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 import AstroPopBottleSelectionCard from "../app/components/astro-pop/AstroPopBottleSelectionCard.vue";
 import AstroPopPackYourPopSection from "../app/components/astro-pop/AstroPopPackYourPopSection.vue";
@@ -13,6 +13,10 @@ const renderComponent = (component: typeof AstroPopBottleSelectionCard, props = 
   renderToString(createSSRApp({ render: () => h(component, props) }));
 
 describe("AstroPop bottle selection card", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("renders the card, bottle image, flavor title, and disabled Add Bottle button", async () => {
     const flavor = ASTROPOP_FLAVORS[0];
     const html = await renderComponent(AstroPopBottleSelectionCard, { flavor });
@@ -41,6 +45,36 @@ describe("AstroPop bottle selection card", () => {
     await nextTick();
 
     expect(emittedFlavorIds).toEqual([flavor.id]);
+    app.unmount();
+    container.remove();
+  });
+
+  it("shows and restarts the added confirmation when its success token changes", async () => {
+    vi.useFakeTimers();
+    const flavor = ASTROPOP_FLAVORS[0];
+    const successToken = ref(0);
+    const container = document.createElement("div");
+    const app = createApp({
+      setup: () => () => h(AstroPopBottleSelectionCard, { flavor, successToken: successToken.value }),
+    });
+
+    document.body.appendChild(container);
+    app.mount(container);
+
+    successToken.value += 1;
+    await nextTick();
+    expect(container.querySelector("button")?.textContent).toContain("✓ ADDED!");
+
+    vi.advanceTimersByTime(750);
+    successToken.value += 1;
+    await nextTick();
+    vi.advanceTimersByTime(750);
+    expect(container.querySelector("button")?.textContent).toContain("✓ ADDED!");
+
+    vi.advanceTimersByTime(50);
+    await nextTick();
+    expect(container.querySelector("button")?.textContent).toContain("Add Bottle");
+
     app.unmount();
     container.remove();
   });

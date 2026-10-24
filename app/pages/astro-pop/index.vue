@@ -7,11 +7,14 @@ import AstroPopDeliveryTestimonialsSection from "../../components/astro-pop/Astr
 import AstroPopFooter from "../../components/astro-pop/AstroPopFooter.vue";
 import DecorativeImage from "../../components/shared/DecorativeImage.vue";
 import AstroPopNav from "../../components/astro-pop/AstroPopNav.vue";
+import AstroPopNotificationContainer from "../../components/astro-pop/AstroPopNotificationContainer.vue";
 </script>
 
 <template>
   <div>
     <main class="astropop-page">
+      <AstroPopNotificationContainer>
+      </AstroPopNotificationContainer>
       <section class="astropop-hero" aria-labelledby="astropop-title">
         <NuxtLink class="astropop-home-link" to="/">← Universe directory</NuxtLink>
         <h1 id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>

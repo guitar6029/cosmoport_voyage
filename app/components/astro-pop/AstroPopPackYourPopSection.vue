@@ -8,6 +8,9 @@ import AstroPopBottleSelectionCard from "./AstroPopBottleSelectionCard.vue";
 const crateStore = useAstroPopCrateStore();
 const announcement = ref("");
 const confirmation = ref("");
+const addedTokens = ref<Record<AstroPopFlavorId, number>>(
+  Object.fromEntries(ASTROPOP_FLAVORS.map((flavor) => [flavor.id, 0])) as Record<AstroPopFlavorId, number>,
+);
 
 onMounted(() => {
   crateStore.restoreFromStorage();
@@ -18,6 +21,7 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
   if (crateStore.addItem(flavorId) && flavor) {
     announcement.value = `${flavor.name} added to your order manifest. ${crateStore.totalBottles} of 6 bottles selected.`;
     confirmation.value = `${flavor.name} added · ${crateStore.totalBottles} of 6 bottles`;
+    addedTokens.value[flavorId] += 1;
   }
 };
 </script>
@@ -46,6 +50,7 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
           :key="flavor.id"
           :flavor="flavor"
           :disabled="crateStore.isFull"
+          :success-token="addedTokens[flavor.id]"
           @add="addBottle"
         />
       </div>
