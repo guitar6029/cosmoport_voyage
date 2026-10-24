@@ -72,7 +72,10 @@ export default defineEventHandler(async (event) => {
             price_data: {
                 currency: 'usd',
                 product_data: {
-                    name: flavor.name
+                    name: flavor.name,
+                    metadata: {
+                        astro_pop_flavor_id: flavor.id,
+                    },
                 },
                 unit_amount: PRICE_PER_BOTTLE_CENTS,
             },
@@ -99,6 +102,9 @@ export default defineEventHandler(async (event) => {
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: lineItems,
+        metadata: {
+            astro_pop_order: 'true',
+        },
         success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: new URL(
             '/astro-pop/cart?checkout=cancelled',
