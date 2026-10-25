@@ -9,6 +9,7 @@ vi.mock("@neondatabase/serverless", () => ({
 import {
   AstroPopDatabaseConfigurationError,
   getAstroPopDatabaseHealth,
+  isAstroPopOrderRecorded,
   persistAstroPopOrder,
 } from "../server/utils/astroPopDatabase";
 
@@ -151,5 +152,50 @@ describe("Astro Pop database health", () => {
         "postgresql://test.example/astro_pop",
       ),
     ).rejects.toBe(databaseError);
+  });
+
+  it("returns true when the Checkout Session has a persisted order", async () => {
+    const sql = vi.fn().mockResolvedValue([{ recorded: true }]);
+    neonMock.mockReturnValue(sql);
+
+    await expect(
+      isAstroPopOrderRecorded(
+        "cs_test_recorded",
+        "postgresql://test.example/astro_pop",
+      ),
+    ).resolves.toBe(true);
+
+    expect(sql).toHaveBeenCalledOnce();
+    expect(sql.mock.calls[0]?.[0].raw.join(" ")).toContain("SELECT EXISTS");
+  });
+
+  it("returns false when the Checkout Session has no persisted order", async () => {
+    neonMock.mockReturnValue(vi.fn().mockResolvedValue([{ recorded: false }]));
+
+    await expect(
+      isAstroPopOrderRecorded(
+        "cs_test_not_recorded",
+        "postgresql://test.example/astro_pop",
+      ),
+    ).resolves.toBe(false);
+  });
+
+  it("propagates order lookup failures", async () => {
+    const databaseError = new Error("connection refused");
+    neonMock.mockReturnValue(vi.fn().mockRejectedValue(databaseError));
+
+    await expect(
+      isAstroPopOrderRecorded(
+        "cs_test_lookup_failure",
+        "postgresql://test.example/astro_pop",
+      ),
+    ).rejects.toBe(databaseError);
+  });
+
+  it("fails when an order lookup has no configured connection string", async () => {
+    await expect(isAstroPopOrderRecorded("cs_test_no_database", "")).rejects.toBeInstanceOf(
+      AstroPopDatabaseConfigurationError,
+    );
+    expect(neonMock).not.toHaveBeenCalled();
   });
 });
