@@ -1,9 +1,29 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import AstroPopAnimatedTestimonialAvatar from "./AstroPopAnimatedTestimonialAvatar.vue";
+
+type AnimatedAvatar = InstanceType<typeof AstroPopAnimatedTestimonialAvatar>;
+
+const animatedAvatars = ref<Record<string, AnimatedAvatar | undefined>>({});
+
+const replayTestimonialAvatar = (name: string) => {
+  animatedAvatars.value[name]?.replayOnHover();
+};
+
+const setTestimonialAvatar = (name: string, avatar: AnimatedAvatar | null) => {
+  if (avatar) {
+    animatedAvatars.value[name] = avatar;
+  } else {
+    delete animatedAvatars.value[name];
+  }
+};
+
 const testimonials = [
   {
     name: "Dorothy Miller",
     role: "Mother of Three",
-    portrait: "/images/astro-pop/testimonials/AstroPop%20Soda%20Housewife%20Portrait.png",
+    portrait: "/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.jpg",
+    portraitVideo: "/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.mp4",
     portraitAlt: "Dorothy Miller holding a bottle of AstroPop soda",
     quote:
       "Three hungry youngsters, a busy household, and somehow Bobby Bubbles always arrives right on time!",
@@ -11,7 +31,8 @@ const testimonials = [
   {
     name: "Walter Peterson",
     role: "Weekend Golfer",
-    portrait: "/images/astro-pop/testimonials/Retro%20AstroPop%20Golf%20Advertisement.png",
+    portrait: "/images/astro-pop/testimonials/walter-peterson/Walter_Peterson.jpg",
+    portraitVideo: "/images/astro-pop/testimonials/walter-peterson/Walter_Peterson.mp4",
     portraitAlt: "Walter Peterson holding an AstroPop bottle with a golf club over his shoulder",
     quote:
       "Eighteen holes on the course, twelve bottles on the porch. Now that's what I call a perfect Sunday!",
@@ -19,7 +40,8 @@ const testimonials = [
   {
     name: "Grandpa Henry",
     role: "Proud AstroPop Customer",
-    portrait: "/images/astro-pop/testimonials/Grandpa%E2%80%99s%20AstroPop%20Soda%20Endorsement.png",
+    portrait: "/images/astro-pop/testimonials/grandpa-henry/Grandpa_Henry.jpg",
+    portraitVideo: "/images/astro-pop/testimonials/grandpa-henry/Grandpa_Henry.mp4",
     portraitAlt: "Grandpa Henry pointing to his bottle of AstroPop soda",
     quote:
       "In my day, the milkman brought milk. Now a fellow brings fizzy drinks from the future. What a marvelous century!",
@@ -51,9 +73,18 @@ const testimonials = [
           v-for="testimonial in testimonials"
           :key="testimonial.name"
           class="astropop-testimonial"
+          @pointerenter="replayTestimonialAvatar(testimonial.name)"
         >
           <div class="astropop-testimonial__portrait">
+            <AstroPopAnimatedTestimonialAvatar
+              v-if="testimonial.portraitVideo"
+              :ref="(avatar) => setTestimonialAvatar(testimonial.name, avatar as AnimatedAvatar | null)"
+              :image-src="testimonial.portrait"
+              :image-alt="testimonial.portraitAlt"
+              :video-src="testimonial.portraitVideo"
+            />
             <img
+              v-else
               :src="testimonial.portrait"
               :alt="testimonial.portraitAlt"
               loading="lazy"
