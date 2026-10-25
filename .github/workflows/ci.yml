@@ -36,6 +36,17 @@ jobs:
       - name: Run tests
         run: npm run test
 
+      - name: Install media Worker dependencies
+        run: npm ci
+        working-directory: workers/media
+
+      - name: Validate media Worker
+        run: |
+          npm run test
+          npm run typecheck
+          npm run validate:wrangler
+        working-directory: workers/media
+
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
