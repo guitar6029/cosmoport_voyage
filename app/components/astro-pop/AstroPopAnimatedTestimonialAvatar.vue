@@ -5,12 +5,14 @@ const props = defineProps<{
   imageSrc: string;
   imageAlt: string;
   videoSrc: string;
+  replayLabel: string;
 }>();
 
 const avatar = ref<HTMLElement | null>(null);
 const video = ref<HTMLVideoElement | null>(null);
 const shouldLoadVideo = ref(false);
 const isVideoPlaying = ref(false);
+const canTapReplay = ref(false);
 let observer: IntersectionObserver | undefined;
 let hasAutoplayed = false;
 let isPlaybackActive = false;
@@ -53,6 +55,10 @@ const replayOnHover = () => {
   void playVideo();
 };
 
+const replayOnTap = () => {
+  void playVideo();
+};
+
 const onPlaying = () => {
   isVideoPlaying.value = true;
 };
@@ -75,13 +81,15 @@ const onVideoTransitionEnd = (event: TransitionEvent) => {
 
 onMounted(() => {
   reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  canTapReplay.value = !reduceMotion && window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
   if (reduceMotion || !avatar.value || !("IntersectionObserver" in window)) {
     return;
   }
 
   observer = new IntersectionObserver((entries) => {
-    if (!entries[0]?.isIntersecting || hasAutoplayed) {
+    const entry = entries[0];
+    if (!entry?.isIntersecting || entry.intersectionRatio < 0.6 || hasAutoplayed) {
       return;
     }
 
@@ -125,6 +133,15 @@ defineExpose({ replayOnHover });
       @error="onVideoError"
       @transitionend="onVideoTransitionEnd"
     />
+    <button
+      v-if="canTapReplay"
+      type="button"
+      class="astropop-animated-testimonial-avatar__replay"
+      :aria-label="props.replayLabel"
+      @click.stop="replayOnTap"
+    >
+      <span class="astropop-animated-testimonial-avatar__replay-icon" aria-hidden="true">↻</span>
+    </button>
   </div>
 </template>
 
@@ -155,6 +172,42 @@ defineExpose({ replayOnHover });
 
 .astropop-animated-testimonial-avatar__video--playing {
   opacity: 1;
+}
+
+.astropop-animated-testimonial-avatar__replay {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0.3rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.astropop-animated-testimonial-avatar__replay-icon {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  border: 1px solid #f7c656;
+  border-radius: 50%;
+  background: #5e2730;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  color: #fff4da;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.astropop-animated-testimonial-avatar__replay:focus-visible {
+  outline: 3px solid #5e2730;
+  outline-offset: -3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

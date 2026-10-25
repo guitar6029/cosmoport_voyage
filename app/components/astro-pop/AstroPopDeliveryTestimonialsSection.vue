@@ -82,6 +82,7 @@ const testimonials = [
               :image-src="testimonial.portrait"
               :image-alt="testimonial.portraitAlt"
               :video-src="testimonial.portraitVideo"
+              :replay-label="`Replay ${testimonial.name}'s animation`"
             />
             <img
               v-else

@@ -46,6 +46,7 @@ const mountAvatar = () => {
       imageSrc,
       imageAlt: "Dorothy Miller holding a bottle of AstroPop soda",
       videoSrc,
+      replayLabel: "Replay Dorothy Miller's animation",
     }),
   });
 
@@ -219,6 +220,73 @@ describe("AstroPop animated testimonial avatar", () => {
     app.unmount();
   });
 
+  it("offers tap replay on touch devices without restarting an active video", async () => {
+    const play = vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue(undefined);
+    vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
+    vi.stubGlobal("matchMedia", vi.fn((query: string) => ({ matches: query === "(hover: none) and (pointer: coarse)" })));
+    const { app, container } = mountTestimonials();
+    await nextTick();
+
+    const buttons = [...container.querySelectorAll<HTMLButtonElement>(".astropop-animated-testimonial-avatar__replay")];
+    expect(buttons).toHaveLength(3);
+    expect(buttons.map((button) => button.getAttribute("aria-label"))).toEqual([
+      "Replay Dorothy Miller's animation",
+      "Replay Walter Peterson's animation",
+      "Replay Grandpa Henry's animation",
+    ]);
+    expect(play).not.toHaveBeenCalled();
+
+    buttons[0].click();
+    buttons[0].click();
+    await nextTick();
+    await nextTick();
+    expect(play).toHaveBeenCalledTimes(1);
+
+    const video = container.querySelector<HTMLVideoElement>(`video[src="${videoSrc}"]`);
+    video?.dispatchEvent(new Event("playing"));
+    buttons[0].click();
+    expect(play).toHaveBeenCalledTimes(1);
+
+    video?.dispatchEvent(new Event("ended"));
+    await nextTick();
+    buttons[0].click();
+    expect(play).toHaveBeenCalledTimes(1);
+
+    const transitionEnd = new Event("transitionend");
+    Object.defineProperty(transitionEnd, "propertyName", { value: "opacity" });
+    video?.dispatchEvent(transitionEnd);
+    buttons[0].click();
+    await nextTick();
+    expect(play).toHaveBeenCalledTimes(2);
+
+    buttons[1].click();
+    await nextTick();
+    await nextTick();
+    expect(play).toHaveBeenCalledTimes(3);
+
+    app.unmount();
+  });
+
+  it("autoplays on touch devices only after 60% of the avatar is visible", async () => {
+    const play = vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue(undefined);
+    vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
+    vi.stubGlobal("matchMedia", vi.fn((query: string) => ({ matches: query === "(hover: none) and (pointer: coarse)" })));
+    const { app, container } = mountAvatar();
+    await nextTick();
+
+    expect(container.querySelector(".astropop-animated-testimonial-avatar__replay")).not.toBeNull();
+    MockIntersectionObserver.instances[0].trigger(true, 0.3);
+    await nextTick();
+    expect(play).not.toHaveBeenCalled();
+
+    MockIntersectionObserver.instances[0].trigger(true, 0.6);
+    await nextTick();
+    await nextTick();
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(MockIntersectionObserver.instances[0].disconnect).toHaveBeenCalledTimes(1);
+    app.unmount();
+  });
+
   it("retains the static image if playback fails", async () => {
     const play = vi.spyOn(HTMLMediaElement.prototype, "play").mockRejectedValue(new Error("Playback blocked"));
     vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
@@ -246,6 +314,7 @@ describe("AstroPop animated testimonial avatar", () => {
 
     expect(play).not.toHaveBeenCalled();
     expect(container.querySelector("video")).toBeNull();
+    expect(container.querySelector(".astropop-animated-testimonial-avatar__replay")).toBeNull();
 
     app.unmount();
   });
