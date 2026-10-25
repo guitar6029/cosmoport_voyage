@@ -26,17 +26,17 @@ describe("AstroPop neighborhood testimonials", () => {
   it.each([
     [
       "Dorothy Miller",
-      "/images/astro-pop/testimonials/AstroPop%20Soda%20Housewife%20Portrait.png",
+      "/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.jpg",
       "Dorothy Miller holding a bottle of AstroPop soda",
     ],
     [
       "Walter Peterson",
-      "/images/astro-pop/testimonials/Retro%20AstroPop%20Golf%20Advertisement.png",
+      "/images/astro-pop/testimonials/walter-peterson/Walter_Peterson.jpg",
       "Walter Peterson holding an AstroPop bottle with a golf club over his shoulder",
     ],
     [
       "Grandpa Henry",
-      "/images/astro-pop/testimonials/Grandpa%E2%80%99s%20AstroPop%20Soda%20Endorsement.png",
+      "/images/astro-pop/testimonials/grandpa-henry/Grandpa_Henry.jpg",
       "Grandpa Henry pointing to his bottle of AstroPop soda",
     ],
   ])("places %s's accessible portrait above the quote", async (name, source, alt) => {
@@ -51,6 +51,13 @@ describe("AstroPop neighborhood testimonials", () => {
     expect(html).toContain('decoding="async"');
     expect(portraitIndex).toBeLessThan(quoteIndex);
     expect(quoteIndex).toBeLessThan(nameIndex);
+  });
+
+  it("renders Dorothy's static portrait as the initial server-rendered state", async () => {
+    const html = await renderSection();
+
+    expect(html).toContain('src="/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.jpg"');
+    expect(html).not.toContain("Dorothy_Miller.mp4");
   });
 
   it.each([
