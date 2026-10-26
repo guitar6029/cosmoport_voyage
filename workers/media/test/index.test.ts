@@ -25,8 +25,10 @@ function enabledEnv(fixtures: Record<string, string> = {}) {
     return r2Object(key, value.slice(range.offset, range.offset + range.length));
   });
   const head = vi.fn(async (key: string) => fixtures[key] === undefined ? null : r2Object(key, fixtures[key]));
+  const limit = vi.fn(async () => ({ success: true }));
   const bucket = { get, head, put: vi.fn(), delete: vi.fn(), list: vi.fn() } as unknown as R2Bucket;
-  return { env: { MEDIA_BUCKET: bucket, MEDIA_DELIVERY_ENABLED: "true" }, get, head, bucket };
+  const rateLimiter = { limit } as RateLimit;
+  return { env: { MEDIA_BUCKET: bucket, MEDIA_RATE_LIMITER: rateLimiter, MEDIA_DELIVERY_ENABLED: "true" }, get, head, bucket, limit, rateLimiter };
 }
 
 function executionContext() {
@@ -56,7 +58,9 @@ async function dispatch(
   init?: RequestInit,
   context = executionContext().context,
 ) {
-  return worker.fetch(new Request(`https://media.cosmos-universe.com${path}`, init), env, context);
+  const headers = new Headers(init?.headers);
+  if (!headers.has("CF-Connecting-IP")) headers.set("CF-Connecting-IP", "192.0.2.1");
+  return worker.fetch(new Request(`https://media.cosmos-universe.com${path}`, { ...init, headers }), env, context);
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -65,14 +69,92 @@ describe("media worker", () => {
   it.each([undefined, "false", "TRUE", "1", "enabled"])("fails closed for MEDIA_DELIVERY_ENABLED=%s without accessing R2", async (deliveryEnabled) => {
     const { match } = installCache();
     const bucket = new Proxy({}, { get: () => { throw new Error("R2 should not be accessed"); } }) as R2Bucket;
+    const rateLimiter = new Proxy({}, { get: () => { throw new Error("Rate limiter should not be accessed"); } }) as RateLimit;
     const env = deliveryEnabled === undefined
-      ? { MEDIA_BUCKET: bucket }
-      : { MEDIA_BUCKET: bucket, MEDIA_DELIVERY_ENABLED: deliveryEnabled };
+      ? { MEDIA_BUCKET: bucket, MEDIA_RATE_LIMITER: rateLimiter }
+      : { MEDIA_BUCKET: bucket, MEDIA_RATE_LIMITER: rateLimiter, MEDIA_DELIVERY_ENABLED: deliveryEnabled };
     const response = await dispatch("/astro-pop/orange-cream.png", env);
 
     expect(response.status).toBe(503);
     expect(response.headers.get("Cache-Control")).toBe("no-store");
     expect(match).not.toHaveBeenCalled();
+  });
+
+  it("checks the same client key for every permitted media path", async () => {
+    const { env, limit } = enabledEnv({ "astro-pop/image.png": "image", "astro-pop/sound.mp3": "audio" });
+
+    await dispatch("/astro-pop/image.png", env, { headers: { "CF-Connecting-IP": "2001:db8::1" } });
+    await dispatch("/astro-pop/sound.mp3", env, { headers: { "CF-Connecting-IP": "2001:db8::1" } });
+
+    expect(limit).toHaveBeenNthCalledWith(1, { key: "2001:db8::1" });
+    expect(limit).toHaveBeenNthCalledWith(2, { key: "2001:db8::1" });
+  });
+
+  it("uses independent client keys", async () => {
+    const { env, limit } = enabledEnv({ "astro-pop/image.png": "image" });
+
+    await dispatch("/astro-pop/image.png", env, { headers: { "CF-Connecting-IP": "192.0.2.1" } });
+    await dispatch("/astro-pop/image.png", env, { headers: { "CF-Connecting-IP": "2001:db8::1" } });
+
+    expect(limit).toHaveBeenNthCalledWith(1, { key: "192.0.2.1" });
+    expect(limit).toHaveBeenNthCalledWith(2, { key: "2001:db8::1" });
+  });
+
+  it.each(["", "untrusted-value"])("fails closed without a valid Cloudflare client identity %j", async (clientIp) => {
+    const { env, get, head, limit } = enabledEnv({ "astro-pop/image.png": "image" });
+    const { match } = installCache();
+
+    const response = await dispatch("/astro-pop/image.png", env, { headers: { "CF-Connecting-IP": clientIp, "X-Forwarded-For": "192.0.2.1" } });
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
+    expect(limit).not.toHaveBeenCalled();
+    expect(match).not.toHaveBeenCalled();
+    expect(get).not.toHaveBeenCalled();
+    expect(head).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when the rate-limit binding is missing or fails", async () => {
+    const missing = enabledEnv({ "astro-pop/image.png": "image" });
+    const cache = installCache();
+    const missingBindingEnv = { MEDIA_BUCKET: missing.bucket, MEDIA_DELIVERY_ENABLED: "true" } as unknown as Parameters<typeof worker.fetch>[1];
+
+    expect((await dispatch("/astro-pop/image.png", missingBindingEnv)).status).toBe(503);
+    expect(missing.get).not.toHaveBeenCalled();
+    expect(cache.match).not.toHaveBeenCalled();
+
+    const broken = enabledEnv({ "astro-pop/image.png": "image" });
+    broken.limit.mockRejectedValueOnce(new Error("rate limiter unavailable"));
+    expect((await dispatch("/astro-pop/image.png", broken.env)).status).toBe(503);
+    expect(broken.get).not.toHaveBeenCalled();
+  });
+
+  it("returns a non-cacheable 429 before cache or R2 access when rate limited", async () => {
+    const { env, get, head, limit } = enabledEnv({ "astro-pop/image.png": "image" });
+    limit.mockResolvedValueOnce({ success: false });
+    const { match, put } = installCache();
+
+    const response = await dispatch("/astro-pop/image.png", env);
+
+    expect(response.status).toBe(429);
+    expect(await response.text()).toBe("Too many requests");
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
+    expect(response.headers.get("Retry-After")).toBe("60");
+    expect(match).not.toHaveBeenCalled();
+    expect(put).not.toHaveBeenCalled();
+    expect(get).not.toHaveBeenCalled();
+    expect(head).not.toHaveBeenCalled();
+  });
+
+  it("keeps rate-limited HEAD responses bodyless", async () => {
+    const { env, limit } = enabledEnv({ "astro-pop/image.png": "image" });
+    limit.mockResolvedValueOnce({ success: false });
+
+    const response = await dispatch("/astro-pop/image.png", env, { method: "HEAD" });
+
+    expect(response.status).toBe(429);
+    expect(response.body).toBeNull();
+    expect(response.headers.get("Retry-After")).toBe("60");
   });
 
   it("gets allowed media with safe headers and ignores query parameters", async () => {

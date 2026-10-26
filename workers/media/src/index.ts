@@ -1,11 +1,13 @@
 export interface Env {
   MEDIA_BUCKET: R2Bucket;
+  MEDIA_RATE_LIMITER: RateLimit;
   MEDIA_DELIVERY_ENABLED?: string;
 }
 
 const ALLOW_HEADER = "GET, HEAD";
 const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "webp"]);
 const IMAGE_CACHE_TTL_SECONDS = 300;
+const RATE_LIMIT_RETRY_AFTER_SECONDS = 60;
 const PUBLIC_MEDIA_PREFIXES = ["astro-pop/"];
 const MEDIA_TYPES: Record<string, string> = {
   png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp",
@@ -85,10 +87,34 @@ function mediaHeaders(object: R2Object, key: string, length: number, cacheable =
 function unavailable(request: Request): Response {
   return responseFor(request, "Media delivery is unavailable", { status: 503, headers: { "Cache-Control": "no-store" } });
 }
+function rateLimited(request: Request): Response {
+  return responseFor(request, "Too many requests", {
+    status: 429,
+    headers: { "Cache-Control": "no-store", "Retry-After": String(RATE_LIMIT_RETRY_AFTER_SECONDS) },
+  });
+}
 function invalidPath(request: Request): Response { return responseFor(request, "Invalid media path", { status: 400 }); }
 function notFound(request: Request): Response { return responseFor(request, "Not found", { status: 404 }); }
 function rangeNotSatisfiable(request: Request, size: number): Response {
   return responseFor(request, "Range not satisfiable", { status: 416, headers: { "Content-Range": `bytes */${size}` } });
+}
+
+function isClientIp(value: string): boolean {
+  const ipv4Parts = value.split(".");
+  if (ipv4Parts.length === 4) {
+    return ipv4Parts.every((part) => /^(?:0|[1-9]\d{0,2})$/.test(part) && Number(part) <= 255);
+  }
+
+  const ipv6Parts = value.split("::");
+  if (ipv6Parts.length > 2 || !value.includes(":")) return false;
+  const groups = ipv6Parts.flatMap((part) => part ? part.split(":") : []);
+  if (!groups.every((group) => /^[0-9a-f]{1,4}$/i.test(group))) return false;
+  return ipv6Parts.length === 2 ? groups.length < 8 : groups.length === 8;
+}
+
+function clientIdentity(request: Request): string | null {
+  const clientIp = request.headers.get("CF-Connecting-IP")?.trim();
+  return clientIp && isClientIp(clientIp) ? clientIp : null;
 }
 
 export default {
@@ -101,6 +127,15 @@ export default {
     const key = mediaKey(new URL(request.url));
     if (key === null) return invalidPath(request);
     if (!key) return notFound(request);
+
+    const clientIp = clientIdentity(request);
+    if (!clientIp) return unavailable(request);
+    try {
+      const outcome = await env.MEDIA_RATE_LIMITER.limit({ key: clientIp });
+      if (!outcome.success) return rateLimited(request);
+    } catch {
+      return unavailable(request);
+    }
 
     try {
       if (request.method === "HEAD") {

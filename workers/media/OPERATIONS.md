@@ -45,13 +45,15 @@ This release does **not** make media public by changing the WAF. After a separat
 4. Only after the separate approval, disable that existing scoped rule in the dashboard. Do not delete it, create a temporary exception, or change a broader WAF rule.
 5. Repeat the verification checks immediately, monitor Security Events, Worker metrics, and R2 usage, and keep the rule available for immediate re-enablement.
 
-## Rate limiting — deferred on the current Free plan
+## Worker-level rate limiting
 
-Cloudflare's current Free-plan material advertises **one** rate-limiting rule per zone, but the available matching fields are limited to path and verified-bot matching: hostname matching is not available. Its available counting window is 10 seconds, not 60 seconds.
+`MEDIA_RATE_LIMITER` is a Cloudflare Workers Rate Limiting API binding, configured for **120 requests per 60 seconds** per `CF-Connecting-IP` value. The key is deliberately the same across every public image, audio, and video path, so query strings and filenames cannot create separate counters. This is an initial operational threshold, not a proven optimal limit; change it only in a reviewed PR that updates `wrangler.jsonc`, the configuration test, and this runbook.
 
-As a result, the previously considered `120 requests/minute/IP` rule scoped to `http.host eq "media.cosmos-universe.com"` is **not deployable** on this plan. Do not translate it into a broad `20 requests/10 seconds/IP` path rule: the media hostname shares the `cosmos-universe.com` zone, and a path-only rule could affect another Cosmos Universe application that uses the same path.
+The binding is evaluated after method, delivery-switch, and media-path validation but before the Cache API or any R2 operation. A rejected request returns non-cacheable `429 Too Many Requests` with `Retry-After: 60`. Missing client identity, a missing binding, or a Rate Limiting API failure returns non-cacheable `503` without accessing the cache or R2. The Worker accepts only Cloudflare's `CF-Connecting-IP` header and does not use client-provided `X-Forwarded-For`.
 
-No WAF rate-limiting rule is proposed or should be created in this phase. Retain the hostname-scoped emergency WAF Block rule above, and defer rate limiting until an approved plan or architecture provides a hostname-scoped condition. At that time, test normal image loading, MP4 probing/seeking, retries, shared NAT addresses, and scripted bursts before selecting a threshold. Rate limiting is not a hard cost cap: distributed traffic and requests below the threshold can still incur cost.
+Worker rate limits are approximate and enforced independently at each Cloudflare location. They can briefly exceed the threshold while counts synchronize, and a distributed attack can spread traffic across locations or IPs to bypass a per-IP counter. IP-based limits can also rate-limit legitimate users behind a shared NAT, carrier network, corporate proxy, or privacy relay. Monitor Worker `429` responses in Workers Logs and Traces alongside Worker request volume and R2 Class B operations; do not log raw client IP addresses.
+
+This binding is available with the installed Wrangler version and does not require a Workers Paid or Cloudflare Pro plan. It is separate from the Workers Free daily request quota: the API helps reduce per-client abusive traffic before cache/R2 access, while the quota counts Worker invocations. Neither mechanism, the Cache API, budget alerts, nor the emergency WAF is an absolute R2 billing cap. Retain the emergency WAF procedures below for immediate incident response.
 
 ## Billing and usage monitoring
 
