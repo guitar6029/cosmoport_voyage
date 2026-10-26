@@ -14,7 +14,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: `npm run dev -- --host 127.0.0.1 --port ${port}`,
+    command: `PLAYWRIGHT_TEST=true npm run dev -- --host 127.0.0.1 --port ${port}`,
     url: `${baseURL}/astro-pop/cart`,
     reuseExistingServer: !env.CI,
     timeout: 120_000,
