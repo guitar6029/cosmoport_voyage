@@ -119,6 +119,7 @@ export default {
         headers.set("Content-Range", `bytes ${range.offset}-${range.offset + range.length - 1}/${objectMetadata.size}`);
         return new Response(object.body, { status: 206, headers });
       }
+
       const imageCacheKey = request.method === "GET" && isCacheableImage(key)
         ? cacheKey(new URL(request.url))
         : null;
