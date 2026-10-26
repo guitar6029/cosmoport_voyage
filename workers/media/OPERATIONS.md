@@ -65,20 +65,40 @@ Budget alerts and usage notifications are **notifications, not spending caps**. 
 4. Preserve timestamps, rule IDs, and request samples in the incident record. Do not expose request credentials or private object keys.
 5. Reopen only after identifying the source, checking the proposed rate-limit scope, and obtaining explicit approval.
 
-## Caching safety assessment — deferred
+## Safe image edge caching
 
-Caching is intentionally not enabled in this Worker. These layers differ:
+The Worker uses the explicit Cloudflare **Cache API** (`caches.default`) only for successful, full `GET` responses for Astro Pop PNG, JPEG, and WebP objects. It does not enable the Wrangler `cache` setting: `cache.enabled` remains `false`, so this is not Workers Caching and the Worker still executes for every request.
 
-- **Browser caching** follows response `Cache-Control` in the visitor's cache. It may reduce repeat browser requests, but does not create a Cloudflare Worker cache or replace the kill switch.
-- **Cache API** is explicit Worker code such as `caches.default.match()` and `put()`. It would need its own reviewed cache key, TTL, invalidation, and kill-switch ordering.
-- **Workers Caching** is a platform setting. It can serve cached responses before Worker execution; it is therefore deliberately disabled until its behavior is tested with this media Worker.
+The Worker checks the delivery switch, allowed method, and safe public-media path before looking in the Cache API. `MEDIA_DELIVERY_ENABLED: "false"` therefore returns the normal `503` even when an image was cached while delivery was enabled. Range requests—including image ranges—bypass the Cache API, are served by the existing R2 range path, and are never stored as `206` responses. MP4 and audio always retain their existing R2 streaming behavior.
 
-Before a future caching proposal, test all of the following:
+Successful cacheable image responses receive `Cache-Control: public, max-age=300, s-maxage=300, must-revalidate`. The Cache API key contains only the request origin and validated object path, so harmless query strings such as campaign tags map to the same object. This lets a repeated image request in the same edge data center avoid an R2 `get` and its associated R2 Class B operation. Cache API entries do not replicate across data centers, so do not treat a hit in one location as a global hit guarantee. Cache lookup or write failures are intentionally non-fatal: the Worker falls back to the normal R2 streaming response.
 
-- The kill switch must be checked before any Worker-managed cache lookup. A platform cache that runs first must not continue serving media after delivery is disabled.
-- The WAF emergency block must be verified against cache hits: it must stop media at the edge before cached content reaches a visitor.
-- Do not cache `206` responses or ranges without a canonical range-aware cache-key and invalidation design. Seeking can create many distinct ranges and incorrect keys can return the wrong bytes.
-- Define how object replacement invalidates browser, Worker, and platform cache entries. Use immutable/versioned object keys or a documented purge process; TTL alone is not an update strategy.
-- Measure whether repeat requests reduce R2 Class B operations without unexpectedly increasing Worker request cost. Workers Cache hits still count as Worker requests under current pricing, even though they avoid Worker CPU on hits.
+The Cache API write runs through `ctx.waitUntil()` using a clone of the streaming response. Do not replace this with a full `arrayBuffer()`, `text()`, or similar operation: media should not be buffered in Worker memory merely to cache it.
 
-No cache implementation belongs in this phase.
+### Object replacement and TTL
+
+The TTL is a conservative 300 seconds, not an invalidation guarantee. Replacing an R2 object at the same key can leave the previous image served for up to five minutes. For an urgent replacement, use a new, versioned object key and update the approved application reference; if a same-key replacement is unavoidable, use an approved Cloudflare cache-purge procedure and verify it against the media hostname. Do not lower the TTL or add broad purge rules during an incident without assessing the effect on the rest of the zone.
+
+### Verification after an approved activation
+
+1. Confirm the emergency WAF Block rule remains enabled and `MEDIA_DELIVERY_ENABLED` is still `"false"` before beginning. Do not make media public as part of a cache test.
+2. In an approved staging or controlled production activation, enable delivery only through the authorized release process and request the same PNG, JPEG, or WebP twice with different benign query strings. Check Worker observability and R2 Class B operation trends: the first request should read R2 and the repeated request should be a Cache API hit without another R2 `get`.
+3. Request an MP4 with `Range: bytes=0-...` and confirm `206`, `Content-Range`, and streaming continue to work. Repeat with an image range and confirm it also bypasses the image cache.
+4. Check cache-hit headers: `Content-Type`, `Content-Length`, `ETag`, and `X-Content-Type-Options: nosniff` must match the R2-delivered response. Confirm error responses and disabled `503` responses have not been cached.
+5. Test the existing WAF emergency block against a previously cached image from a non-privileged client. It must block the request before the Worker serves the cached response. Record the rule ID, time, test path, and result in the activation ticket; then leave the rule enabled unless a separately approved launch procedure directs otherwise.
+
+Final cache-hit and WAF-order verification requires Cloudflare's live edge: Wrangler's local runtime can exercise R2 behavior but does not prove the production Cache API or WAF execution order.
+
+### Controlled activation checklist
+
+1. Obtain written approval for public media delivery and confirm the domain, R2 binding, WAF emergency rule, billing alerts, and owner/on-call contacts.
+2. Review `wrangler.jsonc`: preserve `cache.enabled: false`, keep `workers_dev` and preview URLs disabled, and do not add a public R2 endpoint. Confirm cache code still checks the kill switch before `caches.default`.
+3. Deploy only by the approved release path, enable delivery only when approved, then perform the verification steps above with a small non-sensitive image and a range-enabled MP4.
+4. Monitor Worker requests, errors, Cache API behavior, and R2 Class B operations through the first 300-second cache lifetime. Keep the WAF rule ready for immediate use.
+
+### Rollback
+
+1. Enable the existing hostname-scoped WAF Block rule immediately to stop both cache hits and R2 delivery at the edge.
+2. Set `MEDIA_DELIVERY_ENABLED` back to `"false"` only through the approved release path. This protects requests that reach the Worker after the WAF block is removed.
+3. If stale or incorrect images remain a concern after the incident is contained, use an approved hostname/path-specific cache purge. Do not create a broad zone purge without explicit authorization because other Cosmos Universe applications share the zone.
+4. Preserve metrics, affected object keys, cache/WAF observations, and timestamps for the incident record before considering reactivation.

@@ -4,6 +4,8 @@ export interface Env {
 }
 
 const ALLOW_HEADER = "GET, HEAD";
+const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "webp"]);
+const IMAGE_CACHE_TTL_SECONDS = 300;
 const PUBLIC_MEDIA_PREFIXES = ["astro-pop/"];
 const MEDIA_TYPES: Record<string, string> = {
   png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp",
@@ -40,6 +42,17 @@ function mediaType(key: string): string {
   return MEDIA_TYPES[key.slice(key.lastIndexOf(".") + 1).toLowerCase()];
 }
 
+function isCacheableImage(key: string): boolean {
+  return IMAGE_EXTENSIONS.has(key.slice(key.lastIndexOf(".") + 1).toLowerCase());
+}
+
+function cacheKey(url: URL): Request {
+  const canonicalUrl = new URL(url);
+  canonicalUrl.search = "";
+  canonicalUrl.hash = "";
+  return new Request(canonicalUrl, { method: "GET" });
+}
+
 function parseRange(rangeHeader: string, size: number): ByteRange | null {
   if (!rangeHeader.startsWith("bytes=") || rangeHeader.includes(",")) return null;
   const match = /^(\d*)-(\d*)$/.exec(rangeHeader.slice("bytes=".length).trim());
@@ -56,10 +69,12 @@ function parseRange(rangeHeader: string, size: number): ByteRange | null {
   return { offset: size - length, length };
 }
 
-function mediaHeaders(object: R2Object, key: string, length: number): Headers {
+function mediaHeaders(object: R2Object, key: string, length: number, cacheable = false): Headers {
   return new Headers({
     "Accept-Ranges": "bytes",
-    "Cache-Control": "public, max-age=300, must-revalidate",
+    "Cache-Control": cacheable
+      ? `public, max-age=${IMAGE_CACHE_TTL_SECONDS}, s-maxage=${IMAGE_CACHE_TTL_SECONDS}, must-revalidate`
+      : "public, max-age=300, must-revalidate",
     "Content-Length": String(length),
     "Content-Type": mediaType(key),
     ETag: object.httpEtag,
@@ -77,7 +92,7 @@ function rangeNotSatisfiable(request: Request, size: number): Response {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     if (request.method !== "GET" && request.method !== "HEAD") {
       return new Response("Method not allowed", { status: 405, headers: { Allow: ALLOW_HEADER } });
     }
@@ -104,8 +119,33 @@ export default {
         headers.set("Content-Range", `bytes ${range.offset}-${range.offset + range.length - 1}/${objectMetadata.size}`);
         return new Response(object.body, { status: 206, headers });
       }
+
+      const imageCacheKey = request.method === "GET" && isCacheableImage(key)
+        ? cacheKey(new URL(request.url))
+        : null;
+      if (imageCacheKey) {
+        try {
+          const cached = await caches.default.match(imageCacheKey);
+          if (cached) return cached;
+        } catch {
+          // Cache failures must not prevent safe R2 delivery.
+        }
+      }
+
       const object = await env.MEDIA_BUCKET.get(key);
-      return object ? new Response(object.body, { headers: mediaHeaders(object, key, object.size) }) : notFound(request);
+      if (!object) return notFound(request);
+
+      const response = new Response(object.body, {
+        headers: mediaHeaders(object, key, object.size, Boolean(imageCacheKey)),
+      });
+      if (imageCacheKey) {
+        try {
+          ctx.waitUntil(caches.default.put(imageCacheKey, response.clone()).catch(() => undefined));
+        } catch {
+          // Cache write setup must not prevent safe R2 delivery.
+        }
+      }
+      return response;
     } catch {
       return responseFor(request, "Media delivery failed", { status: 502, headers: { "Cache-Control": "no-store" } });
     }
