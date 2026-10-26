@@ -1,12 +1,12 @@
 # Media delivery operations runbook
 
-This runbook is for the future activation of `media.cosmos-universe.com`. It does not authorize activation, a route, a custom domain, public R2 access, caching, or any Cloudflare dashboard change. Keep `MEDIA_DELIVERY_ENABLED` set to `"false"` until a separate, approved activation procedure is complete.
+This release intentionally enables Worker media delivery for `media.cosmos-universe.com` by setting `MEDIA_DELIVERY_ENABLED` to `"true"` in the authoritative Wrangler configuration. It does not authorize a route or custom-domain change, public R2 access, caching changes, or any Cloudflare dashboard change. The existing emergency WAF Block rule must remain active throughout deployment; enabling the Worker never authorizes disabling that rule.
 
 ## Configuration guardrails in this repository
 
-`wrangler.jsonc` is intentionally fail-closed:
+`wrangler.jsonc` is the source of truth for this approved enablement and preserves the following guardrails:
 
-- `MEDIA_DELIVERY_ENABLED` is `"false"`.
+- `MEDIA_DELIVERY_ENABLED` is explicitly `"true"`; reverting it to `"false"` through the approved deployment process returns the handler to fail-closed operation.
 - `workers_dev` and `preview_urls` are `false`.
 - There is no `route`, `routes`, custom-domain setting, or public R2 setting.
 - The only R2 binding is `MEDIA_BUCKET` for `cosmos-universe-public-media`.
@@ -14,7 +14,7 @@ This runbook is for the future activation of `media.cosmos-universe.com`. It doe
 
 `test/config.test.mjs` protects these assumptions in CI. A proposed change to any public exposure or cache setting should be reviewed as an intentional activation change, not folded into unrelated work.
 
-## Emergency edge block — configure before public activation
+## Emergency edge block — keep active during Worker deployment
 
 Create and leave enabled a Cloudflare WAF Custom Rule once the media hostname is present:
 
@@ -34,6 +34,16 @@ Dashboard procedure:
 5. If an incident requires the emergency block again, return to **Security > Security rules**, find this rule by name, and enable it. Prefer toggling the existing scoped rule over creating an ad-hoc broad block. Do not delete the rule during incident response.
 
 Cloudflare documents creating Custom Rules in the dashboard at <https://developers.cloudflare.com/waf/custom-rules/create-dashboard/>. The exact-host expression limits the blast radius to the future media hostname; it does not block the main site or other Cosmos Universe applications.
+
+### Separately approved final public activation
+
+This release does **not** make media public by changing the WAF. After a separate, documented approval for public access, an authorized operator must use the Cloudflare dashboard procedure below:
+
+1. Confirm the deployed Worker configuration still has `MEDIA_DELIVERY_ENABLED: "true"`, `workers_dev: false`, `preview_urls: false`, `cache.enabled: false`, and the unchanged `MEDIA_BUCKET` binding.
+2. In the `cosmos-universe.com` zone, open **Security > Security rules** and locate the existing `Emergency block: media.cosmos-universe.com` Custom Rule. Confirm its exact-host expression and record its rule ID.
+3. Perform the image, cache, and MP4-range checks in [Verification after final public activation](#verification-after-final-public-activation) from a non-privileged client while the rule remains enabled; the requests must be blocked.
+4. Only after the separate approval, disable that existing scoped rule in the dashboard. Do not delete it, create a temporary exception, or change a broader WAF rule.
+5. Repeat the verification checks immediately, monitor Security Events, Worker metrics, and R2 usage, and keep the rule available for immediate re-enablement.
 
 ## Rate limiting — deferred on the current Free plan
 
@@ -79,10 +89,10 @@ The Cache API write runs through `ctx.waitUntil()` using a clone of the streamin
 
 The TTL is a conservative 300 seconds, not an invalidation guarantee. Replacing an R2 object at the same key can leave the previous image served for up to five minutes. For an urgent replacement, use a new, versioned object key and update the approved application reference; if a same-key replacement is unavoidable, use an approved Cloudflare cache-purge procedure and verify it against the media hostname. Do not lower the TTL or add broad purge rules during an incident without assessing the effect on the rest of the zone.
 
-### Verification after an approved activation
+### Verification after final public activation
 
-1. Confirm the emergency WAF Block rule remains enabled and `MEDIA_DELIVERY_ENABLED` is still `"false"` before beginning. Do not make media public as part of a cache test.
-2. In an approved staging or controlled production activation, enable delivery only through the authorized release process and request the same PNG, JPEG, or WebP twice with different benign query strings. Check Worker observability and R2 Class B operation trends: the first request should read R2 and the repeated request should be a Cache API hit without another R2 `get`.
+1. Before changing the WAF rule, confirm the emergency WAF Block rule remains enabled and requests to the media hostname are blocked. Do not make media public as part of this Worker deployment.
+2. Once separately approved and the scoped WAF rule is disabled, request the same real PNG, JPEG, or WebP twice with different benign query strings. Check Worker observability and R2 Class B operation trends: the first request should read R2 and the repeated request should be a Cache API hit without another R2 `get`.
 3. Request an MP4 with `Range: bytes=0-...` and confirm `206`, `Content-Range`, and streaming continue to work. Repeat with an image range and confirm it also bypasses the image cache.
 4. Check cache-hit headers: `Content-Type`, `Content-Length`, `ETag`, and `X-Content-Type-Options: nosniff` must match the R2-delivered response. Confirm error responses and disabled `503` responses have not been cached.
 5. Test the existing WAF emergency block against a previously cached image from a non-privileged client. It must block the request before the Worker serves the cached response. Record the rule ID, time, test path, and result in the activation ticket; then leave the rule enabled unless a separately approved launch procedure directs otherwise.
@@ -91,14 +101,15 @@ Final cache-hit and WAF-order verification requires Cloudflare's live edge: Wran
 
 ### Controlled activation checklist
 
-1. Obtain written approval for public media delivery and confirm the domain, R2 binding, WAF emergency rule, billing alerts, and owner/on-call contacts.
+1. Confirm this release is deployed through the approved path and the emergency WAF Block rule remains active.
 2. Review `wrangler.jsonc`: preserve `cache.enabled: false`, keep `workers_dev` and preview URLs disabled, and do not add a public R2 endpoint. Confirm cache code still checks the kill switch before `caches.default`.
-3. Deploy only by the approved release path, enable delivery only when approved, then perform the verification steps above with a small non-sensitive image and a range-enabled MP4.
-4. Monitor Worker requests, errors, Cache API behavior, and R2 Class B operations through the first 300-second cache lifetime. Keep the WAF rule ready for immediate use.
+3. Obtain separate written approval before following the dashboard procedure above to disable the scoped WAF rule and perform the verification steps with a small non-sensitive image and a range-enabled MP4.
+4. Monitor Worker requests, errors, Cache API behavior, and R2 Class B operations through the first 300-second cache lifetime. Re-enable the WAF rule immediately for unexpected traffic or costs.
 
 ### Rollback
 
 1. Enable the existing hostname-scoped WAF Block rule immediately to stop both cache hits and R2 delivery at the edge.
-2. Set `MEDIA_DELIVERY_ENABLED` back to `"false"` only through the approved release path. This protects requests that reach the Worker after the WAF block is removed.
-3. If stale or incorrect images remain a concern after the incident is contained, use an approved hostname/path-specific cache purge. Do not create a broad zone purge without explicit authorization because other Cosmos Universe applications share the zone.
-4. Preserve metrics, affected object keys, cache/WAF observations, and timestamps for the incident record before considering reactivation.
+2. Restore `MEDIA_DELIVERY_ENABLED` to `"false"` through the approved deployment process.
+3. Verify that requests are blocked and the Worker has returned to fail-closed operation.
+4. If stale or incorrect images remain a concern after containment, use an approved hostname/path-specific cache purge. Do not create a broad zone purge without explicit authorization because other Cosmos Universe applications share the zone.
+5. Preserve metrics, affected object keys, cache/WAF observations, and timestamps for the incident record before considering reactivation.

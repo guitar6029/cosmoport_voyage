@@ -10,7 +10,7 @@
     "enabled": false
   },
   "vars": {
-    "MEDIA_DELIVERY_ENABLED": "false"
+    "MEDIA_DELIVERY_ENABLED": "true"
   },
   "r2_buckets": [
     {

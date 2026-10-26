@@ -9,10 +9,10 @@ function workerConfig() {
 }
 
 describe("media Worker deployment safeguards", () => {
-  it("fails closed and keeps Worker caching disabled", () => {
+  it("explicitly enables approved production delivery while keeping Worker caching disabled", () => {
     const config = workerConfig();
 
-    expect(config.vars?.MEDIA_DELIVERY_ENABLED).toBe("false");
+    expect(config.vars?.MEDIA_DELIVERY_ENABLED).toBe("true");
     expect(config.cache).toEqual({ enabled: false });
   });
 
