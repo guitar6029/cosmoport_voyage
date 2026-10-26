@@ -12,6 +12,32 @@ const GUEST_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
 const GUEST_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
+const guestCookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: GUEST_COOKIE_MAX_AGE,
+};
+
+export function getAstroPopGuestCredential(event: RequestEvent): string | undefined {
+    const credential = getCookie(event, GUEST_COOKIE_NAME);
+    return credential && GUEST_TOKEN_PATTERN.test(credential)
+        ? credential
+        : undefined;
+}
+
+export function createAstroPopGuestCredential(): string {
+    return randomBytes(32).toString("base64url");
+}
+
+export function setAstroPopGuestCredential(
+    event: RequestEvent,
+    credential: string,
+): void {
+    setCookie(event, GUEST_COOKIE_NAME, credential, guestCookieOptions);
+}
+
 /**
  * Returns this browser's guest checkout credential,
  * creating one if necessary.
@@ -21,21 +47,14 @@ const GUEST_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 export function getOrCreateAstroPopGuestCredential(
     event: RequestEvent,
 ): string {
-    const existing = getCookie(event, GUEST_COOKIE_NAME);
+    const existing = getAstroPopGuestCredential(event);
 
-    if (existing && GUEST_TOKEN_PATTERN.test(existing)) {
+    if (existing) {
         return existing;
     }
 
-    const credential = randomBytes(32).toString("base64url");
-
-    setCookie(event, GUEST_COOKIE_NAME, credential, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: "lax",
-        path: "/",
-        maxAge: GUEST_COOKIE_MAX_AGE,
-    });
+    const credential = createAstroPopGuestCredential();
+    setAstroPopGuestCredential(event, credential);
 
     return credential;
 }
@@ -62,11 +81,10 @@ export function isAstroPopGuestCheckoutAuthorized(
     event: RequestEvent,
     expectedFingerprint: string | undefined,
 ): boolean {
-    const credential = getCookie(event, GUEST_COOKIE_NAME);
+    const credential = getAstroPopGuestCredential(event);
 
     if (
         !credential ||
-        !GUEST_TOKEN_PATTERN.test(credential) ||
         !expectedFingerprint ||
         !/^[a-f0-9]{64}$/.test(expectedFingerprint)
     ) {

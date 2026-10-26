@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { checkoutSessionIdSchema, getCheckoutVerificationResult } from "../../../utils/astroPopCheckoutVerification";
-import { isAstroPopGuestCheckoutAuthorized } from "~~/server/utils/astroPopGuestCheckout";
+import { isAstroPopGuestCheckoutAuthorized } from "../../../utils/astroPopGuestCheckout";
 import {
   createError,
   defineEventHandler,

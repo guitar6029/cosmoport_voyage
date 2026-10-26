@@ -1,9 +1,13 @@
-import { createHash } from 'node:crypto'
-import { getOrCreateAstroPopGuestCredential } from "../../utils/astroPopGuestCheckout"
+import {
+    createAstroPopGuestCredential,
+    getAstroPopGuestCredential,
+    getAstroPopGuestFingerprint,
+    setAstroPopGuestCredential,
+} from "../../utils/astroPopGuestCheckout"
 import { z } from 'zod'
 import Stripe from 'stripe'
 import { ASTROPOP_FLAVORS } from '../../../app/data/astroPopFlavors'
-import { MAX_CART_ITEMS, MAX_CRATE_CAPACITY, MAX_QUANTITY_BOTTLES, MIN_CART_ITEMS, MIN_FLAVOR_ID_LENGTH, MIN_QUANTITY_BOTTLES, PRICE_PER_BOTTLE_CENTS } from '~/constants/astro-pop/constants'
+import { MAX_CART_ITEMS, MAX_CRATE_CAPACITY, MAX_QUANTITY_BOTTLES, MIN_CART_ITEMS, MIN_FLAVOR_ID_LENGTH, MIN_QUANTITY_BOTTLES, PRICE_PER_BOTTLE_CENTS } from '../../../app/constants/astro-pop/constants'
 import {
     createError,
     defineEventHandler,
@@ -104,9 +108,9 @@ export default defineEventHandler(async (event) => {
     const successUrl = new URL('/astro-pop/checkout/success', appUrl).toString()
 
 
-    const guestCredential = getOrCreateAstroPopGuestCredential(event);
-
-    const guestFingerprint = createHash("sha256").update(guestCredential).digest("hex");
+    const existingGuestCredential = getAstroPopGuestCredential(event);
+    const guestCredential = existingGuestCredential ?? createAstroPopGuestCredential();
+    const guestFingerprint = getAstroPopGuestFingerprint(guestCredential);
 
 
     const session = await stripe.checkout.sessions.create({
@@ -122,6 +126,11 @@ export default defineEventHandler(async (event) => {
             appUrl
         ).toString(),
     })
+
+    // Do not create a browser credential unless Stripe accepted the checkout.
+    if (!existingGuestCredential) {
+        setAstroPopGuestCredential(event, guestCredential);
+    }
 
     return { url: session.url, sessionId: session.id }
 })

@@ -5,7 +5,7 @@ import {
   checkoutSessionIdSchema,
   getAstroPopCheckoutStatus,
 } from "../../../utils/astroPopCheckoutVerification";
-import { isAstroPopGuestCheckoutAuthorized } from "~~/server/utils/astroPopGuestCheckout";
+import { isAstroPopGuestCheckoutAuthorized } from "../../../utils/astroPopGuestCheckout";
 
 /**
  * Reports whether an Astro Pop Checkout Session is paid and has been recorded

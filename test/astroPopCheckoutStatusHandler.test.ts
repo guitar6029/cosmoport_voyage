@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => {
 
   return {
     StripeInvalidRequestError,
+    isGuestAuthorized: vi.fn(),
     getQuery: vi.fn(),
     isOrderRecorded: vi.fn(),
     stripeClient,
@@ -47,12 +48,19 @@ vi.mock("../server/utils/astroPopDatabase", () => ({
   isAstroPopOrderRecorded: mocks.isOrderRecorded,
 }));
 
+vi.mock("../server/utils/astroPopGuestCheckout", () => ({
+  isAstroPopGuestCheckoutAuthorized: mocks.isGuestAuthorized,
+}));
+
 type StatusHandler = (event: object) => Promise<object>;
 
 const session = (overrides: Record<string, unknown> = {}) => ({
   id: "cs_test_astro_pop_status",
   mode: "payment",
-  metadata: { astro_pop_order: "true" },
+  metadata: {
+    astro_pop_order: "true",
+    astro_pop_guest_fingerprint: "a".repeat(64),
+  },
   payment_status: "paid",
   status: "complete",
   ...overrides,
@@ -71,6 +79,7 @@ describe("Astro Pop checkout status handler", () => {
     mocks.getQuery.mockReturnValue({ session_id: "cs_test_astro_pop_status" });
     mocks.stripeClient.checkout.sessions.retrieve.mockResolvedValue(session());
     mocks.isOrderRecorded.mockResolvedValue(true);
+    mocks.isGuestAuthorized.mockReturnValue(true);
   });
 
   afterAll(() => {
@@ -114,6 +123,22 @@ describe("Astro Pop checkout status handler", () => {
     expect(mocks.isOrderRecorded).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ["a missing browser credential", undefined],
+    ["an incorrect browser credential", "b".repeat(64)],
+    ["a missing fingerprint", undefined],
+  ])("rejects %s before querying Neon", async (_description, fingerprint) => {
+    if (fingerprint === undefined && _description === "a missing fingerprint") {
+      mocks.stripeClient.checkout.sessions.retrieve.mockResolvedValue(
+        session({ metadata: { astro_pop_order: "true" } }),
+      );
+    }
+    mocks.isGuestAuthorized.mockReturnValue(false);
+
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
+    expect(mocks.isOrderRecorded).not.toHaveBeenCalled();
+  });
+
   it("reports a completed but unpaid Checkout as pending without querying Neon", async () => {
     mocks.stripeClient.checkout.sessions.retrieve.mockResolvedValue(
       session({ payment_status: "unpaid" }),
@@ -147,6 +172,10 @@ describe("Astro Pop checkout status handler", () => {
       orderConfirmed: true,
     });
     expect(mocks.isOrderRecorded).toHaveBeenCalledWith("cs_test_astro_pop_status");
+    expect(mocks.isGuestAuthorized).toHaveBeenCalledWith(
+      expect.any(Object),
+      "a".repeat(64),
+    );
   });
 
   it("distinguishes a paid Checkout with no recorded order", async () => {
