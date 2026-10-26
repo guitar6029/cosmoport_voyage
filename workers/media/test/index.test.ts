@@ -62,10 +62,13 @@ async function dispatch(
 afterEach(() => vi.unstubAllGlobals());
 
 describe("media worker", () => {
-  it("keeps delivery disabled by default without accessing R2", async () => {
+  it.each([undefined, "false", "TRUE", "1", "enabled"])("fails closed for MEDIA_DELIVERY_ENABLED=%s without accessing R2", async (deliveryEnabled) => {
     const { match } = installCache();
     const bucket = new Proxy({}, { get: () => { throw new Error("R2 should not be accessed"); } }) as R2Bucket;
-    const response = await dispatch("/astro-pop/orange-cream.png", { MEDIA_BUCKET: bucket });
+    const env = deliveryEnabled === undefined
+      ? { MEDIA_BUCKET: bucket }
+      : { MEDIA_BUCKET: bucket, MEDIA_DELIVERY_ENABLED: deliveryEnabled };
+    const response = await dispatch("/astro-pop/orange-cream.png", env);
 
     expect(response.status).toBe(503);
     expect(response.headers.get("Cache-Control")).toBe("no-store");
