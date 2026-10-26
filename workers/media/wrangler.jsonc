@@ -6,6 +6,9 @@
   "compatibility_date": "2026-10-24",
   "workers_dev": false,
   "preview_urls": false,
+  "vars": {
+    "MEDIA_DELIVERY_ENABLED": "false"
+  },
   "r2_buckets": [
     {
       "binding": "MEDIA_BUCKET",
