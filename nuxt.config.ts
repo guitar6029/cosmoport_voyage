@@ -3,7 +3,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "./app/site";
 import astroPopDatabaseHealth from "./server/dev-handlers/astroPopDatabaseHealth";
 
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt"],
+  modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt", "@clerk/nuxt"],
   fonts: {
     families: [
       {
