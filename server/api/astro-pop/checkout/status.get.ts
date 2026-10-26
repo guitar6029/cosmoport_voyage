@@ -5,6 +5,7 @@ import {
   checkoutSessionIdSchema,
   getAstroPopCheckoutStatus,
 } from "../../../utils/astroPopCheckoutVerification";
+import { isAstroPopGuestCheckoutAuthorized } from "~~/server/utils/astroPopGuestCheckout";
 
 /**
  * Reports whether an Astro Pop Checkout Session is paid and has been recorded
@@ -38,6 +39,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ status: 404, statusText: "Checkout session not found" });
     }
 
+
     throw createError({ status: 502, statusText: "Unable to retrieve checkout session" });
   }
 
@@ -47,6 +49,24 @@ export default defineEventHandler(async (event) => {
   ) {
     throw createError({ status: 404, statusText: "Checkout session not found" });
   }
+
+
+  /**
+   * Verify that this browser initiated the checkout.
+   * A valid Stripe Session ID alone does not grant access.
+   */
+  const authorized = isAstroPopGuestCheckoutAuthorized(
+    event,
+    session.metadata?.astro_pop_guest_fingerprint,
+  );
+
+  if (!authorized) {
+    throw createError({
+      status: 403,
+      statusText: "Checkout access denied",
+    });
+  }
+
 
   const paymentIsComplete =
     session.status === "complete" && session.payment_status === "paid";

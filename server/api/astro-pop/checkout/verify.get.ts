@@ -1,6 +1,11 @@
 import Stripe from "stripe";
 import { checkoutSessionIdSchema, getCheckoutVerificationResult } from "../../../utils/astroPopCheckoutVerification";
-
+import { isAstroPopGuestCheckoutAuthorized } from "~~/server/utils/astroPopGuestCheckout";
+import {
+  createError,
+  defineEventHandler,
+  getQuery,
+} from "nuxt/server";
 export default defineEventHandler(async (event) => {
   const parsedQuery = checkoutSessionIdSchema.safeParse(
     getQuery(event).session_id,
@@ -23,9 +28,12 @@ export default defineEventHandler(async (event) => {
 
   const stripe = new Stripe(secretKey);
 
+
+
+  let session: Stripe.Checkout.Session;
+
   try {
-    const session = await stripe.checkout.sessions.retrieve(parsedQuery.data);
-    return getCheckoutVerificationResult(parsedQuery.data, session);
+    session = await stripe.checkout.sessions.retrieve(parsedQuery.data);
   } catch (error) {
     if (error instanceof Stripe.errors.StripeInvalidRequestError) {
       throw createError({
@@ -39,4 +47,36 @@ export default defineEventHandler(async (event) => {
       statusText: "Unable to verify checkout session",
     });
   }
+
+
+  // Confirm this is an Astro Pop payment checkout.
+  if (
+    session.mode !== "payment" ||
+    session.metadata?.astro_pop_order !== "true"
+  ) {
+    throw createError({
+      status: 404,
+      statusText: "Checkout session not found",
+    });
+  }
+
+  // Verify that the browser is authorized for this checkout.
+  const authorized = isAstroPopGuestCheckoutAuthorized(
+    event,
+    session.metadata?.astro_pop_guest_fingerprint,
+  );
+
+  if (!authorized) {
+    throw createError({
+      status: 403,
+      statusText: "Checkout access denied",
+    });
+  }
+
+  // Only return payment verification after authorization.
+  return getCheckoutVerificationResult(parsedQuery.data, session);
+
+
+
+
 });
