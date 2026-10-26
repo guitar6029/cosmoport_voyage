@@ -115,3 +115,36 @@ export async function persistAstroPopOrder(
 
   return { persisted: rows.length === 1 } as const;
 }
+
+
+
+/**
+ * Checks whether a Stripe Checkout Session has
+ * a persisted Astro Pop order in Neon.
+ *
+ * Read-only: this function never creates an order.
+ */
+export async function isAstroPopOrderRecorded(
+  sessionId: string,
+  connectionString = process.env.ASTROPOP_POOLED_URL,
+): Promise<boolean> {
+  if (!connectionString) {
+    throw new AstroPopDatabaseConfigurationError();
+  }
+
+  const sql = neon(connectionString);
+
+  const rows = await sql`
+    SELECT EXISTS (
+      SELECT 1
+      FROM public.orders
+      WHERE stripe_checkout_session_id = ${sessionId}
+    ) AS recorded
+  `;
+
+  if (!rows[0]) {
+    throw new Error("Order lookup returned no result");
+  }
+
+  return rows[0].recorded === true;
+}

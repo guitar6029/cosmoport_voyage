@@ -1,8 +1,18 @@
-
+import {
+    createAstroPopGuestCredential,
+    getAstroPopGuestCredential,
+    getAstroPopGuestFingerprint,
+    setAstroPopGuestCredential,
+} from "../../utils/astroPopGuestCheckout"
 import { z } from 'zod'
 import Stripe from 'stripe'
 import { ASTROPOP_FLAVORS } from '../../../app/data/astroPopFlavors'
-import { MAX_CART_ITEMS, MAX_CRATE_CAPACITY, MAX_QUANTITY_BOTTLES, MIN_CART_ITEMS, MIN_FLAVOR_ID_LENGTH, MIN_QUANTITY_BOTTLES, PRICE_PER_BOTTLE_CENTS } from '~/constants/astro-pop/constants'
+import { MAX_CART_ITEMS, MAX_CRATE_CAPACITY, MAX_QUANTITY_BOTTLES, MIN_CART_ITEMS, MIN_FLAVOR_ID_LENGTH, MIN_QUANTITY_BOTTLES, PRICE_PER_BOTTLE_CENTS } from '../../../app/constants/astro-pop/constants'
+import {
+    createError,
+    defineEventHandler,
+    readBody,
+} from "nuxt/server";
 
 const checkoutSchema = z.object({
     items: z.array(
@@ -42,16 +52,14 @@ const checkoutSchema = z.object({
 export default defineEventHandler(async (event) => {
 
 
-    const cart = await readValidatedBody(
-        event,
-        checkoutSchema.safeParse
-    );
+    const body = await readBody(event);
+    const cart = checkoutSchema.safeParse(body);
 
     if (!cart.success) {
         throw createError({
             status: 400,
-            statusText: 'Invalid checkout cart'
-        })
+            statusText: "Invalid checkout cart",
+        });
     }
 
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = []
@@ -99,11 +107,18 @@ export default defineEventHandler(async (event) => {
 
     const successUrl = new URL('/astro-pop/checkout/success', appUrl).toString()
 
+
+    const existingGuestCredential = getAstroPopGuestCredential(event);
+    const guestCredential = existingGuestCredential ?? createAstroPopGuestCredential();
+    const guestFingerprint = getAstroPopGuestFingerprint(guestCredential);
+
+
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: lineItems,
         metadata: {
             astro_pop_order: 'true',
+            astro_pop_guest_fingerprint: guestFingerprint,
         },
         success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: new URL(
@@ -111,6 +126,11 @@ export default defineEventHandler(async (event) => {
             appUrl
         ).toString(),
     })
+
+    // Do not create a browser credential unless Stripe accepted the checkout.
+    if (!existingGuestCredential) {
+        setAstroPopGuestCredential(event, guestCredential);
+    }
 
     return { url: session.url, sessionId: session.id }
 })
