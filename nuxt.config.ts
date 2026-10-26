@@ -4,6 +4,10 @@ import astroPopDatabaseHealth from "./server/dev-handlers/astroPopDatabaseHealth
 
 export default defineNuxtConfig({
   modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt", "@clerk/nuxt"],
+  clerk: {
+    // Playwright exercises existing guest flows without Doppler credentials in CI.
+    skipServerMiddleware: process.env.PLAYWRIGHT_TEST === "true",
+  },
   fonts: {
     families: [
       {
