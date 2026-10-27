@@ -4,6 +4,8 @@ export type AstroPopTheme =
   | "lunar-lime"
   | "neptune-berry";
 
+import { ASTRO_POP_MEDIA } from "./astroPopMedia";
+
 export interface AstroPopArtwork {
   label: string;
   pose: string;
@@ -29,11 +31,11 @@ export const ASTROPOP_FLAVORS = [
       "A bright, bubbling cherry soda with enough sparkle to power your next trip around the moon.",
     slogan: "A Cherry Blast from Tomorrow!",
     theme: "atomic-cherry",
-    bottleImage: "/images/astro-pop/bottles/AstroPop Atomic Cherry Fizz Bottle.png",
+    bottleImage: ASTRO_POP_MEDIA.flavors.atomicCherry.bottle,
     artwork: {
       label: "Bottle and Astro Kid artwork",
       pose: "Astro Kid hugging a bottle",
-      src: "/images/astro-pop/drinks/AstroPop Atomic Cherry Fizz.png",
+      src: ASTRO_POP_MEDIA.flavors.atomicCherry.artwork,
       alt: "Vintage Atomic Cherry Fizz advertisement showing Astro Kid hugging a red AstroPop soda bottle.",
     },
   },
@@ -44,11 +46,11 @@ export const ASTROPOP_FLAVORS = [
       "A golden citrus refresher that brings a little sunshine to every interplanetary picnic.",
     slogan: "Sunshine in Every Sip!",
     theme: "solar-citrus",
-    bottleImage: "/images/astro-pop/bottles/AstroPop Solar Citrus Spark Bottle.png",
+    bottleImage: ASTRO_POP_MEDIA.flavors.solarCitrus.bottle,
     artwork: {
       label: "Bottle and Astro Kid artwork",
       pose: "Astro Kid pointing toward a sunburst",
-      src: "/images/astro-pop/drinks/Solar Citrus Spark Retro Poster.png",
+      src: ASTRO_POP_MEDIA.flavors.solarCitrus.artwork,
       alt: "Vintage Solar Citrus Spark advertisement showing Astro Kid pointing toward a sunburst beside an orange AstroPop soda bottle.",
     },
   },
@@ -59,11 +61,11 @@ export const ASTROPOP_FLAVORS = [
       "A cool mint-lime fizz with a crisp, refreshing lift for high-flying afternoons.",
     slogan: "A Little Lift in Every Bottle!",
     theme: "lunar-lime",
-    bottleImage: "/images/astro-pop/bottles/AstroPop Lunar Lime Lift Bottle.png",
+    bottleImage: ASTRO_POP_MEDIA.flavors.lunarLime.bottle,
     artwork: {
       label: "Bottle and Astro Kid artwork",
       pose: "Astro Kid floating beside a bottle",
-      src: "/images/astro-pop/drinks/AstroPop Lunar Lime Lift Retro Ad.png",
+      src: ASTRO_POP_MEDIA.flavors.lunarLime.artwork,
       alt: "Vintage Lunar Lime Lift advertisement showing Astro Kid floating beside a green AstroPop soda bottle.",
     },
   },
@@ -74,11 +76,11 @@ export const ASTROPOP_FLAVORS = [
       "A juicy berry soda in ocean-blue hues, made for splashy adventures among the stars.",
     slogan: "A Splash from the Stars!",
     theme: "neptune-berry",
-    bottleImage: "/images/astro-pop/bottles/AstroPop Neptune Berry Fizz Bottle.png",
+    bottleImage: ASTRO_POP_MEDIA.flavors.neptuneBerry.bottle,
     artwork: {
       label: "Bottle and Astro Kid artwork",
       pose: "Astro Kid leaning against a bottle",
-      src: "/images/astro-pop/drinks/Neptune Berry Fizz Space Adventure.png",
+      src: ASTRO_POP_MEDIA.flavors.neptuneBerry.artwork,
       alt: "Vintage Neptune Berry Fizz advertisement showing Astro Kid leaning against a blue AstroPop soda bottle.",
     },
   },

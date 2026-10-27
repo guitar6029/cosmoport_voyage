@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 import AstroPopAnimatedTestimonialAvatar from "./AstroPopAnimatedTestimonialAvatar.vue";
 
 type AnimatedAvatar = InstanceType<typeof AstroPopAnimatedTestimonialAvatar>;
@@ -22,8 +23,8 @@ const testimonials = [
   {
     name: "Dorothy Miller",
     role: "Mother of Three",
-    portrait: "/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.jpg",
-    portraitVideo: "/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.mp4",
+    portrait: ASTRO_POP_MEDIA.testimonials.dorothy.portrait,
+    portraitVideo: ASTRO_POP_MEDIA.testimonials.dorothy.video,
     portraitAlt: "Dorothy Miller holding a bottle of AstroPop soda",
     quote:
       "Three hungry youngsters, a busy household, and somehow Bobby Bubbles always arrives right on time!",
@@ -31,8 +32,8 @@ const testimonials = [
   {
     name: "Walter Peterson",
     role: "Weekend Golfer",
-    portrait: "/images/astro-pop/testimonials/walter-peterson/Walter_Peterson.jpg",
-    portraitVideo: "/images/astro-pop/testimonials/walter-peterson/Walter_Peterson.mp4",
+    portrait: ASTRO_POP_MEDIA.testimonials.walter.portrait,
+    portraitVideo: ASTRO_POP_MEDIA.testimonials.walter.video,
     portraitAlt: "Walter Peterson holding an AstroPop bottle with a golf club over his shoulder",
     quote:
       "Eighteen holes on the course, twelve bottles on the porch. Now that's what I call a perfect Sunday!",
@@ -40,8 +41,8 @@ const testimonials = [
   {
     name: "Grandpa Henry",
     role: "Proud AstroPop Customer",
-    portrait: "/images/astro-pop/testimonials/grandpa-henry/Grandpa_Henry.jpg",
-    portraitVideo: "/images/astro-pop/testimonials/grandpa-henry/Grandpa_Henry.mp4",
+    portrait: ASTRO_POP_MEDIA.testimonials.grandpaHenry.portrait,
+    portraitVideo: ASTRO_POP_MEDIA.testimonials.grandpaHenry.video,
     portraitAlt: "Grandpa Henry pointing to his bottle of AstroPop soda",
     quote:
       "In my day, the milkman brought milk. Now a fellow brings fizzy drinks from the future. What a marvelous century!",
@@ -54,10 +55,11 @@ const testimonials = [
     id="astropop-delivery-testimonials"
     class="astropop-testimonials"
     aria-labelledby="astropop-testimonials-title"
+    :style="{ backgroundImage: `linear-gradient(180deg, rgba(255, 244, 214, 0.18), rgba(255, 244, 214, 0.08)), url(${ASTRO_POP_MEDIA.testimonials.backdrop})` }"
   >
     <img
       class="astropop-testimonials__sign"
-      src="/images/astro-pop/testimonials/TheNeighborhoodIsTalkingSign.png"
+      :src="ASTRO_POP_MEDIA.testimonials.sign"
       alt=""
       aria-hidden="true"
     />
@@ -116,9 +118,6 @@ const testimonials = [
   margin: 0;
   color: #5e2730;
   overflow: visible;
-  background-image:
-    linear-gradient(180deg, rgba(255, 244, 214, 0.18), rgba(255, 244, 214, 0.08)),
-    url("/images/astro-pop/testimonials/RetroFuturisticSuburbanUtopia.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

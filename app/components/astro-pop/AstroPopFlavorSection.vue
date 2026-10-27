@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ASTROPOP_FLAVORS } from "../../data/astroPopFlavors";
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 import DecorativeImage from "../shared/DecorativeImage.vue";
 import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
 </script>
@@ -8,23 +9,23 @@ import AstroPopFlavorCard from "./AstroPopFlavorCard.vue";
   <section class="astropop-flavor-section decorative-container" aria-labelledby="astropop-flavors-title">
     <DecorativeImage
       class="astropop-flavor-section__cap"
-      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      :src="ASTRO_POP_MEDIA.sodaCap"
       style="top: -6rem; left: -5rem; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
     />
     <DecorativeImage
       class="astropop-flavor-section__cap"
-      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      :src="ASTRO_POP_MEDIA.sodaCap"
       style="top: 50%; left: 95%; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
     />
     <DecorativeImage
       class="astropop-flavor-section__cap"
-      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      :src="ASTRO_POP_MEDIA.sodaCap"
       style="top: 30%; left: 10%; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
     />
 
     <DecorativeImage
       class="astropop-flavor-section__bottle_opener"
-      src="/images/astro-pop/accents/Vintage AstroPop Soda Bottle Opener.png"
+      :src="ASTRO_POP_MEDIA.bottleOpener"
       style="top: 30%; left: 75%; opacity: 1; transform: rotate(25deg); z-index: 0;"
     />
 
