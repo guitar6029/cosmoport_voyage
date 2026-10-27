@@ -317,6 +317,26 @@ test("completes the checkout snapshot when payment is received but the order is 
   await expect(page.evaluate(() => window.localStorage.getItem("astropop-crate"))).resolves.toBeNull();
 });
 
+test("polls a paid unrecorded checkout until the order is recorded", async ({ page }) => {
+  const sessionId = "cs_e2e_recording_poll";
+  let statusRequests = 0;
+  await configureCheckout(page, sessionId);
+  await page.route("**/api/astro-pop/checkout/status?*", async (route) => {
+    statusRequests += 1;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(statusRequests === 1
+        ? { paymentStatus: "paid", orderStatus: "not_recorded", orderConfirmed: false }
+        : { paymentStatus: "paid", orderStatus: "recorded", orderConfirmed: true }),
+    });
+  });
+  await seedCartAndOpenCart(page);
+  await clickCheckout(page);
+  await expect(page.getByText("Your payment was received. We’re finalizing your order.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible({ timeout: 5_000 });
+  expect(statusRequests).toBe(2);
+});
+
 test("does not describe a paid checkout as failed when recording status is unknown", async ({ page }) => {
   const sessionId = "cs_e2e_recording_unknown";
   await configureCheckout(page, sessionId);
