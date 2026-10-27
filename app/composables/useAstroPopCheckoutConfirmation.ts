@@ -54,7 +54,7 @@ const statusFor = (checkoutStatus: AstroPopCheckoutStatus): AstroPopConfirmation
 export const useAstroPopCheckoutConfirmation = ({
   sessionId,
   crateStore,
-  fetchStatus = (id, signal) => $fetch<AstroPopCheckoutStatus>("/api/astro-pop/checkout/status", { query: { session_id: id }, signal }),
+  fetchStatus = (id, signal) => $fetch<AstroPopCheckoutStatus>("/api/astro-pop/checkout/status", { query: { session_id: id }, signal, retry: false }),
 }: AstroPopCheckoutConfirmationOptions): AstroPopCheckoutConfirmation => {
   const status = ref<AstroPopConfirmationState>("checking");
   const cartCompletion = ref<AstroPopCartCompletion>(null);
