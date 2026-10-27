@@ -60,6 +60,50 @@ describe("useAstroPopCheckoutConfirmation", () => {
     mount(fetchStatus); await nextPoll();
     expect(fetchStatus).toHaveBeenCalledTimes(2);
     expect(confirmation.status.value).toBe("confirmed");
+    expect(confirmation.cartCompletion.value).toBe("cleared");
+    await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it("keeps a verified paid-not-recorded state after a later refresh failure", async () => {
+    const fetchStatus = vi.fn().mockResolvedValueOnce(paidNotRecorded).mockRejectedValueOnce(new Error("Stripe unavailable"));
+    mount(fetchStatus); await flush();
+    expect(confirmation.status.value).toBe("payment-received");
+    expect(confirmation.cartCompletion.value).toBe("cleared");
+    await nextPoll();
+    expect(confirmation.status.value).toBe("payment-received");
+    expect(confirmation.cartCompletion.value).toBe("cleared");
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it("keeps a verified paid-unknown-recording state after a later 502", async () => {
+    const fetchStatus = vi.fn().mockResolvedValueOnce(paidUnknown).mockRejectedValueOnce(Object.assign(new Error("unavailable"), { statusCode: 502 }));
+    mount(fetchStatus); await nextPoll();
+    expect(confirmation.status.value).toBe("payment-received-recording-unknown");
+    expect(confirmation.cartCompletion.value).toBe("cleared");
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it("shows unavailable and preserves the cart when the initial request fails", async () => {
+    const fetchStatus = vi.fn().mockRejectedValue(Object.assign(new Error("unavailable"), { statusCode: 502 }));
+    mount(fetchStatus); await flush();
+    expect(confirmation.status.value).toBe("unavailable");
+    expect(confirmation.cartCompletion.value).toBeNull();
+    expect(getCompletedAstroPopCheckout()).toBeNull();
+    expect(window.localStorage.getItem("astropop-crate")).toBe(JSON.stringify(cartItems));
+    await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
+    expect(fetchStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it("hides paid checkout details when authorization is revoked on a later request", async () => {
+    const fetchStatus = vi.fn().mockResolvedValueOnce(paidNotRecorded).mockRejectedValueOnce(Object.assign(new Error("forbidden"), { statusCode: 403 }));
+    mount(fetchStatus); await nextPoll();
+    expect(confirmation.status.value).toBe("unauthorized");
+    expect(confirmation.cartCompletion.value).toBe("cleared");
+    await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
   });
 
   it("bounds retries, leaves the final paid message visible, and schedules no final timer", async () => {

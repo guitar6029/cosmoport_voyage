@@ -107,7 +107,16 @@ export const useAstroPopCheckoutConfirmation = ({
       }
     } catch (error) {
       if (disposed || controller.signal.aborted) return;
-      status.value = isUnauthorizedError(error) ? "unauthorized" : "unavailable";
+      if (isUnauthorizedError(error)) {
+        status.value = "unauthorized";
+        return;
+      }
+
+      // Stripe already verified payment on an earlier attempt. A later transient
+      // refresh failure must not replace that fact with an unavailable message.
+      if (status.value === "payment-received" || status.value === "payment-received-recording-unknown") return;
+
+      status.value = "unavailable";
     } finally {
       if (activeRequest === controller) activeRequest = undefined;
     }
