@@ -95,8 +95,6 @@ describe("AstroPop notifications", () => {
 
     vi.advanceTimersByTime(1800);
 
-
-
     if (id === undefined) {
       throw new Error("Expected notification to be created");
     }
@@ -119,7 +117,7 @@ describe("AstroPop notifications", () => {
 
     const id = notifications.show({
       type: "info",
-      message: "Am info message",
+      message: "An info message",
       duration: 1000,
     });
 
@@ -146,11 +144,9 @@ describe("AstroPop notifications", () => {
     const notifications = useAstroPopNotifications();
     const id = notifications.show({ type: "error", message: "An error message", duration: 1000 });
 
-
     if (id === undefined) {
       throw new Error("Expected notification to be created");
     }
-
 
     vi.advanceTimersByTime(400);
     notifications.pause(id, "pointer");
@@ -172,9 +168,8 @@ describe("AstroPop notifications", () => {
     const pausedId = notifications.show({ type: "success", message: "A success message", duration: 1000 });
     const permanentId = notifications.show({ type: "info", message: "An info message", duration: 0 });
 
-
-    if (pausedId === undefined) {
-      throw new Error("Expected notification to be created");
+    if (pausedId === undefined || permanentId === undefined) {
+      throw new Error("Expected notifications to be created");
     }
 
     notifications.pause(pausedId, "focus");
