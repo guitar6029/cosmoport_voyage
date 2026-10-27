@@ -333,8 +333,16 @@ test("polls a paid unrecorded checkout until the order is recorded", async ({ pa
   await seedCartAndOpenCart(page);
   await clickCheckout(page);
   await expect(page.getByText("Your payment was received. We’re finalizing your order.")).toBeVisible();
+  await expect(page.locator(".astro-pop-notification")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible({ timeout: 5_000 });
-  expect(statusRequests).toBe(2);
+  await expect.poll(() => statusRequests).toBe(2);
+
+  const notifications = page.locator(".astro-pop-notification");
+  await expect(notifications).toHaveCount(1);
+  await expect(notifications).toHaveAttribute("role", "status");
+  await expect(notifications.getByText("Order confirmed!", { exact: true })).toBeVisible();
+  await expect(notifications.locator("img")).toHaveAttribute("src", /astro-pop-toast-success\.png/);
+  await expect(notifications).toHaveCount(1);
 });
 
 test("keeps the payment-received message when a later status refresh fails", async ({ page }) => {
@@ -408,6 +416,11 @@ test("handles unauthorized checkout status requests without exposing order detai
   await clickCheckout(page);
 
   await expect(page.getByText("This browser cannot access that checkout.")).toBeVisible();
+  const notifications = page.locator(".astro-pop-notification");
+  await expect(notifications).toHaveCount(1);
+  await expect(notifications).toHaveAttribute("role", "alert");
+  await expect(notifications.getByText("Checkout unavailable", { exact: true })).toBeVisible();
+  await expect(notifications).toHaveCount(1);
   await expect(page.evaluate(() => window.localStorage.getItem("astropop-crate"))).resolves.toBe(JSON.stringify(cartItems));
 });
 

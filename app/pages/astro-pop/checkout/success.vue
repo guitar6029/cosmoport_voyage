@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { useAstroPopCheckoutConfirmation } from "../../../composables/useAstroPopCheckoutConfirmation";
+import AstroPopNotificationContainer from "../../../components/astro-pop/AstroPopNotificationContainer.vue";
+import { useAstroPopNotifications, type AstroPopNotificationOptions } from "../../../composables/astro-pop/useAstroPopNotifications";
+import { useAstroPopCheckoutConfirmation, type AstroPopCheckoutFinalOutcome } from "../../../composables/useAstroPopCheckoutConfirmation";
 import { useAstroPopCrateStore } from "../../../stores/astroPopCrate";
 
 const route = useRoute();
@@ -10,7 +12,53 @@ const sessionId =
   typeof route.query.session_id === "string"
     ? route.query.session_id
     : undefined;
-const { status, cartCompletion, start } = useAstroPopCheckoutConfirmation({ sessionId, crateStore });
+const { status, finalOutcome, cartCompletion, start } = useAstroPopCheckoutConfirmation({ sessionId, crateStore });
+const { show } = useAstroPopNotifications();
+const hasMounted = ref(false);
+let notificationShown = false;
+
+const notificationFor: Record<AstroPopCheckoutFinalOutcome, AstroPopNotificationOptions> = {
+  confirmed: {
+    type: "success",
+    title: "Order confirmed!",
+    message: "Your Astro Pop order is confirmed!",
+  },
+  "payment-received": {
+    type: "info",
+    title: "Payment received!",
+    message: "We're still finalizing your order.",
+  },
+  "payment-received-recording-unknown": {
+    type: "info",
+    title: "Payment received!",
+    message: "We couldn't confirm your order record yet.",
+  },
+  "payment-pending": {
+    type: "info",
+    title: "Payment processing",
+    message: "Your payment hasn't been confirmed yet.",
+  },
+  unpaid: {
+    type: "error",
+    title: "Checkout incomplete",
+    message: "Your payment wasn't completed. Your cart is still saved.",
+  },
+  unavailable: {
+    type: "error",
+    title: "Checkout update",
+    message: "We couldn't verify your checkout status. Please try again.",
+  },
+  unauthorized: {
+    type: "error",
+    title: "Checkout unavailable",
+    message: "This browser cannot access or confirm that checkout.",
+  },
+  unrecognized: {
+    type: "error",
+    title: "Checkout unavailable",
+    message: "This browser cannot access or confirm that checkout.",
+  },
+};
 
 const messages = {
   checking: "Checking your checkout…",
@@ -31,10 +79,20 @@ const cartMessage = computed(() => {
   return "";
 });
 
-onMounted(start);
+watch(finalOutcome, (outcome) => {
+  if (!outcome || notificationShown) return;
+  notificationShown = true;
+  show(notificationFor[outcome]);
+});
+
+onMounted(() => {
+  hasMounted.value = true;
+  start();
+});
 </script>
 
 <template>
+  <AstroPopNotificationContainer v-if="hasMounted" />
   <main class="astropop-checkout-success">
     <p v-if="status === 'checking'" role="status">{{ message }}</p>
     <template v-else>

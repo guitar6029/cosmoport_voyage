@@ -10,7 +10,8 @@
     "build": "nuxt build",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "doppler:dev": "doppler run -p cosmoport-universe -c dev -- npm run dev"
+    "doppler:dev": "doppler run -p cosmoport-universe -c dev -- npm run dev",
+    "stripe:webhook:dev": "stripe listen --events checkout.session.completed,checkout.session.async_payment_succeeded --forward-to http://localhost:3000/api/astro-pop/stripe-webhook"
   },
   "dependencies": {
     "@clerk/nuxt": "^3.1.17",

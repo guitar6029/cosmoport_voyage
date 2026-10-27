@@ -11,6 +11,7 @@ import {
 } from "../utils/astroPopCheckout";
 
 export type AstroPopConfirmationState = "checking" | "confirmed" | "payment-pending" | "payment-received" | "payment-received-recording-unknown" | "unpaid" | "unavailable" | "unauthorized" | "unrecognized";
+export type AstroPopCheckoutFinalOutcome = Exclude<AstroPopConfirmationState, "checking">;
 export type AstroPopCartCompletion = "cleared" | "preserved" | "untouched" | null;
 type AstroPopCrateStore = ReturnType<typeof useAstroPopCrateStore>;
 type FetchCheckoutStatus = (sessionId: string, signal: AbortSignal) => Promise<unknown>;
@@ -23,6 +24,7 @@ export interface AstroPopCheckoutConfirmationOptions {
 
 export interface AstroPopCheckoutConfirmation {
   status: Ref<AstroPopConfirmationState>;
+  finalOutcome: Ref<AstroPopCheckoutFinalOutcome | null>;
   cartCompletion: Ref<AstroPopCartCompletion>;
   start: () => void;
 }
@@ -40,7 +42,7 @@ const isUnauthorizedError = (error: unknown) => {
   return fetchError.statusCode === 403 || fetchError.response?.status === 403;
 };
 
-const statusFor = (checkoutStatus: AstroPopCheckoutStatus): AstroPopConfirmationState => {
+const statusFor = (checkoutStatus: AstroPopCheckoutStatus): AstroPopCheckoutFinalOutcome => {
   if (checkoutStatus.paymentStatus === "paid") {
     if (checkoutStatus.orderConfirmed && checkoutStatus.orderStatus === "recorded") return "confirmed";
     return checkoutStatus.orderStatus === "not_recorded" ? "payment-received" : "payment-received-recording-unknown";
@@ -57,12 +59,19 @@ export const useAstroPopCheckoutConfirmation = ({
   fetchStatus = (id, signal) => $fetch<AstroPopCheckoutStatus>("/api/astro-pop/checkout/status", { query: { session_id: id }, signal, retry: false }),
 }: AstroPopCheckoutConfirmationOptions): AstroPopCheckoutConfirmation => {
   const status = ref<AstroPopConfirmationState>("checking");
+  const finalOutcome = ref<AstroPopCheckoutFinalOutcome | null>(null);
   const cartCompletion = ref<AstroPopCartCompletion>(null);
   let attempts = 0;
   let retryTimer: ReturnType<typeof setTimeout> | undefined;
   let activeRequest: AbortController | undefined;
   let disposed = false;
   let checkoutCompleted = false;
+
+  const finish = (outcome: AstroPopCheckoutFinalOutcome) => {
+    if (disposed) return;
+    status.value = outcome;
+    finalOutcome.value = outcome;
+  };
 
   const completeCart = () => {
     if (checkoutCompleted || !sessionId) return;
@@ -96,7 +105,8 @@ export const useAstroPopCheckoutConfirmation = ({
       if (!hasExpectedStatusShape(result)) throw new Error("Invalid checkout status");
       if (result.paymentStatus === "paid") completeCart();
       if (disposed) return;
-      status.value = statusFor(result);
+      const nextStatus = statusFor(result);
+      status.value = nextStatus;
       const shouldRetry = result.paymentStatus === "paid" && (result.orderStatus === "not_recorded" || result.orderStatus === "unknown");
       if (shouldRetry && attempts < MAX_STATUS_CHECKS_ATTEMPTS && !disposed) {
         if (activeRequest === controller) activeRequest = undefined;
@@ -104,19 +114,24 @@ export const useAstroPopCheckoutConfirmation = ({
           retryTimer = undefined;
           void checkStatus();
         }, POLL_INTERVAL_MS);
+      } else {
+        finish(nextStatus);
       }
     } catch (error) {
       if (disposed || controller.signal.aborted) return;
       if (isUnauthorizedError(error)) {
-        status.value = "unauthorized";
+        finish("unauthorized");
         return;
       }
 
       // Stripe already verified payment on an earlier attempt. A later transient
       // refresh failure must not replace that fact with an unavailable message.
-      if (status.value === "payment-received" || status.value === "payment-received-recording-unknown") return;
+      if (status.value === "payment-received" || status.value === "payment-received-recording-unknown") {
+        finish(status.value);
+        return;
+      }
 
-      status.value = "unavailable";
+      finish("unavailable");
     } finally {
       if (activeRequest === controller) activeRequest = undefined;
     }
@@ -125,14 +140,14 @@ export const useAstroPopCheckoutConfirmation = ({
   const start = () => {
 
     if (!sessionId) {
-      status.value = "unavailable";
+      finish("unavailable");
       return;
     }
 
     const pendingCheckout = getPendingAstroPopCheckout();
     const completedCheckout = getCompletedAstroPopCheckout();
     if (!sessionId || (pendingCheckout?.sessionId !== sessionId && completedCheckout?.sessionId !== sessionId)) {
-      status.value = "unrecognized";
+      finish("unrecognized");
       return;
     }
     void checkStatus();
@@ -144,5 +159,5 @@ export const useAstroPopCheckoutConfirmation = ({
     activeRequest?.abort();
   });
 
-  return { status, cartCompletion, start };
+  return { status, finalOutcome, cartCompletion, start };
 };
