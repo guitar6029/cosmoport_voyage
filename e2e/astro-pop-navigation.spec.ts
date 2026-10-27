@@ -4,10 +4,30 @@ test.describe("AstroPop route-aware navigation", () => {
   test("keeps homepage section shortcuts as local anchors", async ({ page }) => {
     await page.goto("/astro-pop");
 
-    await page.getByRole("link", { name: "Flavors", exact: true }).click();
+    // Wait until the desktop navigation has mounted.
+    await expect(
+      page.getByRole("button", { name: "Back to top" }),
+    ).toBeVisible();
 
-    await expect(page).toHaveURL(/\/astro-pop#astropop-flavors-title$/);
-    await expect(page.locator("#astropop-flavors-title")).toBeInViewport();
+    const flavorsLink = page.getByRole("link", {
+      name: "Flavors",
+      exact: true,
+    });
+
+    await expect(flavorsLink).toHaveAttribute(
+      "href",
+      "#astropop-flavors-title",
+    );
+
+    await flavorsLink.click();
+
+    await expect(page).toHaveURL(
+      /\/astro-pop#astropop-flavors-title$/,
+    );
+
+    await expect(
+      page.locator("#astropop-flavors-title"),
+    ).toBeInViewport();
   });
 
   test("takes story and flavor-detail visitors to the homepage flavors section", async ({ page }) => {
