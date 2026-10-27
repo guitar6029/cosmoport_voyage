@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 type DeliveryPlan = {
   id: string;
   name: string;
@@ -15,7 +16,7 @@ const deliveryPlans: DeliveryPlan[] = [
     id: "porch-pack",
     name: "Porch Pack",
     bottles: "6 bottles",
-    image: "/images/astro-pop/delivery/astropop-crate-small.png",
+    image: ASTRO_POP_MEDIA.deliveryCrates.small,
     imageWidth: 585,
     price: "35¢ per delivery",
     description:
@@ -25,7 +26,7 @@ const deliveryPlans: DeliveryPlan[] = [
     id: "family-fizz-crate",
     name: "Family Fizz Crate",
     bottles: "12 bottles",
-    image: "/images/astro-pop/delivery/astropop-crate-medium.png",
+    image: ASTRO_POP_MEDIA.deliveryCrates.medium,
     imageWidth: 655,
     price: "65¢ per delivery",
     description:
@@ -36,7 +37,7 @@ const deliveryPlans: DeliveryPlan[] = [
     id: "rocket-reserve",
     name: "Rocket Reserve",
     bottles: "24 bottles",
-    image: "/images/astro-pop/delivery/astropop-crate-large.png",
+    image: ASTRO_POP_MEDIA.deliveryCrates.large,
     imageWidth: 808,
     price: "$1.19 per delivery",
     description:

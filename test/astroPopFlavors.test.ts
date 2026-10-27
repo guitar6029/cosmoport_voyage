@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
+import { ASTRO_POP_MEDIA_BASE_URL } from "../app/data/astroPopMedia";
 
 describe("AstroPop flavor lineup", () => {
   it("defines four complete, uniquely identified flavors", () => {
@@ -13,7 +14,7 @@ describe("AstroPop flavor lineup", () => {
       expect(flavor.theme).toBeTruthy();
       expect(flavor.artwork.label).toBeTruthy();
       expect(flavor.artwork.pose).toBeTruthy();
-      expect(flavor.artwork.src).toMatch(/^\/images\/astro-pop\/drinks\/.+\.png$/);
+      expect(flavor.artwork.src).toMatch(new RegExp(`^${ASTRO_POP_MEDIA_BASE_URL}/drinks/.+\\.png$`));
       expect(flavor.artwork.alt).toContain(flavor.name);
     }
   });

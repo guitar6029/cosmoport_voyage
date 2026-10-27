@@ -1,5 +1,6 @@
 
 <script setup lang="ts">
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 type NotificationType = "success" | "error" | "info";
 
 const props = defineProps<{
@@ -7,9 +8,9 @@ const props = defineProps<{
 }>();
 
 const notificationImages: Record<NotificationType, string> = {
-  success: "/images/astro-pop/notification/astro-pop-toast-success.png",
-  error: "/images/astro-pop/notification/astro-pop-toast-error.png",
-  info: "/images/astro-pop/notification/astro-pop-toast-info.png",
+  success: ASTRO_POP_MEDIA.notifications.success,
+  error: ASTRO_POP_MEDIA.notifications.error,
+  info: ASTRO_POP_MEDIA.notifications.info,
 };
 
 const notificationDescriptions: Record<NotificationType, string> = {

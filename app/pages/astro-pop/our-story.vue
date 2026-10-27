@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AstroPopFooter from "../../components/astro-pop/AstroPopFooter.vue";
 import AstroPopNav from "../../components/astro-pop/AstroPopNav.vue";
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 import DecorativeImage from "../../components/shared/DecorativeImage.vue";
 
 useHead({
@@ -20,7 +21,7 @@ useHead({
       <section class="astropop-our-story-hero" aria-labelledby="astropop-our-story-title">
         <img
           class="astropop-our-story-hero__image"
-          src="/images/astro-pop/our-story/hero-family-backyard.png"
+          :src="ASTRO_POP_MEDIA.story.hero"
           alt="A father pouring homemade red soda beside his smiling family at a backyard table at sunset"
         />
         <div class="astropop-our-story-hero__wash" aria-hidden="true" />
@@ -45,22 +46,22 @@ useHead({
       <section class="astropop-porch-years" aria-labelledby="astropop-porch-years-title">
         <DecorativeImage
           class="astropop-porch-years__cap astropop-porch-years__cap--upper-left"
-          src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+          :src="ASTRO_POP_MEDIA.sodaCap"
         />
         <DecorativeImage
           class="astropop-porch-years__cap astropop-porch-years__cap--lower-left"
-          src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+          :src="ASTRO_POP_MEDIA.sodaCap"
         />
         <DecorativeImage
           class="astropop-porch-years__cap astropop-porch-years__cap--lower-right"
-          src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+          :src="ASTRO_POP_MEDIA.sodaCap"
         />
 
         <div class="astropop-porch-years__inner">
           <div class="astropop-porch-years__image-wrap">
             <img
               class="astropop-porch-years__image"
-              src="/images/astro-pop/our-story/Vintage%20Lemonade%20Stand%20Polaroid.png"
+              :src="ASTRO_POP_MEDIA.story.lemonadeStand"
               alt="Herbert Walker stirring a bright red batch of homemade soda on the family back porch"
             />
           </div>
@@ -108,7 +109,7 @@ useHead({
           <figure class="astropop-first-shop__photo-frame">
             <img
               class="astropop-first-shop__photo"
-              src="/images/astro-pop/our-story/A%20Family%20Day%20at%20Astro%20Pop%20Soda%20Co.png"
+              :src="ASTRO_POP_MEDIA.story.familyDay"
               alt="The Walker family standing outside the first Astro Pop Soda Co. storefront beneath its striped awning and hand-painted sign"
               loading="lazy"
             />
@@ -134,7 +135,7 @@ useHead({
         <figure class="astropop-neighborhood__photo-wrap">
           <img
             class="astropop-neighborhood__photo"
-            src="/images/astro-pop/our-story/Astro%20Pop%20Neighborhood%20Block%20Party.png"
+            :src="ASTRO_POP_MEDIA.story.neighborhood"
             alt="Families sharing Astro Pop at porches and a picnic table during a neighborhood celebration, with an Astro Pop delivery van on the street"
             loading="lazy"
           />

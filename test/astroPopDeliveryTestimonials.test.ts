@@ -2,6 +2,7 @@ import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it } from "vitest";
 import AstroPopDeliveryTestimonialsSection from "../app/components/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
+import { ASTRO_POP_MEDIA } from "../app/data/astroPopMedia";
 
 const renderSection = () =>
   renderToString(createSSRApp({ render: () => h(AstroPopDeliveryTestimonialsSection) }));
@@ -26,17 +27,17 @@ describe("AstroPop neighborhood testimonials", () => {
   it.each([
     [
       "Dorothy Miller",
-      "/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.jpg",
+      ASTRO_POP_MEDIA.testimonials.dorothy.portrait,
       "Dorothy Miller holding a bottle of AstroPop soda",
     ],
     [
       "Walter Peterson",
-      "/images/astro-pop/testimonials/walter-peterson/Walter_Peterson.jpg",
+      ASTRO_POP_MEDIA.testimonials.walter.portrait,
       "Walter Peterson holding an AstroPop bottle with a golf club over his shoulder",
     ],
     [
       "Grandpa Henry",
-      "/images/astro-pop/testimonials/grandpa-henry/Grandpa_Henry.jpg",
+      ASTRO_POP_MEDIA.testimonials.grandpaHenry.portrait,
       "Grandpa Henry pointing to his bottle of AstroPop soda",
     ],
   ])("places %s's accessible portrait above the quote", async (name, source, alt) => {
@@ -56,8 +57,8 @@ describe("AstroPop neighborhood testimonials", () => {
   it("renders Dorothy's static portrait as the initial server-rendered state", async () => {
     const html = await renderSection();
 
-    expect(html).toContain('src="/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.jpg"');
-    expect(html).not.toContain("Dorothy_Miller.mp4");
+    expect(html).toContain(`src="${ASTRO_POP_MEDIA.testimonials.dorothy.portrait}"`);
+    expect(html).not.toContain(ASTRO_POP_MEDIA.testimonials.dorothy.video);
   });
 
   it.each([
