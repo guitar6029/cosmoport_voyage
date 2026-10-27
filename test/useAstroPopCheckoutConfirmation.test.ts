@@ -48,6 +48,7 @@ describe("useAstroPopCheckoutConfirmation", () => {
     mount(fetchStatus);
     await nextTick(); await flush();
     expect(confirmation.status.value).toBe("confirmed");
+    expect(confirmation.finalOutcome.value).toBe("confirmed");
     expect(confirmation.cartCompletion.value).toBe("cleared");
     expect(getPendingAstroPopCheckout()).toBeNull();
     expect(getCompletedAstroPopCheckout()).toEqual({ sessionId });
@@ -60,18 +61,33 @@ describe("useAstroPopCheckoutConfirmation", () => {
     mount(fetchStatus); await nextPoll();
     expect(fetchStatus).toHaveBeenCalledTimes(2);
     expect(confirmation.status.value).toBe("confirmed");
+    expect(confirmation.finalOutcome.value).toBe("confirmed");
     expect(confirmation.cartCompletion.value).toBe("cleared");
     await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
     expect(fetchStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not expose a final outcome while paid recording verification is still polling", async () => {
+    const fetchStatus = vi.fn().mockResolvedValueOnce(paidNotRecorded).mockResolvedValueOnce(paidRecorded);
+
+    mount(fetchStatus);
+    await flush();
+
+    expect(confirmation.status.value).toBe("payment-received");
+    expect(confirmation.finalOutcome.value).toBeNull();
+    await nextPoll();
+    expect(confirmation.finalOutcome.value).toBe("confirmed");
   });
 
   it("keeps a verified paid-not-recorded state after a later refresh failure", async () => {
     const fetchStatus = vi.fn().mockResolvedValueOnce(paidNotRecorded).mockRejectedValueOnce(new Error("Stripe unavailable"));
     mount(fetchStatus); await flush();
     expect(confirmation.status.value).toBe("payment-received");
+    expect(confirmation.finalOutcome.value).toBeNull();
     expect(confirmation.cartCompletion.value).toBe("cleared");
     await nextPoll();
     expect(confirmation.status.value).toBe("payment-received");
+    expect(confirmation.finalOutcome.value).toBe("payment-received");
     expect(confirmation.cartCompletion.value).toBe("cleared");
     expect(fetchStatus).toHaveBeenCalledTimes(2);
     await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
@@ -82,6 +98,7 @@ describe("useAstroPopCheckoutConfirmation", () => {
     const fetchStatus = vi.fn().mockResolvedValueOnce(paidUnknown).mockRejectedValueOnce(Object.assign(new Error("unavailable"), { statusCode: 502 }));
     mount(fetchStatus); await nextPoll();
     expect(confirmation.status.value).toBe("payment-received-recording-unknown");
+    expect(confirmation.finalOutcome.value).toBe("payment-received-recording-unknown");
     expect(confirmation.cartCompletion.value).toBe("cleared");
     expect(fetchStatus).toHaveBeenCalledTimes(2);
   });
@@ -90,6 +107,7 @@ describe("useAstroPopCheckoutConfirmation", () => {
     const fetchStatus = vi.fn().mockRejectedValue(Object.assign(new Error("unavailable"), { statusCode: 502 }));
     mount(fetchStatus); await flush();
     expect(confirmation.status.value).toBe("unavailable");
+    expect(confirmation.finalOutcome.value).toBe("unavailable");
     expect(confirmation.cartCompletion.value).toBeNull();
     expect(getCompletedAstroPopCheckout()).toBeNull();
     expect(window.localStorage.getItem("astropop-crate")).toBe(JSON.stringify(cartItems));
@@ -112,6 +130,7 @@ describe("useAstroPopCheckoutConfirmation", () => {
     for (let attempt = 1; attempt < MAX_STATUS_CHECKS_ATTEMPTS; attempt += 1) await nextPoll();
     expect(fetchStatus).toHaveBeenCalledTimes(MAX_STATUS_CHECKS_ATTEMPTS);
     expect(confirmation.status.value).toBe("payment-received");
+    expect(confirmation.finalOutcome.value).toBe("payment-received");
     expect(vi.getTimerCount()).toBe(0);
   });
 
@@ -130,6 +149,7 @@ describe("useAstroPopCheckoutConfirmation", () => {
     resolve(paidRecorded);
     await flush();
     expect(confirmation.status.value).toBe("checking");
+    expect(confirmation.finalOutcome.value).toBeNull();
   });
 
   it.each([
@@ -142,6 +162,7 @@ describe("useAstroPopCheckoutConfirmation", () => {
     const fetchStatus = vi.fn().mockImplementation(() => response instanceof Error ? Promise.reject(response) : Promise.resolve(response));
     mount(fetchStatus); await flush();
     expect(confirmation.status.value).toBe(expected);
+    expect(confirmation.finalOutcome.value).toBe(expected);
     await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 2);
     expect(fetchStatus).toHaveBeenCalledTimes(1);
     expect(window.localStorage.getItem("astropop-crate")).toBe(JSON.stringify(cartItems));
