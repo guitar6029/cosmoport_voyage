@@ -32,4 +32,14 @@ describe("media Worker deployment safeguards", () => {
       { binding: "MEDIA_BUCKET", bucket_name: "cosmos-universe-public-media" },
     ]);
   });
+
+  it("uses the reviewed Worker rate-limit binding", () => {
+    expect(workerConfig().ratelimits).toEqual([
+      {
+        name: "MEDIA_RATE_LIMITER",
+        namespace_id: "2026102601",
+        simple: { limit: 120, period: 60 },
+      },
+    ]);
+  });
 });
