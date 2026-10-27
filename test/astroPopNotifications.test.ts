@@ -64,6 +64,10 @@ describe("AstroPop notifications", () => {
       duration: 1200,
     });
 
+    if (errorId === undefined) {
+      throw new Error("Expected notification to be created");
+    }
+
     expect(notifications.notifications.value).toEqual([
       { id: successId, type: "success", title: "Great news!", message: "A success message" },
       { id: errorId, type: "error", title: "Oh no!", message: "An error message" },
@@ -74,7 +78,7 @@ describe("AstroPop notifications", () => {
       { id: errorId, type: "error", title: "Oh no!", message: "An error message" },
     ]);
 
-    notifications.dismiss(errorId!);
+    notifications.dismiss(errorId);
     vi.advanceTimersByTime(1200);
     expect(notifications.notifications.value).toEqual([]);
   });
@@ -82,14 +86,27 @@ describe("AstroPop notifications", () => {
   it("pauses on pointer interaction and resumes only the remaining time", async () => {
     const { useAstroPopNotifications } = await import("../app/composables/astro-pop/useAstroPopNotifications");
     const notifications = useAstroPopNotifications();
-    const id = notifications.show({ type: "success", message: "A success message", duration: 3000 });
+
+    const id = notifications.show({
+      type: "success",
+      message: "A success message",
+      duration: 3000,
+    });
 
     vi.advanceTimersByTime(1800);
-    notifications.pause(id!, "pointer");
+
+
+
+    if (id === undefined) {
+      throw new Error("Expected notification to be created");
+    }
+
+    notifications.pause(id, "pointer");
+
     vi.advanceTimersByTime(10_000);
     expect(notifications.notifications.value).toHaveLength(1);
 
-    notifications.resume(id!, "pointer");
+    notifications.resume(id, "pointer");
     vi.advanceTimersByTime(1199);
     expect(notifications.notifications.value).toHaveLength(1);
     vi.advanceTimersByTime(1);
@@ -99,16 +116,25 @@ describe("AstroPop notifications", () => {
   it("does not reset time across repeated pointer interactions", async () => {
     const { useAstroPopNotifications } = await import("../app/composables/astro-pop/useAstroPopNotifications");
     const notifications = useAstroPopNotifications();
-    const id = notifications.show({ type: "info", message: "An info message", duration: 1000 });
+
+    const id = notifications.show({
+      type: "info",
+      message: "Am info message",
+      duration: 1000,
+    });
+
+    if (id === undefined) {
+      throw new Error("Expected notification to be created");
+    }
 
     vi.advanceTimersByTime(200);
-    notifications.pause(id!, "pointer");
+    notifications.pause(id, "pointer");
     vi.advanceTimersByTime(500);
-    notifications.resume(id!, "pointer");
+    notifications.resume(id, "pointer");
     vi.advanceTimersByTime(300);
-    notifications.pause(id!, "pointer");
+    notifications.pause(id, "pointer");
     vi.advanceTimersByTime(500);
-    notifications.resume(id!, "pointer");
+    notifications.resume(id, "pointer");
     vi.advanceTimersByTime(499);
     expect(notifications.notifications.value).toHaveLength(1);
     vi.advanceTimersByTime(1);
@@ -120,14 +146,20 @@ describe("AstroPop notifications", () => {
     const notifications = useAstroPopNotifications();
     const id = notifications.show({ type: "error", message: "An error message", duration: 1000 });
 
+
+    if (id === undefined) {
+      throw new Error("Expected notification to be created");
+    }
+
+
     vi.advanceTimersByTime(400);
-    notifications.pause(id!, "pointer");
-    notifications.pause(id!, "focus");
-    notifications.resume(id!, "pointer");
+    notifications.pause(id, "pointer");
+    notifications.pause(id, "focus");
+    notifications.resume(id, "pointer");
     vi.advanceTimersByTime(1000);
     expect(notifications.notifications.value).toHaveLength(1);
 
-    notifications.resume(id!, "focus");
+    notifications.resume(id, "focus");
     vi.advanceTimersByTime(599);
     expect(notifications.notifications.value).toHaveLength(1);
     vi.advanceTimersByTime(1);
@@ -140,15 +172,20 @@ describe("AstroPop notifications", () => {
     const pausedId = notifications.show({ type: "success", message: "A success message", duration: 1000 });
     const permanentId = notifications.show({ type: "info", message: "An info message", duration: 0 });
 
-    notifications.pause(pausedId!, "focus");
-    notifications.dismiss(pausedId!);
-    notifications.resume(pausedId!, "focus");
+
+    if (pausedId === undefined) {
+      throw new Error("Expected notification to be created");
+    }
+
+    notifications.pause(pausedId, "focus");
+    notifications.dismiss(pausedId);
+    notifications.resume(pausedId, "focus");
     vi.advanceTimersByTime(10_000);
     expect(notifications.notifications.value).toEqual([
       { id: permanentId, type: "info", title: "Heads up!", message: "An info message" },
     ]);
 
-    notifications.dismiss(permanentId!);
+    notifications.dismiss(permanentId);
     expect(notifications.notifications.value).toEqual([]);
   });
 
