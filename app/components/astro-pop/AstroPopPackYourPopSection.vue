@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { ASTROPOP_FLAVORS } from "../../data/astroPopFlavors";
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 import type { AstroPopFlavorId } from "../../stores/astroPopCrate";
 import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
 import AstroPopBottleSelectionCard from "./AstroPopBottleSelectionCard.vue";
@@ -38,7 +39,7 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
       <div class="astropop-pack-your-pop-section__artwork">
         <img
           class="astropop-pack-your-pop-section__logo"
-          src="/images/astro-pop/logos/AstroPop Pack Your Pop Logo.png"
+          :src="ASTRO_POP_MEDIA.packYourPopLogo"
           alt="AstroPop Pack Your Pop!"
           loading="lazy"
         />

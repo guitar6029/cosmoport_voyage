@@ -3,21 +3,22 @@ import { createApp, h, nextTick, ref } from "vue";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AstroPopAnimatedTestimonialAvatar from "../app/components/astro-pop/AstroPopAnimatedTestimonialAvatar.vue";
 import AstroPopDeliveryTestimonialsSection from "../app/components/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
+import { ASTRO_POP_MEDIA } from "../app/data/astroPopMedia";
 
-const imageSrc = "/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.jpg";
-const videoSrc = "/images/astro-pop/testimonials/dorothy-miller/Dorothy_Miller.mp4";
+const imageSrc = ASTRO_POP_MEDIA.testimonials.dorothy.portrait;
+const videoSrc = ASTRO_POP_MEDIA.testimonials.dorothy.video;
 const testimonialMedia = [
   {
     imageSrc,
     videoSrc,
   },
   {
-    imageSrc: "/images/astro-pop/testimonials/walter-peterson/Walter_Peterson.jpg",
-    videoSrc: "/images/astro-pop/testimonials/walter-peterson/Walter_Peterson.mp4",
+    imageSrc: ASTRO_POP_MEDIA.testimonials.walter.portrait,
+    videoSrc: ASTRO_POP_MEDIA.testimonials.walter.video,
   },
   {
-    imageSrc: "/images/astro-pop/testimonials/grandpa-henry/Grandpa_Henry.jpg",
-    videoSrc: "/images/astro-pop/testimonials/grandpa-henry/Grandpa_Henry.mp4",
+    imageSrc: ASTRO_POP_MEDIA.testimonials.grandpaHenry.portrait,
+    videoSrc: ASTRO_POP_MEDIA.testimonials.grandpaHenry.video,
   },
 ];
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
 
 const route = useRoute();
@@ -114,7 +115,7 @@ onBeforeUnmount(() => {
       to="/astro-pop"
       aria-label="Astro Pop home"
     >
-      <img src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png" alt="" aria-hidden="true" />
+      <img :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
     </NuxtLink>
     <button
       v-else
@@ -126,7 +127,7 @@ onBeforeUnmount(() => {
       :aria-label="isMobileNavigation() ? 'Open navigation menu' : 'Back to top'"
       @click="handleCapClick"
     >
-      <img src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png" alt="" aria-hidden="true" />
+      <img :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
     </button>
 
     <div class="navigation__links" aria-label="AstroPop sections">
@@ -140,7 +141,7 @@ onBeforeUnmount(() => {
     </div>
 
     <NuxtLink to="/astro-pop/cart" class="navigation__cart" :aria-label="`Cart, ${crateStore.totalBottles} bottles`">
-      <img src="/images/astro-pop/cart/Retro Soda Crate with Space Emblem.png" alt="" aria-hidden="true" loading="lazy" />
+      <img :src="ASTRO_POP_MEDIA.cartCrate" alt="" aria-hidden="true" loading="lazy" />
       <span class="navigation__cart-count" aria-hidden="true">{{ crateStore.totalBottles }}</span>
     </NuxtLink>
   </nav>
@@ -157,9 +158,9 @@ onBeforeUnmount(() => {
             aria-label="Astro Pop home"
             @click="closeMenu(false)"
           >
-            <img src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png" alt="" aria-hidden="true" />
+            <img :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
           </NuxtLink>
-          <img v-else src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png" alt="" aria-hidden="true" />
+          <img v-else :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
           <button ref="closeButton" class="navigation-drawer__close" type="button" @click="closeMenu()">
             <span aria-hidden="true">×</span><span>Close menu</span>
           </button>

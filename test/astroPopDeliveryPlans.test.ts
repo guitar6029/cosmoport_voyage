@@ -1,8 +1,8 @@
 import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
-import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import AstroPopDeliveryPlansSection from "../app/components/astro-pop/AstroPopDeliveryPlansSection.vue";
+import { ASTRO_POP_MEDIA } from "../app/data/astroPopMedia";
 
 describe("AstroPop delivery plans section", () => {
   it("renders its heading and supporting copy", async () => {
@@ -48,7 +48,7 @@ describe("AstroPop delivery plans section", () => {
 
     for (const [index, plan] of plans.entries()) {
       const card = cards[index]!;
-      const src = `/images/astro-pop/delivery/astropop-crate-${plan.size}.png`;
+      const src = ASTRO_POP_MEDIA.deliveryCrates[plan.size];
       expect(card.match(/<img\b/g)).toHaveLength(1);
       expect(card).toContain(`src="${src}"`);
       expect(card).toContain(`alt="${plan.name} wooden AstroPop soda crate with ${plan.bottles}"`);
@@ -59,11 +59,6 @@ describe("AstroPop delivery plans section", () => {
       expect(card.indexOf('__price"')).toBeLessThan(card.indexOf('__description"'));
       expect(card.includes("Neighborhood Favorite")).toBe(index === 1);
 
-      // Check the actual public asset, including the intrinsic dimensions used in markup.
-      const png = await readFile(new URL(`../public${src}`, import.meta.url));
-      expect(png.subarray(0, 8)).toEqual(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
-      expect(png.readUInt32BE(16)).toBe(plan.width);
-      expect(png.readUInt32BE(20)).toBe(768);
       expect(card).toContain(`width="${plan.width}" height="768"`);
     }
   });

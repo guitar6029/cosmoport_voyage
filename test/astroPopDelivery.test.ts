@@ -2,6 +2,7 @@ import { createSSRApp, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it } from "vitest";
 import AstroPopDeliverySection from "../app/components/astro-pop/AstroPopDeliverySection.vue";
+import { ASTRO_POP_MEDIA } from "../app/data/astroPopMedia";
 
 describe("AstroPop delivery section", () => {
   it("renders its heading, delivery hero image, and View Plans CTA", async () => {
@@ -11,7 +12,7 @@ describe("AstroPop delivery section", () => {
 
     expect(html).toContain("AstroPop Delivers!");
     expect(html).toContain(
-      "/images/astro-pop/delivery/AstroPop%20Delivers_%20Retro%20Soda%20Adventure.png",
+      ASTRO_POP_MEDIA.deliveryArtwork,
     );
     expect(html).toContain("View Plans");
     expect(html).toContain('href="#astropop-delivery-plans"');

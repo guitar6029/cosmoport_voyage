@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 import DecorativeImage from "../shared/DecorativeImage.vue";
 </script>
 
@@ -19,7 +20,7 @@ import DecorativeImage from "../shared/DecorativeImage.vue";
       <div class="astropop-delivery-section__artwork">
         <img
           class="astropop-delivery-section__image"
-          src="/images/astro-pop/delivery/AstroPop Delivers_ Retro Soda Adventure.png"
+          :src="ASTRO_POP_MEDIA.deliveryArtwork"
           alt="Retro AstroPop delivery adventure with a soda delivery rocket"
           loading="lazy"
         />
@@ -28,19 +29,19 @@ import DecorativeImage from "../shared/DecorativeImage.vue";
 
     <DecorativeImage
       class="astropop-flavor-section__cap"
-      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      :src="ASTRO_POP_MEDIA.sodaCap"
       style="top: 90%; left: -5rem; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
     />
 
     <DecorativeImage
       class="astropop-flavor-section__cap"
-      src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+      :src="ASTRO_POP_MEDIA.sodaCap"
       style="top: 10%; left: 95%; width: 150px; opacity: 0.45; transform: rotate(-15deg); z-index: 0;"
     />
 
     <DecorativeImage
       class="astropop-flavor-section__delivery_card"
-      src="/images/astro-pop/accents/AstroPop Soda Co. Delivery Note.png"
+      :src="ASTRO_POP_MEDIA.deliveryNote"
       style="top: 10%; left: 5%; width: 550px; opacity: 0.45; transform: rotate(-45deg); z-index: 0;"
     />
 

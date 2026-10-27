@@ -9,6 +9,7 @@ import AstroPopFooter from "../../components/astro-pop/AstroPopFooter.vue";
 import DecorativeImage from "../../components/shared/DecorativeImage.vue";
 import AstroPopNav from "../../components/astro-pop/AstroPopNav.vue";
 import AstroPopNotificationContainer from "../../components/astro-pop/AstroPopNotificationContainer.vue";
+import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
 
 const hasMounted = ref(false);
 
@@ -31,7 +32,7 @@ onMounted(() => {
 
         <img
           class="astropop-hero__image"
-          src="/images/astro-pop/hero/AstroPopDeliveryMan.png"
+          :src="ASTRO_POP_MEDIA.hero"
           alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket"
         />
       </section>
@@ -41,7 +42,7 @@ onMounted(() => {
         <div class="astropop-flavor-pack-transition__artwork" aria-hidden="true">
           <DecorativeImage
             class="astropop-flavor-pack-transition__cap"
-            src="/images/astro-pop/accents/Vintage AstroPop Soda Cap.png"
+            :src="ASTRO_POP_MEDIA.sodaCap"
           />
         </div>
         <AstroPopPackYourPopSection class="astropop-flavor-pack-transition__section" />
