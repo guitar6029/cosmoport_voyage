@@ -1,5 +1,16 @@
 import type Stripe from "stripe";
 import { z } from "zod";
+import type {
+  AstroPopCheckoutStatus,
+  AstroPopOrderStatus,
+  AstroPopPaymentStatus,
+} from "../../shared/astroPopCheckoutStatus";
+
+export type {
+  AstroPopCheckoutStatus,
+  AstroPopOrderStatus,
+  AstroPopPaymentStatus,
+} from "../../shared/astroPopCheckoutStatus";
 
 export const checkoutSessionIdSchema = z
   .string()
@@ -16,15 +27,6 @@ export const getCheckoutVerificationResult = (
     session.status === "complete" &&
     session.payment_status === "paid",
 });
-
-export type AstroPopPaymentStatus = "paid" | "pending" | "unpaid" | "unknown";
-export type AstroPopOrderStatus = "recorded" | "not_recorded" | "not_checked" | "unknown";
-
-export interface AstroPopCheckoutStatus {
-  paymentStatus: AstroPopPaymentStatus;
-  orderStatus: AstroPopOrderStatus;
-  orderConfirmed: boolean;
-}
 
 type CheckoutStatusSession = Pick<
   Stripe.Checkout.Session,
