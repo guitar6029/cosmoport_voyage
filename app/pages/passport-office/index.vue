@@ -10,6 +10,7 @@ const step = ref<DialogueStep>(openingDialogueStep());
 const reducedMotion = ref(false);
 const isRegistering = ref(false);
 const registrationComplete = ref(false);
+const { isSignedIn } = useAuth();
 const imageFailure = ref<"none" | "primary" | "fallback">("none");
 const backgroundFailed = ref(false);
 let motionQuery: MediaQueryList | undefined;
@@ -24,7 +25,7 @@ const stellaSource = computed(() => {
 });
 const stellaAlt = computed(() => `Stella Starling, the Passport Office attendant, ${dialogue.value.stella}`);
 
-function choose(choice: PassportOfficeChoice) { if (choice === "apply" && !registrationComplete.value) isRegistering.value = true; else step.value = choice; }
+function choose(choice: PassportOfficeChoice) { if (choice === "apply" && !registrationComplete.value && !isSignedIn.value) isRegistering.value = true; else step.value = choice === "apply" ? "returning" : choice; }
 function restart() { step.value = openingDialogueStep(); registrationComplete.value = false; }
 function cancelRegistration() { isRegistering.value = false; }
 function completeRegistration() { isRegistering.value = false; registrationComplete.value = true; }
@@ -59,7 +60,7 @@ onBeforeUnmount(() => motionQuery?.removeEventListener("change", updateMotionPre
       <p class="passport-office__eyebrow">CosmoPort Passport Bureau</p>
       <h1 id="passport-office-title">Stella Starling</h1>
       <div class="passport-office__message" role="status" aria-live="polite" aria-atomic="true">
-        <p v-for="line in dialogue.lines" :key="line">{{ line }}</p>
+        <p v-if="isRegistering">Wonderful—let's prepare your CosmoPort account. Start with an email and a password.</p><p v-else v-for="line in dialogue.lines" :key="line">{{ line }}</p>
       </div>
       <PassportOfficeRegistration v-if="isRegistering" @cancel="cancelRegistration" @complete="completeRegistration" />
       <div v-else-if="dialogue.choices" class="passport-office__choices" aria-label="Choose a response">
