@@ -1,6 +1,3 @@
-Failed to create stream fd: Operation not permitted
-Failed to create stream fd: Operation not permitted
-Failed to create stream fd: Operation not permitted
 <script setup lang="ts">
 useSeoMeta({
   title: "About | CosmoPort Universe",
