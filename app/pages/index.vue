@@ -8,6 +8,7 @@
         <ul class="universe-directory__links">
           <li><NuxtLink to="/cosmoport-voyage">CosmoPort Voyage</NuxtLink></li>
           <li><NuxtLink to="/astro-pop">AstroPop Soda Co.</NuxtLink></li>
+          <li><NuxtLink to="/passport-office">Visit the Passport Office preview</NuxtLink></li>
         </ul>
       </nav>
     </main>

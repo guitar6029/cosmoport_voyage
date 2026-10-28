@@ -8,7 +8,9 @@ const ALLOW_HEADER = "GET, HEAD";
 const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "webp"]);
 const IMAGE_CACHE_TTL_SECONDS = 300;
 const RATE_LIMIT_RETRY_AFTER_SECONDS = 60;
-const PUBLIC_MEDIA_PREFIXES = ["astro-pop/", "passport-office/stella/v0/"];
+// Each prefix is a deliberately reviewed public-artwork namespace. Keep this
+// allowlist narrow; R2 itself remains private.
+const PUBLIC_MEDIA_PREFIXES = ["astro-pop/", "passport-office/"];
 const MEDIA_TYPES: Record<string, string> = {
   png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp",
   mp4: "video/mp4", mp3: "audio/mpeg", wav: "audio/wav", ogg: "audio/ogg",
