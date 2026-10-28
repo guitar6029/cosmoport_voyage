@@ -8,13 +8,15 @@ type DialogueStep = "opening" | PassportOfficeChoice;
 const step = ref<DialogueStep>(openingDialogueStep());
 const reducedMotion = ref(false);
 const imageFailure = ref<"none" | "primary" | "fallback">("none");
+const backgroundFailed = ref(false);
 let motionQuery: MediaQueryList | undefined;
 const updateMotionPreference = () => { reducedMotion.value = motionQuery?.matches ?? false; };
 
 const dialogue = computed(() => dialogueFor(step.value));
 const stellaSource = computed(() => {
+  // The happy portrait is an intentionally static asset for reduced-motion visitors.
+  if (reducedMotion.value) return PASSPORT_OFFICE_MEDIA.stella.happy;
   if (imageFailure.value === "primary") return PASSPORT_OFFICE_MEDIA.stella.fallback;
-  if (reducedMotion.value) return PASSPORT_OFFICE_MEDIA.stella.idle;
   return PASSPORT_OFFICE_MEDIA.stella[dialogue.value.stella];
 });
 const stellaAlt = computed(() => `Stella Starling, the Passport Office attendant, ${dialogue.value.stella}`);
@@ -22,7 +24,7 @@ const stellaAlt = computed(() => `Stella Starling, the Passport Office attendant
 function choose(choice: PassportOfficeChoice) { step.value = choice; }
 function restart() { step.value = openingDialogueStep(); }
 function handleImageError() {
-  imageFailure.value = imageFailure.value === "none" ? "primary" : "fallback";
+  imageFailure.value = !reducedMotion.value && imageFailure.value === "none" ? "primary" : "fallback";
 }
 
 onMounted(() => {
@@ -34,8 +36,16 @@ onBeforeUnmount(() => motionQuery?.removeEventListener("change", updateMotionPre
 </script>
 
 <template>
-  <main class="passport-office">
-    <img class="passport-office__background" :src="PASSPORT_OFFICE_MEDIA.background" alt="" aria-hidden="true">
+  <main class="passport-office" :class="{ 'passport-office--background-fallback': backgroundFailed }">
+    <img
+      v-if="!backgroundFailed"
+      class="passport-office__background"
+      :src="PASSPORT_OFFICE_MEDIA.background"
+      alt=""
+      aria-hidden="true"
+      @error="backgroundFailed = true"
+    >
+    <div v-else class="passport-office__background-fallback" aria-hidden="true" />
     <div class="passport-office__wash" aria-hidden="true" />
 
     <NuxtLink class="passport-office__exit" to="/">Exit Office</NuxtLink>
@@ -74,8 +84,9 @@ onBeforeUnmount(() => motionQuery?.removeEventListener("change", updateMotionPre
 
 <style scoped>
 .passport-office { isolation: isolate; position: relative; display: grid; grid-template-columns: minmax(18rem, 31rem) minmax(14rem, 1fr); min-height: 100vh; min-height: 100svh; overflow: hidden; align-items: end; padding: clamp(1rem, 3vw, 2.75rem); color: #173c47; }
-.passport-office__background, .passport-office__wash { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; }
+.passport-office__background, .passport-office__background-fallback, .passport-office__wash { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; }
 .passport-office__background { object-fit: cover; object-position: center; }
+.passport-office__background-fallback { background: radial-gradient(circle at 72% 30%, #78c5bf 0 9%, transparent 9.5%), linear-gradient(135deg, #244c59 0 45%, #173c47 45% 100%); }
 .passport-office__wash { z-index: -1; background: linear-gradient(90deg, rgb(255 247 226 / 0.34), transparent 68%); }
 .passport-office__exit { position: absolute; top: clamp(1rem, 3vw, 2rem); right: clamp(1rem, 3vw, 2rem); border: 2px solid #173c47; border-radius: 999px; padding: .56rem .86rem; background: rgb(255 247 226 / .93); color: inherit; font-size: .86rem; font-weight: 800; text-decoration: none; }
 .passport-office__dialogue { align-self: end; width: min(100%, 31rem); border: 3px solid #173c47; border-radius: 1.1rem; padding: clamp(1.1rem, 2.6vw, 1.75rem); background: #fff3d7; box-shadow: .45rem .45rem 0 #d9654d; }

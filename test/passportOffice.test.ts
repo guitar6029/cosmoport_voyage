@@ -46,11 +46,15 @@ describe("Passport Office scene", () => {
     expect(dialogueFor(openingDialogueStep()).choices).toHaveLength(3);
   });
 
-  it("uses mobile, reduced-motion, and CDN-error fallbacks", async () => {
+  it("uses a static reduced-motion portrait and graceful CDN fallbacks", async () => {
     const source = await readFile(resolve(process.cwd(), "app/pages/passport-office/index.vue"), "utf8");
     expect(source).toContain("prefers-reduced-motion: reduce");
+    expect(source).toContain("if (reducedMotion.value) return PASSPORT_OFFICE_MEDIA.stella.happy");
     expect(source).toContain("handleImageError");
     expect(source).toContain("Stella will be right back.");
+    expect(source).toContain("backgroundFailed = ref(false)");
+    expect(source).toContain("passport-office__background-fallback");
+    expect(source).toContain("@error=\"backgroundFailed = true\"");
     expect(source).toContain("@media (max-width: 44rem)");
     expect(source).toContain("grid-template-columns: 1fr");
   });

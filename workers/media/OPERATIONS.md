@@ -83,7 +83,7 @@ The Worker exposes only the reviewed `astro-pop/` and `passport-office/` key pre
 
 ## Safe image edge caching
 
-The Worker uses the explicit Cloudflare **Cache API** (`caches.default`) only for successful, full `GET` responses for Astro Pop PNG, JPEG, and WebP objects. It does not enable the Wrangler `cache` setting: `cache.enabled` remains `false`, so this is not Workers Caching and the Worker still executes for every request.
+The Worker uses the explicit Cloudflare **Cache API** (`caches.default`) only for successful, full `GET` responses for allowed PNG, JPEG, and WebP artwork under both the `astro-pop/` and `passport-office/` prefixes. It does not enable the Wrangler `cache` setting: `cache.enabled` remains `false`, so this is not Workers Caching and the Worker still executes for every request.
 
 The Worker checks the delivery switch, allowed method, and safe public-media path before looking in the Cache API. `MEDIA_DELIVERY_ENABLED: "false"` therefore returns the normal `503` even when an image was cached while delivery was enabled. Range requests—including image ranges—bypass the Cache API, are served by the existing R2 range path, and are never stored as `206` responses. MP4 and audio always retain their existing R2 streaming behavior.
 

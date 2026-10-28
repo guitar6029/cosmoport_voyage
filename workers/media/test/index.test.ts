@@ -182,6 +182,22 @@ describe("media worker", () => {
     expect(get).toHaveBeenCalledWith(key);
   });
 
+  it("caches full Passport Office artwork responses with the same safe image policy", async () => {
+    const key = "passport-office/retro-spaceport-passport-bureau.png";
+    const { env, get } = enabledEnv({ [key]: "artwork" });
+    const { match, put } = installCache();
+    const { context, pending } = executionContext();
+
+    const response = await dispatch(`/${key}`, env, undefined, context);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toContain("s-maxage=300");
+    expect(match).toHaveBeenCalledOnce();
+    expect(get).toHaveBeenCalledWith(key);
+    await Promise.all(pending);
+    expect(put).toHaveBeenCalledOnce();
+  });
+
   it("uses metadata only for HEAD", async () => {
     const { match } = installCache();
     const { env, get, head } = enabledEnv({ "astro-pop/sound.mp3": "audio" });
