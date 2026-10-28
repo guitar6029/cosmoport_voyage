@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 const { isLoaded, isSignedIn, signOut } = useAuth();
 const { user } = useUser();
 const isSigningOut = ref(false);
+const signOutError = ref("");
 
 const userName = computed(() => (
   user.value?.fullName
@@ -20,10 +21,17 @@ const fallbackInitials = computed(() => userName.value
   .join("") || "CP");
 
 const handleSignOut = async () => {
+  if (isSigningOut.value) {
+    return;
+  }
+
+  signOutError.value = "";
   isSigningOut.value = true;
 
   try {
     await signOut({ redirectUrl: "/" });
+  } catch {
+    signOutError.value = "We couldn't sign you out. Please try again.";
   } finally {
     isSigningOut.value = false;
   }
@@ -64,6 +72,7 @@ const handleSignOut = async () => {
           <button class="universe-nav__button universe-nav__button--quiet" type="button" :disabled="isSigningOut" @click="handleSignOut">
             {{ isSigningOut ? "Signing Out" : "Sign Out" }}
           </button>
+          <p v-if="signOutError" class="universe-nav__sign-out-error" role="alert">{{ signOutError }}</p>
         </div>
       </template>
     </div>
@@ -163,6 +172,7 @@ const handleSignOut = async () => {
 
 .universe-nav__profile {
   display: flex;
+  position: relative;
   align-items: center;
   gap: 0.55rem;
 }
@@ -183,6 +193,22 @@ const handleSignOut = async () => {
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.04em;
+}
+
+.universe-nav__sign-out-error {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  width: min(18rem, 80vw);
+  margin: 0;
+  border: 1px solid #b44d32;
+  border-radius: 0.35rem;
+  padding: 0.5rem 0.65rem;
+  background: #fff8e8;
+  color: #8d301e;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .universe-nav__avatar {

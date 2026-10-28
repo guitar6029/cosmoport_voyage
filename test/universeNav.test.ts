@@ -1,7 +1,9 @@
-import { createSSRApp, defineComponent, h, ref } from "vue";
+// @vitest-environment jsdom
+import { createApp, createSSRApp, defineComponent, h, nextTick, ref } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { readFile } from "node:fs/promises";
-import { describe, expect, it, vi } from "vitest";
+import { resolve } from "node:path";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import UniverseNav from "../app/components/universe/UniverseNav.vue";
 import UniverseHomePage from "../app/pages/index.vue";
 
@@ -18,6 +20,24 @@ vi.stubGlobal("useAuth", () => ({
 }));
 vi.stubGlobal("useUser", () => ({ user }));
 
+const mountSignedInNavigation = () => {
+  authState.value = "signed-in";
+  user.value = { fullName: "Nova Ray", imageUrl: "https://example.test/nova.png" };
+  const container = document.createElement("div");
+  const app = createApp(UniverseNav);
+
+  app.component("NuxtLink", NuxtLink);
+  document.body.appendChild(container);
+  app.mount(container);
+
+  return { app, container };
+};
+
+const flushSignOut = async () => {
+  await Promise.resolve();
+  await nextTick();
+};
+
 const NuxtLink = defineComponent({
   props: { to: { type: String, required: true } },
   setup: (props, { slots }) => () => h("a", { href: props.to }, slots.default?.()),
@@ -33,6 +53,10 @@ const renderWithAccountState = (component: typeof UniverseNav | typeof UniverseH
 };
 
 describe("CosmoPort Universe navigation", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    document.body.replaceChildren();
+  });
   it("shows unavailable custom sign-in and registration controls to signed-out visitors", async () => {
     const html = await renderWithAccountState(UniverseNav, "signed-out");
 
@@ -67,6 +91,54 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain("universe-nav__avatar--fallback");
   });
 
+  it("requests a Clerk sign-out to the Universe root and clears the processing state on success", async () => {
+    signOut.mockResolvedValue(undefined);
+    const { app, container } = mountSignedInNavigation();
+    const button = container.querySelector<HTMLButtonElement>(".universe-nav__button");
+
+    button?.click();
+    await flushSignOut();
+
+    expect(signOut).toHaveBeenCalledWith({ redirectUrl: "/" });
+    expect(button?.disabled).toBe(false);
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+
+    app.unmount();
+  });
+
+  it("shows a safe error after sign-out fails, resets loading, and permits a retry", async () => {
+    let rejectSignOut: (reason?: unknown) => void = () => undefined;
+    signOut.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => {
+      rejectSignOut = reject;
+    }));
+    signOut.mockResolvedValueOnce(undefined);
+    const { app, container } = mountSignedInNavigation();
+    const button = container.querySelector<HTMLButtonElement>(".universe-nav__button");
+
+    button?.click();
+    button?.click();
+    await nextTick();
+    expect(signOut).toHaveBeenCalledTimes(1);
+    expect(button?.disabled).toBe(true);
+    expect(button?.textContent).toContain("Signing Out");
+
+    rejectSignOut(new Error("Sensitive provider failure"));
+    await flushSignOut();
+
+    const alert = container.querySelector('[role="alert"]');
+    expect(alert?.textContent).toContain("We couldn't sign you out. Please try again.");
+    expect(alert?.textContent).not.toContain("Sensitive provider failure");
+    expect(button?.disabled).toBe(false);
+    expect(button?.textContent).toContain("Sign Out");
+
+    button?.click();
+    await flushSignOut();
+    expect(signOut).toHaveBeenCalledTimes(2);
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+
+    app.unmount();
+  });
+
   it("keeps account controls pending until Clerk finishes loading", async () => {
     const html = await renderWithAccountState(UniverseNav, "loading");
 
@@ -87,10 +159,10 @@ describe("CosmoPort Universe navigation", () => {
 
   it("is integrated only by the Universe root page", async () => {
     const [rootPage, appShell, astroPopPage, voyagePage] = await Promise.all([
-      readFile(new URL("../app/pages/index.vue", import.meta.url), "utf8"),
-      readFile(new URL("../app/app.vue", import.meta.url), "utf8"),
-      readFile(new URL("../app/pages/astro-pop/index.vue", import.meta.url), "utf8"),
-      readFile(new URL("../app/pages/cosmoport-voyage.vue", import.meta.url), "utf8"),
+      readFile(resolve(process.cwd(), "app/pages/index.vue"), "utf8"),
+      readFile(resolve(process.cwd(), "app/app.vue"), "utf8"),
+      readFile(resolve(process.cwd(), "app/pages/astro-pop/index.vue"), "utf8"),
+      readFile(resolve(process.cwd(), "app/pages/cosmoport-voyage.vue"), "utf8"),
     ]);
 
     expect(rootPage).toContain("<UniverseNav />");
@@ -100,7 +172,7 @@ describe("CosmoPort Universe navigation", () => {
   });
 
   it("uses Clerk composables and an SDK sign-out redirect without prebuilt Clerk UI", async () => {
-    const source = await readFile(new URL("../app/components/universe/UniverseNav.vue", import.meta.url), "utf8");
+    const source = await readFile(resolve(process.cwd(), "app/components/universe/UniverseNav.vue"), "utf8");
 
     expect(source).toContain("useAuth()");
     expect(source).toContain("useUser()");
