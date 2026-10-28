@@ -1,6 +1,7 @@
 <template>
-  <main class="universe-directory">
-    <div class="universe-directory__content">
+  <div class="universe-directory">
+    <UniverseNav />
+    <main class="universe-directory__content">
       <p class="universe-directory__eyebrow">The CosmoPort universe</p>
       <h1>Choose your tomorrow.</h1>
       <nav aria-label="Experiences">
@@ -9,23 +10,25 @@
           <li><NuxtLink to="/astro-pop">AstroPop Soda Co.</NuxtLink></li>
         </ul>
       </nav>
-    </div>
-  </main>
+    </main>
+  </div>
 </template>
 
 <style scoped>
 .universe-directory {
   display: grid;
+  grid-template-rows: auto 1fr;
   min-height: 100vh;
   min-height: 100svh;
-  place-items: center;
-  padding: 2rem;
   background: #f3e4c7;
   color: #183d4a;
 }
 
 .universe-directory__content {
   width: min(100%, 42rem);
+  align-self: center;
+  justify-self: center;
+  padding: 2rem;
   text-align: center;
 }
 
