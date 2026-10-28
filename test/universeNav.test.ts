@@ -6,6 +6,7 @@ import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import UniverseNav from "../app/components/universe/UniverseNav.vue";
 import UniverseHomePage from "../app/pages/index.vue";
+import UniverseAboutPage from "../app/pages/about.vue";
 
 type AccountState = "signed-in" | "signed-out" | "loading";
 
@@ -19,6 +20,7 @@ vi.stubGlobal("useAuth", () => ({
   signOut,
 }));
 vi.stubGlobal("useUser", () => ({ user }));
+vi.stubGlobal("useSeoMeta", vi.fn());
 
 const mountSignedInNavigation = () => {
   authState.value = "signed-in";
@@ -156,6 +158,21 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain('href="/cosmoport-voyage"');
     expect(html).toContain('href="/astro-pop"');
     expect(html).toContain('href="/passport-office"');
+    expect(html).toContain('href="/about"');
+  });
+
+  it("renders the Universe About page with its destinations, engineering story, and home CTA", async () => {
+    const html = await renderWithAccountState(UniverseAboutPage, "signed-out");
+
+    expect(html).toContain("One Universe.");
+    expect(html).toContain("Endless Possibilities.");
+    expect(html).toContain("Astro Pop");
+    expect(html).toContain('href="/astro-pop"');
+    expect(html).toContain("In development");
+    expect(html).toContain("The Engineering");
+    expect(html).toContain("Cloudflare");
+    expect(html).toContain("Built with curiosity.");
+    expect(html).toContain('href="/"');
   });
 
   it("is integrated only by the Universe root page", async () => {

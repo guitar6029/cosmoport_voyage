@@ -45,6 +45,10 @@ const handleSignOut = async () => {
       <span class="universe-nav__brand-name">Universe</span>
     </NuxtLink>
 
+    <div class="universe-nav__links">
+      <NuxtLink class="universe-nav__link" to="/about">About</NuxtLink>
+    </div>
+
     <div class="universe-nav__account" aria-live="polite">
       <template v-if="!isLoaded">
         <span class="universe-nav__loading" role="status">Loading account controls</span>
@@ -114,9 +118,35 @@ const handleSignOut = async () => {
   letter-spacing: 0.03em;
 }
 
+.universe-nav__links,
 .universe-nav__account {
   display: flex;
   align-items: center;
+}
+
+.universe-nav__links {
+  margin-left: auto;
+}
+
+.universe-nav__link {
+  border-bottom: 2px solid transparent;
+  padding: 0.45rem 0.15rem;
+  color: #183d4a;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.universe-nav__link:hover,
+.universe-nav__link:focus-visible,
+.universe-nav__link.router-link-exact-active {
+  border-color: #b44d32;
+  color: #b44d32;
+}
+
+.universe-nav__account {
   justify-content: flex-end;
   gap: 0.55rem;
   min-width: 10.5rem;
@@ -159,6 +189,7 @@ const handleSignOut = async () => {
 }
 
 .universe-nav__brand:focus-visible,
+.universe-nav__link:focus-visible,
 .universe-nav__button:focus-visible {
   outline: 3px solid #b44d32;
   outline-offset: 4px;
@@ -248,6 +279,15 @@ const handleSignOut = async () => {
   .universe-nav__account {
     gap: 0.35rem;
     min-width: 0;
+  }
+
+  .universe-nav__links {
+    margin-left: 0;
+  }
+
+  .universe-nav__link {
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
   }
 
   .universe-nav__controls {
