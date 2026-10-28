@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { PASSPORT_OFFICE_MEDIA } from "../../data/passportOfficeMedia";
 
-const STELLA_SPRITE_URL = "https://media.cosmos-universe.com/passport-office/stella/v0/stella-blink.webp";
+const STELLA_SPRITE_URL = PASSPORT_OFFICE_MEDIA.stella.fallback;
 const useCreamBackground = ref(true);
 const imageFailed = ref(false);
 

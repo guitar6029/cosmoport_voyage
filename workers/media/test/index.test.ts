@@ -171,14 +171,14 @@ describe("media worker", () => {
     expect(response.headers.get("X-Content-Type-Options")).toBe("nosniff");
   });
 
-  it("serves the public Stella WebP from the Passport Office prefix", async () => {
-    const key = "passport-office/stella/v0/stella-blink.webp";
+  it("serves reviewed Passport Office artwork from the public prefix", async () => {
+    const key = "passport-office/retro-spaceport-passport-bureau.png";
     const { env, get } = enabledEnv({ [key]: "animated-webp" });
     const response = await dispatch(`/${key}`, env);
 
     expect(response.status).toBe(200);
     expect(await response.text()).toBe("animated-webp");
-    expect(response.headers.get("Content-Type")).toBe("image/webp");
+    expect(response.headers.get("Content-Type")).toBe("image/png");
     expect(get).toHaveBeenCalledWith(key);
   });
 
@@ -206,7 +206,7 @@ describe("media worker", () => {
     expect(match).not.toHaveBeenCalled();
   });
 
-  it.each(["/outside/object.mp4", "/passport-office/other/v0/hidden.webp", "/passport-office/stella/v1/stella-blink.webp", "/astro-pop/script.js", "/astro-pop/document.html"])("hides unsupported path %s without R2 access", async (path) => {
+  it.each(["/outside/object.mp4", "/passport-office/briefing.pdf", "/astro-pop/script.js", "/astro-pop/document.html"])("hides unsupported path %s without R2 access", async (path) => {
     const { env, get, head } = enabledEnv();
     expect((await dispatch(path, env)).status).toBe(404);
     expect(get).not.toHaveBeenCalled();

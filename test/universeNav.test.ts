@@ -155,6 +155,7 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain('aria-label="Experiences"');
     expect(html).toContain('href="/cosmoport-voyage"');
     expect(html).toContain('href="/astro-pop"');
+    expect(html).toContain('href="/passport-office"');
   });
 
   it("is integrated only by the Universe root page", async () => {

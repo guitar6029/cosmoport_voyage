@@ -79,7 +79,7 @@ Budget alerts and usage notifications are **notifications, not spending caps**. 
 
 ## Public media prefixes
 
-The Worker exposes only the reviewed `astro-pop/` and `passport-office/stella/v0/` key prefixes. In particular, the Stella preview object is `passport-office/stella/v0/stella-blink.webp`; adjacent Passport Office paths and future versions remain unavailable until explicitly added to the allowlist and covered by tests.
+The Worker exposes only the reviewed `astro-pop/` and `passport-office/` key prefixes. The Passport Office namespace is intentionally public artwork; keep all non-public objects outside it and cover new application references with tests.
 
 ## Safe image edge caching
 
