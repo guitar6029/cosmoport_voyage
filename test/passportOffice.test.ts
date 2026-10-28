@@ -2,10 +2,12 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { createSSRApp, defineComponent, h } from "vue";
 import { renderToString } from "vue/server-renderer";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
 import { dialogueFor, openingDialogueStep, PASSPORT_OFFICE_DIALOGUE } from "../app/data/passportOfficeDialogue";
 import { PASSPORT_OFFICE_MEDIA, PASSPORT_OFFICE_MEDIA_BASE_URL } from "../app/data/passportOfficeMedia";
 import PassportOfficePage from "../app/pages/passport-office/index.vue";
+import PassportOfficeRegistration from "../app/components/passport-office/PassportOfficeRegistration.vue";
 
 const NuxtLink = defineComponent({
   props: { to: { type: String, required: true } },
@@ -25,8 +27,10 @@ describe("Passport Office scene", () => {
   });
 
   it("renders the continuous background, Stella, dialogue choices, and an accessible exit", async () => {
+    vi.stubGlobal("useAuth", () => ({ isSignedIn: ref(false) }));
     const app = createSSRApp(PassportOfficePage);
     app.component("NuxtLink", NuxtLink);
+    app.component("PassportOfficeRegistration", PassportOfficeRegistration);
     const html = await renderToString(app);
 
     expect(html).toContain(PASSPORT_OFFICE_MEDIA.background);
@@ -35,6 +39,14 @@ describe("Passport Office scene", () => {
     expect(html).toContain('href="/"');
     expect(html).toContain("Exit Office");
     expect(html).toContain('role="status"');
+  });
+
+  it("uses Clerk's Vue computed setActive ref and custom email-code methods", async () => {
+    const source = await readFile(resolve(process.cwd(), "app/composables/usePassportOfficeRegistration.ts"), "utf8");
+    expect(source).toContain("setActive.value");
+    expect(source).toContain("prepareEmailAddressVerification({ strategy: \"email_code\" })");
+    expect(source).toContain("attemptEmailAddressVerification");
+    expect(source).toContain("complete();");
   });
 
   it("keeps dialogue branching data-driven and provides restart navigation", () => {

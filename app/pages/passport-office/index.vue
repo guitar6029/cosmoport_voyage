@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import PassportOfficeRegistration from "../../components/passport-office/PassportOfficeRegistration.vue";
 import { dialogueFor, openingDialogueStep, type PassportOfficeChoice } from "../../data/passportOfficeDialogue";
 import { PASSPORT_OFFICE_MEDIA } from "../../data/passportOfficeMedia";
 
@@ -7,22 +8,27 @@ type DialogueStep = "opening" | PassportOfficeChoice;
 
 const step = ref<DialogueStep>(openingDialogueStep());
 const reducedMotion = ref(false);
+const isRegistering = ref(false);
+const registrationComplete = ref(false);
+const { isSignedIn } = useAuth();
 const imageFailure = ref<"none" | "primary" | "fallback">("none");
 const backgroundFailed = ref(false);
 let motionQuery: MediaQueryList | undefined;
 const updateMotionPreference = () => { reducedMotion.value = motionQuery?.matches ?? false; };
 
-const dialogue = computed(() => dialogueFor(step.value));
+const dialogue = computed(() => registrationComplete.value ? { stella: "happy" as const, lines: ["Splendid! Your CosmoPort account is ready for takeoff.", "Passport issuance will open in a future story."], choices: undefined } : dialogueFor(step.value));
 const stellaSource = computed(() => {
   // The happy portrait is an intentionally static asset for reduced-motion visitors.
   if (reducedMotion.value) return PASSPORT_OFFICE_MEDIA.stella.happy;
   if (imageFailure.value === "primary") return PASSPORT_OFFICE_MEDIA.stella.fallback;
-  return PASSPORT_OFFICE_MEDIA.stella[dialogue.value.stella];
+  return PASSPORT_OFFICE_MEDIA.stella[isRegistering.value ? "talking" : dialogue.value.stella];
 });
 const stellaAlt = computed(() => `Stella Starling, the Passport Office attendant, ${dialogue.value.stella}`);
 
-function choose(choice: PassportOfficeChoice) { step.value = choice; }
-function restart() { step.value = openingDialogueStep(); }
+function choose(choice: PassportOfficeChoice) { if (choice === "apply" && !registrationComplete.value && !isSignedIn.value) isRegistering.value = true; else step.value = choice === "apply" ? "returning" : choice; }
+function restart() { step.value = openingDialogueStep(); registrationComplete.value = false; }
+function cancelRegistration() { isRegistering.value = false; }
+function completeRegistration() { isRegistering.value = false; registrationComplete.value = true; }
 function handleImageError() {
   imageFailure.value = !reducedMotion.value && imageFailure.value === "none" ? "primary" : "fallback";
 }
@@ -54,9 +60,10 @@ onBeforeUnmount(() => motionQuery?.removeEventListener("change", updateMotionPre
       <p class="passport-office__eyebrow">CosmoPort Passport Bureau</p>
       <h1 id="passport-office-title">Stella Starling</h1>
       <div class="passport-office__message" role="status" aria-live="polite" aria-atomic="true">
-        <p v-for="line in dialogue.lines" :key="line">{{ line }}</p>
+        <p v-if="isRegistering">Wonderful—let's prepare your CosmoPort account. Start with an email and a password.</p><p v-else v-for="line in dialogue.lines" :key="line">{{ line }}</p>
       </div>
-      <div v-if="dialogue.choices" class="passport-office__choices" aria-label="Choose a response">
+      <PassportOfficeRegistration v-if="isRegistering" @cancel="cancelRegistration" @complete="completeRegistration" />
+      <div v-else-if="dialogue.choices" class="passport-office__choices" aria-label="Choose a response">
         <button v-for="choice in dialogue.choices" :key="choice.id" type="button" @click="choose(choice.id)">
           {{ choice.label }}
         </button>
