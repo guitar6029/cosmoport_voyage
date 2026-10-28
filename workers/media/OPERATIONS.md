@@ -77,6 +77,10 @@ Budget alerts and usage notifications are **notifications, not spending caps**. 
 4. Preserve timestamps, rule IDs, and request samples in the incident record. Do not expose request credentials or private object keys.
 5. Reopen only after identifying the source, checking the proposed rate-limit scope, and obtaining explicit approval.
 
+## Public media prefixes
+
+The Worker exposes only the reviewed `astro-pop/` and `passport-office/stella/v0/` key prefixes. In particular, the Stella preview object is `passport-office/stella/v0/stella-blink.webp`; adjacent Passport Office paths and future versions remain unavailable until explicitly added to the allowlist and covered by tests.
+
 ## Safe image edge caching
 
 The Worker uses the explicit Cloudflare **Cache API** (`caches.default`) only for successful, full `GET` responses for Astro Pop PNG, JPEG, and WebP objects. It does not enable the Wrangler `cache` setting: `cache.enabled` remains `false`, so this is not Workers Caching and the Worker still executes for every request.
