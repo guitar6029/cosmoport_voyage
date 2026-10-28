@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import PassportOfficeRegistration from "../../components/passport-office/PassportOfficeRegistration.vue";
 import { dialogueFor, openingDialogueStep, type PassportOfficeChoice } from "../../data/passportOfficeDialogue";
 import { PASSPORT_OFFICE_MEDIA } from "../../data/passportOfficeMedia";
 
@@ -23,7 +24,7 @@ const stellaSource = computed(() => {
 });
 const stellaAlt = computed(() => `Stella Starling, the Passport Office attendant, ${dialogue.value.stella}`);
 
-function choose(choice: PassportOfficeChoice) { if (choice === "apply") isRegistering.value = true; else step.value = choice; }
+function choose(choice: PassportOfficeChoice) { if (choice === "apply" && !registrationComplete.value) isRegistering.value = true; else step.value = choice; }
 function restart() { step.value = openingDialogueStep(); registrationComplete.value = false; }
 function cancelRegistration() { isRegistering.value = false; }
 function completeRegistration() { isRegistering.value = false; registrationComplete.value = true; }
