@@ -182,6 +182,25 @@ describe("media worker", () => {
     expect(get).toHaveBeenCalledWith(key);
   });
 
+  it("serves reviewed About artwork with safe WebP headers and image caching", async () => {
+    const key = "about/01-midcentury-cartoon.webp";
+    const { env, get } = enabledEnv({ [key]: "about-artwork" });
+    const { match, put } = installCache();
+    const { context, pending } = executionContext();
+
+    const response = await dispatch(`/${key}`, env, undefined, context);
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe("about-artwork");
+    expect(response.headers.get("Content-Type")).toBe("image/webp");
+    expect(response.headers.get("Cache-Control")).toBe("public, max-age=300, s-maxage=300, must-revalidate");
+    expect(response.headers.get("X-Content-Type-Options")).toBe("nosniff");
+    expect(get).toHaveBeenCalledWith(key);
+    expect(match).toHaveBeenCalledOnce();
+    await Promise.all(pending);
+    expect(put).toHaveBeenCalledOnce();
+  });
+
   it("caches full Passport Office artwork responses with the same safe image policy", async () => {
     const key = "passport-office/retro-spaceport-passport-bureau.png";
     const { env, get } = enabledEnv({ [key]: "artwork" });
@@ -222,7 +241,7 @@ describe("media worker", () => {
     expect(match).not.toHaveBeenCalled();
   });
 
-  it.each(["/outside/object.mp4", "/passport-office/briefing.pdf", "/astro-pop/script.js", "/astro-pop/document.html"])("hides unsupported path %s without R2 access", async (path) => {
+  it.each(["/outside/object.mp4", "/passport-office/briefing.pdf", "/about/unreviewed.svg", "/astro-pop/script.js", "/astro-pop/document.html"])("hides unsupported path %s without R2 access", async (path) => {
     const { env, get, head } = enabledEnv();
     expect((await dispatch(path, env)).status).toBe(404);
     expect(get).not.toHaveBeenCalled();
