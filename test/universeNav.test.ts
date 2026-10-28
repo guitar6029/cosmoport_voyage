@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import UniverseNav from "../app/components/universe/UniverseNav.vue";
+import UniverseMultiverseCollage from "../app/components/universe/UniverseMultiverseCollage.vue";
 import UniverseHomePage from "../app/pages/index.vue";
 import UniverseAboutPage from "../app/pages/about.vue";
 
@@ -45,12 +46,13 @@ const NuxtLink = defineComponent({
   setup: (props, { slots }) => () => h("a", { href: props.to }, slots.default?.()),
 });
 
-const renderWithAccountState = (component: typeof UniverseNav | typeof UniverseHomePage, accountState: AccountState) => {
+const renderWithAccountState = (component: typeof UniverseNav | typeof UniverseHomePage | typeof UniverseAboutPage, accountState: AccountState) => {
   authState.value = accountState;
   user.value = accountState === "signed-in" ? { fullName: "Nova Ray", imageUrl: "https://example.test/nova.png" } : null;
   const app = createSSRApp({ render: () => h(component) });
   app.component("NuxtLink", NuxtLink);
   app.component("UniverseNav", UniverseNav);
+  app.component("UniverseMultiverseCollage", UniverseMultiverseCollage);
   return renderToString(app);
 };
 
@@ -173,6 +175,7 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain("Cloudflare");
     expect(html).toContain("Built with curiosity.");
     expect(html).toContain('href="/"');
+    expect(html.match(/<img/g)).toHaveLength(6);
   });
 
   it("is integrated only by the Universe root page", async () => {
