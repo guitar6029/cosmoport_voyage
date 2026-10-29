@@ -66,12 +66,12 @@ describe("CosmoPort Universe navigation", () => {
     const html = await renderWithAccountState(UniverseNav, "signed-out");
 
     expect(html).toContain('aria-label="CosmoPort Universe"');
-    expect(html).toContain("CosmoPort");
-    expect(html).toContain("Universe");
+    expect(html).toContain(">Home<");
     expect(html).toContain("Sign In");
     expect(html).toContain("Register");
     expect(html).toContain('href="/passport-office?intent=sign-in"');
     expect(html).toContain('href="/passport-office?intent=register"');
+    expect(html).not.toContain('href="/about"');
     expect(html).not.toContain("UserButton");
   });
 
@@ -189,7 +189,8 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).not.toContain('href="/cosmoport-voyage"');
     expect(html).toContain('href="/passport-office?intent=sign-in"');
     expect(html).toContain('href="/passport-office?intent=register"');
-    expect(html).toContain('href="/about"');
+    expect(html).toContain('href="/"');
+    expect(html).not.toContain('href="/about"');
   });
 
   it("uses the reviewed Grand Concourse CDN artwork with a motion-safe fallback", async () => {
@@ -202,7 +203,7 @@ describe("CosmoPort Universe navigation", () => {
     expect(source).toContain("heroImage.value?.complete && heroImage.value.naturalWidth === 0");
     expect(source).toContain("heroImage.value?.decode().catch");
     expect(source).toContain('@error="heroFailed = true"');
-    expect(source).toContain("object-fit: contain");
+    expect(source).toContain("object-fit: cover");
     expect(source).toContain("prefers-reduced-motion: reduce");
   });
 

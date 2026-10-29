@@ -10,7 +10,7 @@ useSeoMeta({
 <template>
   <div class="universe-about">
     <header class="universe-about__header">
-      <UniverseNav />
+      <UniverseNav presentation="surface" />
     </header>
 
     <main>
@@ -106,7 +106,7 @@ useSeoMeta({
 
 <style scoped>
 .universe-about { min-height: 100vh; overflow: clip; background: #f3e4c7; color: #183d4a; }
-.universe-about__header { position: relative; z-index: 2; background: #f3e4c7; }
+.universe-about__header { position: relative; z-index: 2; padding: 1rem 0; background: #f3e4c7; }
 .universe-about__hero, .universe-about__section, .universe-about__closing { width: min(100% - 2rem, 72rem); margin: 0 auto; }
 .universe-about__hero { display: grid; position: relative; grid-template-columns: minmax(0, 1.05fr) minmax(16rem, .95fr); gap: 2.5rem; min-height: 36rem; align-items: center; padding: 4rem 0 5rem; }
 .universe-about__eyebrow { margin: 0 0 1rem; color: #b44d32; font-size: .7rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
