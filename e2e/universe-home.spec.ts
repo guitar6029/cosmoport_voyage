@@ -1,3 +1,6 @@
+Failed to create stream fd: Operation not permitted
+Failed to create stream fd: Operation not permitted
+Failed to create stream fd: Operation not permitted
 import { expect, test, type Page } from "@playwright/test";
 
 const GRAND_CONCOURSE_CDN_URL = "https://media.cosmos-universe.com/grand-concourse/cosmoport-grand-concourse.png";
@@ -60,6 +63,40 @@ test("keeps the hero, auth navigation, and content free of horizontal overflow",
     await expect(navigation.getByRole("link", { name: "About", exact: true })).toHaveAttribute("href", "/about");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
+});
+
+test("shows the complete hero artwork below the desktop breakpoint", async ({ page }) => {
+  await mockGrandConcourseImage(page, 200);
+
+  for (const width of [320, 375, 768]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+
+    const hero = page.locator(".grand-concourse__hero");
+    const image = page.locator(".grand-concourse__hero-art img");
+    const cta = page.getByRole("link", { name: "Explore the Concourse" });
+    await expect(hero).toHaveCSS("min-height", "0px");
+    await expect(image).toHaveCSS("object-fit", "contain");
+    await expect(cta).toHaveCSS("position", "relative");
+    expect(await page.evaluate(() => {
+      const imageRect = document.querySelector(".grand-concourse__hero-art img")?.getBoundingClientRect();
+      const ctaRect = document.querySelector(".grand-concourse__scroll-link")?.getBoundingClientRect();
+      return Boolean(imageRect && ctaRect
+        && imageRect.width <= window.innerWidth
+        && ctaRect.top >= imageRect.bottom
+        && document.documentElement.scrollWidth <= window.innerWidth);
+    })).toBe(true);
+  }
+});
+
+test("retains the immersive cover hero at the desktop breakpoint", async ({ page }) => {
+  await mockGrandConcourseImage(page, 200);
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto("/");
+
+  await expect(page.locator(".grand-concourse__hero")).toHaveCSS("min-height", "900px");
+  await expect(page.locator(".grand-concourse__hero-art img")).toHaveCSS("object-fit", "cover");
+  await expect(page.getByRole("link", { name: "Explore the Concourse" })).toHaveCSS("position", "absolute");
 });
 
 test("keeps every signed-out navigation control usable at 320px", async ({ page }) => {
