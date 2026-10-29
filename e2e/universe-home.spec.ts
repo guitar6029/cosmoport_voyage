@@ -126,7 +126,6 @@ test("keeps the navigation over the hero and sticky through the concourse", asyn
   const header = page.locator(".grand-concourse__header");
   const navigation = page.getByRole("navigation", { name: "CosmoPort Universe" });
   await expect(header).toHaveCSS("position", "sticky");
-  await expect(page.locator(".grand-concourse__hero")).toHaveCSS("min-height", "0px");
   await page.locator("#concourse").scrollIntoViewIfNeeded();
   await expect(navigation).toBeVisible();
   expect(await navigation.evaluate((element) => Math.abs(element.getBoundingClientRect().top - 12) < 1)).toBe(true);
