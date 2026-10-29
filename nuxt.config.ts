@@ -1,9 +1,13 @@
 import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from "node:url";
 import { SITE_DESCRIPTION, SITE_TITLE } from "./app/site";
 import astroPopDatabaseHealth from "./server/dev-handlers/astroPopDatabaseHealth";
 
+const usePlaywrightAuthMock = process.env.PLAYWRIGHT_TEST === "true";
+const playwrightAuthMock = fileURLToPath(new URL("./e2e/support/clerk-mock.ts", import.meta.url));
+
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt", "@clerk/nuxt"],
+  modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt", ...(usePlaywrightAuthMock ? [] : ["@clerk/nuxt"])],
   clerk: {
     afterSignOutUrl: "/",
     // Playwright exercises existing guest flows without Doppler credentials in CI.
@@ -40,7 +44,24 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   vite: {
     plugins: [tailwindcss()],
+    // Clerk dynamically imports its browser runtime. Pre-bundling its package
+    // graph can leave stale hashed chunks in Vite's dependency cache, so serve
+    // those ESM modules directly during development and E2E runs.
+    optimizeDeps: {
+      exclude: ["@clerk/vue", "@clerk/shared", "@clerk/clerk-js"],
+    },
+    resolve: usePlaywrightAuthMock
+      ? { alias: { "@clerk/nuxt/composables": playwrightAuthMock } }
+      : undefined,
   },
+  imports: usePlaywrightAuthMock
+    ? {
+        imports: [
+          { from: playwrightAuthMock, name: "useAuth" },
+          { from: playwrightAuthMock, name: "useUser" },
+        ],
+      }
+    : undefined,
   nitro: {
     devHandlers: [
       {

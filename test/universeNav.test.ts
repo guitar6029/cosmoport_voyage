@@ -13,7 +13,7 @@ type AccountState = "signed-in" | "signed-out" | "loading";
 
 const signOut = vi.fn();
 const authState = ref<AccountState>("loading");
-const user = ref<{ fullName?: string; imageUrl?: string } | null>(null);
+const user = ref<{ fullName?: string; imageUrl?: string; primaryEmailAddress?: { emailAddress: string } } | null>(null);
 
 vi.stubGlobal("useAuth", () => ({
   isLoaded: ref(authState.value !== "loading"),
@@ -25,7 +25,7 @@ vi.stubGlobal("useSeoMeta", vi.fn());
 
 const mountSignedInNavigation = () => {
   authState.value = "signed-in";
-  user.value = { fullName: "Nova Ray", imageUrl: "https://example.test/nova.png" };
+  user.value = { fullName: "Nova Ray", imageUrl: "https://example.test/nova.png", primaryEmailAddress: { emailAddress: "nova@example.test" } };
   const container = document.createElement("div");
   const app = createApp(UniverseNav);
 
@@ -48,7 +48,7 @@ const NuxtLink = defineComponent({
 
 const renderWithAccountState = (component: typeof UniverseNav | typeof UniverseHomePage | typeof UniverseAboutPage, accountState: AccountState) => {
   authState.value = accountState;
-  user.value = accountState === "signed-in" ? { fullName: "Nova Ray", imageUrl: "https://example.test/nova.png" } : null;
+  user.value = accountState === "signed-in" ? { fullName: "Nova Ray", imageUrl: "https://example.test/nova.png", primaryEmailAddress: { emailAddress: "nova@example.test" } } : null;
   const app = createSSRApp({ render: () => h(component) });
   app.component("NuxtLink", NuxtLink);
   app.component("UniverseNav", UniverseNav);
@@ -61,7 +61,7 @@ describe("CosmoPort Universe navigation", () => {
     vi.clearAllMocks();
     document.body.replaceChildren();
   });
-  it("shows unavailable custom sign-in and registration controls to signed-out visitors", async () => {
+  it("links signed-out visitors directly to the custom sign-in and registration flows", async () => {
     const html = await renderWithAccountState(UniverseNav, "signed-out");
 
     expect(html).toContain('aria-label="CosmoPort Universe"');
@@ -69,17 +69,19 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain("Universe");
     expect(html).toContain("Sign In");
     expect(html).toContain("Register");
-    expect(html).toContain("disabled");
-    expect(html).toContain("Passport Office opens");
+    expect(html).toContain('href="/passport-office?intent=sign-in"');
+    expect(html).toContain('href="/passport-office?intent=register"');
     expect(html).not.toContain("UserButton");
   });
 
-  it("shows a custom Clerk-image avatar and sign-out control to signed-in visitors", async () => {
+  it("shows a custom Clerk-image Account control to signed-in visitors", async () => {
     const html = await renderWithAccountState(UniverseNav, "signed-in");
 
     expect(html).toContain('src="https://example.test/nova.png"');
-    expect(html).toContain('alt="Nova Ray profile image"');
-    expect(html).toContain("Sign Out");
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain('aria-haspopup="menu"');
+    expect(html).toContain("Account");
+    expect(html).not.toContain("Sign Out");
     expect(html).not.toContain("Sign In");
     expect(html).not.toContain("Register");
   });
@@ -95,10 +97,15 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain("universe-nav__avatar--fallback");
   });
 
-  it("requests a Clerk sign-out to the Universe root and clears the processing state on success", async () => {
+  it("opens an Account menu with identity details and requests a Clerk sign-out to the Universe root", async () => {
     signOut.mockResolvedValue(undefined);
     const { app, container } = mountSignedInNavigation();
-    const button = container.querySelector<HTMLButtonElement>(".universe-nav__button");
+    const accountButton = container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle");
+    accountButton?.click();
+    await nextTick();
+    expect(container.querySelector('[role="group"]')?.textContent).toContain("Nova Ray");
+    expect(container.querySelector('[role="group"]')?.textContent).toContain("nova@example.test");
+    const button = container.querySelector<HTMLButtonElement>(".universe-nav__menu-sign-out");
 
     button?.click();
     await flushSignOut();
@@ -117,7 +124,9 @@ describe("CosmoPort Universe navigation", () => {
     }));
     signOut.mockResolvedValueOnce(undefined);
     const { app, container } = mountSignedInNavigation();
-    const button = container.querySelector<HTMLButtonElement>(".universe-nav__button");
+    container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle")?.click();
+    await nextTick();
+    const button = container.querySelector<HTMLButtonElement>(".universe-nav__menu-sign-out");
 
     button?.click();
     button?.click();
@@ -152,6 +161,20 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).not.toContain("Avatar");
   });
 
+  it("closes the Account menu with Escape", async () => {
+    const { app, container } = mountSignedInNavigation();
+    const button = container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle");
+    button?.click();
+    await nextTick();
+    expect(container.querySelector('[role="group"]')).not.toBeNull();
+    expect(document.activeElement).toBe(container.querySelector<HTMLButtonElement>(".universe-nav__menu-sign-out"));
+    container.querySelector<HTMLButtonElement>(".universe-nav__menu-sign-out")?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await nextTick();
+    expect(container.querySelector('[role="group"]')).toBeNull();
+    expect(document.activeElement).toBe(button);
+    app.unmount();
+  });
+
   it("renders the navigation on the Universe root while preserving both world links", async () => {
     const html = await renderWithAccountState(UniverseHomePage, "signed-out");
 
@@ -160,6 +183,8 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain('href="/cosmoport-voyage"');
     expect(html).toContain('href="/astro-pop"');
     expect(html).toContain('href="/passport-office"');
+    expect(html).toContain("Visit the Passport Office");
+    expect(html).not.toContain("preview");
     expect(html).toContain('href="/about"');
   });
 
@@ -198,6 +223,12 @@ describe("CosmoPort Universe navigation", () => {
     expect(source).toContain("useAuth()");
     expect(source).toContain("useUser()");
     expect(source).toContain('signOut.value({ redirectUrl: "/" })');
+    expect(source).toContain('to="/passport-office?intent=sign-in"');
+    expect(source).toContain('to="/passport-office?intent=register"');
+    expect(source).toContain(':aria-expanded="accountMenuOpen"');
+    expect(source).toContain('role="group" aria-label="Account details"');
+    expect(source).not.toContain('aria-haspopup="menu"');
+    expect(source).not.toContain('to="/account"');
     expect(source).not.toContain("SignInButton");
     expect(source).not.toContain("SignUpButton");
     expect(source).not.toContain("UserButton");

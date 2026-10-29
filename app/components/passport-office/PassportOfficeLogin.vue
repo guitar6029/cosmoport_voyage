@@ -5,13 +5,14 @@ import { PASSPORT_OFFICE_MEDIA } from "../../data/passportOfficeMedia";
 import { usePassportOfficeLogin } from "../../composables/usePassportOfficeLogin";
 
 const props = defineProps<{ isSignedIn: boolean }>();
-const emit = defineEmits<{ cancel: []; complete: [] }>();
+const emit = defineEmits<{ begin: []; cancel: []; complete: [] }>();
 const { isLoaded, signIn, setActive } = useSignIn();
 const passportInteriorFailed = ref(false);
 const emailAddress = ref("");
 const password = ref("");
 const code = ref("");
 const { verifying, pending, error, begin, verify } = usePassportOfficeLogin(signIn, setActive, isLoaded, () => emit("complete"));
+function beginCheckIn() { emit("begin"); return begin(emailAddress.value, password.value); }
 </script>
 
 <template>
@@ -28,7 +29,7 @@ const { verifying, pending, error, begin, verify } = usePassportOfficeLogin(sign
       <button type="button" class="passport-login__secondary" @click="emit('cancel')">Back to the Office</button>
     </div>
 
-    <form v-else-if="!verifying" class="passport-login__form" @submit.prevent="begin(emailAddress, password)">
+    <form v-else-if="!verifying" class="passport-login__form" @submit.prevent="beginCheckIn">
       <p class="passport-login__stamp">CosmoPort Passport Bureau · Identity Verification</p>
       <h2 id="passport-login-title">Returning Traveler Check-In</h2>
       <label for="passport-login-email">Contact Signal (Email Address)</label>

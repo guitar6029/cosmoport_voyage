@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref } from "vue";
 
 const { isLoaded, isSignedIn, signOut } = useAuth();
 const { user } = useUser();
 const isSigningOut = ref(false);
 const signOutError = ref("");
+const accountMenuOpen = ref(false);
+const accountToggle = ref<HTMLButtonElement>();
+const signOutButton = ref<HTMLButtonElement>();
 
 const userName = computed(() => (
   user.value?.fullName
@@ -20,12 +23,15 @@ const fallbackInitials = computed(() => userName.value
   .map((part) => part[0]?.toUpperCase())
   .join("") || "CP");
 
+const userEmail = computed(() => user.value?.primaryEmailAddress?.emailAddress || "No email address on file");
+
 const handleSignOut = async () => {
   if (isSigningOut.value) {
     return;
   }
 
   signOutError.value = "";
+  accountMenuOpen.value = true;
   isSigningOut.value = true;
 
   try {
@@ -36,6 +42,37 @@ const handleSignOut = async () => {
     isSigningOut.value = false;
   }
 };
+
+function closeAccountMenu(restoreFocus = false) {
+  accountMenuOpen.value = false;
+
+  if (restoreFocus) {
+    void nextTick(() => accountToggle.value?.focus());
+  }
+}
+
+function openAccountMenu() {
+  accountMenuOpen.value = true;
+  void nextTick(() => signOutButton.value?.focus());
+}
+
+function toggleAccountMenu() {
+  if (accountMenuOpen.value) {
+    closeAccountMenu(true);
+    return;
+  }
+
+  openAccountMenu();
+}
+
+function handleAccountKeydown(event: KeyboardEvent) {
+  if (event.key === "Escape" && accountMenuOpen.value) {
+    event.preventDefault();
+    closeAccountMenu(true);
+  }
+}
+
+onBeforeUnmount(closeAccountMenu);
 </script>
 
 <template>
@@ -55,27 +92,34 @@ const handleSignOut = async () => {
       </template>
 
       <template v-else-if="!isSignedIn">
-        <div class="universe-nav__unavailable">
-          <div class="universe-nav__controls">
-            <button class="universe-nav__button universe-nav__button--quiet" type="button" disabled>
-              Sign In
-            </button>
-            <button class="universe-nav__button" type="button" disabled>
-              Register
-            </button>
-          </div>
-          <span class="universe-nav__availability">Passport Office opens soon.</span>
+        <div class="universe-nav__controls">
+          <NuxtLink class="universe-nav__button universe-nav__button--quiet" to="/passport-office?intent=sign-in">Sign In</NuxtLink>
+          <NuxtLink class="universe-nav__button" to="/passport-office?intent=register">Register</NuxtLink>
         </div>
       </template>
 
       <template v-else>
-        <div class="universe-nav__profile">
-          <img v-if="user?.imageUrl" class="universe-nav__avatar" :src="user.imageUrl" :alt="`${userName} profile image`" />
-          <span v-else class="universe-nav__avatar universe-nav__avatar--fallback" aria-hidden="true">{{ fallbackInitials }}</span>
-          <span class="universe-nav__sr-only">Signed in as {{ userName }}</span>
-          <button class="universe-nav__button universe-nav__button--quiet" type="button" :disabled="isSigningOut" @click="handleSignOut">
-            {{ isSigningOut ? "Signing Out" : "Sign Out" }}
+        <div class="universe-nav__profile" @keydown="handleAccountKeydown">
+          <button
+            class="universe-nav__account-toggle"
+            type="button"
+            :aria-expanded="accountMenuOpen"
+            aria-controls="universe-account-menu"
+            ref="accountToggle"
+            @click="toggleAccountMenu"
+          >
+            <img v-if="user?.imageUrl" class="universe-nav__avatar" :src="user.imageUrl" alt="" />
+            <span v-else class="universe-nav__avatar universe-nav__avatar--fallback" aria-hidden="true">{{ fallbackInitials }}</span>
+            <span>Account</span>
+            <span class="universe-nav__sr-only">for {{ userName }}</span>
           </button>
+          <div v-if="accountMenuOpen" id="universe-account-menu" class="universe-nav__account-menu" role="group" aria-label="Account details">
+            <p class="universe-nav__account-name">{{ userName }}</p>
+            <p class="universe-nav__account-email">{{ userEmail }}</p>
+            <button ref="signOutButton" class="universe-nav__menu-sign-out" type="button" :disabled="isSigningOut" @click="handleSignOut">
+              {{ isSigningOut ? "Signing Out" : "Sign Out" }}
+            </button>
+          </div>
           <p v-if="signOutError" class="universe-nav__sign-out-error" role="alert">{{ signOutError }}</p>
         </div>
       </template>
@@ -154,6 +198,9 @@ const handleSignOut = async () => {
 }
 
 .universe-nav__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 2.75rem;
   border: 2px solid #183d4a;
   border-radius: 999px;
@@ -166,6 +213,7 @@ const handleSignOut = async () => {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .universe-nav__button:disabled {
@@ -208,22 +256,82 @@ const handleSignOut = async () => {
   gap: 0.55rem;
 }
 
-.universe-nav__unavailable {
-  display: grid;
-  justify-items: end;
-  gap: 0.18rem;
-}
-
 .universe-nav__controls {
   display: flex;
   gap: 0.55rem;
 }
 
-.universe-nav__availability {
-  color: #49656d;
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+.universe-nav__account-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  border: 2px solid #183d4a;
+  border-radius: 999px;
+  padding: .2rem .7rem .2rem .2rem;
+  background: #fff8e8;
+  color: #183d4a;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.universe-nav__account-toggle:hover,
+.universe-nav__account-toggle[aria-expanded="true"] {
+  border-color: #b44d32;
+  color: #b44d32;
+}
+
+.universe-nav__account-toggle:focus-visible,
+.universe-nav__menu-sign-out:focus-visible {
+  outline: 3px solid #b44d32;
+  outline-offset: 4px;
+}
+
+.universe-nav__account-menu {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  top: calc(100% + .5rem);
+  display: grid;
+  width: min(18rem, 80vw);
+  gap: .35rem;
+  border: 2px solid #183d4a;
+  border-radius: .65rem;
+  padding: .8rem;
+  background: #fff8e8;
+  box-shadow: .3rem .3rem 0 rgb(180 77 50 / .32);
+}
+
+.universe-nav__account-name,
+.universe-nav__account-email {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.universe-nav__account-name { font-weight: 800; }
+.universe-nav__account-email { color: #49656d; font-size: .78rem; }
+
+.universe-nav__menu-sign-out {
+  margin-top: .35rem;
+  border: 2px solid #183d4a;
+  border-radius: .45rem;
+  padding: .55rem .7rem;
+  background: #183d4a;
+  color: #fff8e8;
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.universe-nav__menu-sign-out:hover:not(:disabled) {
+  border-color: #b44d32;
+  background: #b44d32;
 }
 
 .universe-nav__sign-out-error {

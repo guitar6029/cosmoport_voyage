@@ -10,6 +10,9 @@ import PassportOfficePage from "../app/pages/passport-office/index.vue";
 import PassportOfficeLogin from "../app/components/passport-office/PassportOfficeLogin.vue";
 import PassportOfficeRegistration from "../app/components/passport-office/PassportOfficeRegistration.vue";
 
+const routeQuery = ref<Record<string, string>>({});
+vi.stubGlobal("useRoute", () => ({ query: routeQuery.value }));
+
 const NuxtLink = defineComponent({
   props: { to: { type: String, required: true } },
   setup: (props, { slots }) => () => h("a", { href: props.to }, slots.default?.()),
@@ -94,10 +97,21 @@ describe("Passport Office", () => {
 
   it("keeps Stella's introduction on the main office screen and isolates registration from her dialogue", async () => {
     const source = await readFile(resolve(process.cwd(), "app/pages/passport-office/index.vue"), "utf8");
-    expect(source).toContain('v-if="isRegistering" class="passport-office__registration-shell"');
+    expect(source).toContain('v-else-if="isRegistering" class="passport-office__registration-shell"');
     expect(source).toContain("CosmoPort traveler registration");
     expect(source).toContain("A message from Stella Starling");
     expect(source).not.toContain('v-if="isRegistering">Wonderful');
+  });
+
+  it("validates explicit sign-in and registration intents after hydration and Clerk readiness", async () => {
+    const source = await readFile(resolve(process.cwd(), "app/pages/passport-office/index.vue"), "utf8");
+    expect(source).toContain('intent === "sign-in" || intent === "register"');
+    expect(source).toContain('requestedIntent.value === "register"');
+    expect(source).toContain('requestedIntent.value === "sign-in"');
+    expect(source).toContain("clientReady.value && isClerkLoaded.value");
+    expect(source).toContain("Already cleared for departure");
+    expect(source).toContain("Return to the Universe");
+    expect(source).not.toContain("/account");
   });
 
   it("opens the custom returning-traveler form with password-manager and Device Trust support", async () => {
