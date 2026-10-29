@@ -92,30 +92,28 @@ onBeforeUnmount(closeAccountMenu);
 
       <template v-else-if="!isSignedIn">
         <div class="universe-nav__controls">
-          <NuxtLink class="universe-nav__button universe-nav__button--quiet" to="/passport-office?intent=sign-in">Sign In</NuxtLink>
+          <NuxtLink class="universe-nav__button universe-nav__button--quiet" to="/passport-office?intent=sign-in">Sign
+            In</NuxtLink>
           <NuxtLink class="universe-nav__button" to="/passport-office?intent=register">Register</NuxtLink>
         </div>
       </template>
 
       <template v-else>
         <div class="universe-nav__profile" @keydown="handleAccountKeydown">
-          <button
-            class="universe-nav__account-toggle"
-            type="button"
-            :aria-expanded="accountMenuOpen"
-            aria-controls="universe-account-menu"
-            ref="accountToggle"
-            @click="toggleAccountMenu"
-          >
+          <button class="universe-nav__account-toggle" type="button" :aria-expanded="accountMenuOpen"
+            aria-controls="universe-account-menu" ref="accountToggle" @click="toggleAccountMenu">
             <img v-if="user?.imageUrl" class="universe-nav__avatar" :src="user.imageUrl" alt="" />
-            <span v-else class="universe-nav__avatar universe-nav__avatar--fallback" aria-hidden="true">{{ fallbackInitials }}</span>
+            <span v-else class="universe-nav__avatar universe-nav__avatar--fallback" aria-hidden="true">{{
+              fallbackInitials }}</span>
             <span>Account</span>
             <span class="universe-nav__sr-only">for {{ userName }}</span>
           </button>
-          <div v-if="accountMenuOpen" id="universe-account-menu" class="universe-nav__account-menu" role="group" aria-label="Account details">
+          <div v-if="accountMenuOpen" id="universe-account-menu" class="universe-nav__account-menu" role="group"
+            aria-label="Account details">
             <p class="universe-nav__account-name">{{ userName }}</p>
             <p class="universe-nav__account-email">{{ userEmail }}</p>
-            <button ref="signOutButton" class="universe-nav__menu-sign-out" type="button" :disabled="isSigningOut" @click="handleSignOut">
+            <button ref="signOutButton" class="universe-nav__menu-sign-out" type="button" :disabled="isSigningOut"
+              @click="handleSignOut">
               {{ isSigningOut ? "Signing Out" : "Sign Out" }}
             </button>
           </div>
@@ -287,8 +285,14 @@ onBeforeUnmount(closeAccountMenu);
   overflow-wrap: anywhere;
 }
 
-.universe-nav__account-name { font-weight: 800; }
-.universe-nav__account-email { color: var(--cp-universe-muted-teal); font-size: .78rem; }
+.universe-nav__account-name {
+  font-weight: 800;
+}
+
+.universe-nav__account-email {
+  color: var(--cp-universe-muted-teal);
+  font-size: .78rem;
+}
 
 .universe-nav__menu-sign-out {
   margin-top: .35rem;
