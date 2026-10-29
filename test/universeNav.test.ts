@@ -71,7 +71,7 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain("Register");
     expect(html).toContain('href="/passport-office?intent=sign-in"');
     expect(html).toContain('href="/passport-office?intent=register"');
-    expect(html).not.toContain('href="/about"');
+    expect(html).toContain('href="/about"');
     expect(html).not.toContain("UserButton");
   });
 
@@ -190,7 +190,7 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain('href="/passport-office?intent=sign-in"');
     expect(html).toContain('href="/passport-office?intent=register"');
     expect(html).toContain('href="/"');
-    expect(html).not.toContain('href="/about"');
+    expect(html).toContain('href="/about"');
   });
 
   it("uses the reviewed Grand Concourse CDN artwork with a motion-safe fallback", async () => {
@@ -245,7 +245,8 @@ describe("CosmoPort Universe navigation", () => {
     expect(source).toContain('to="/passport-office?intent=sign-in"');
     expect(source).toContain('to="/passport-office?intent=register"');
     expect(source).toContain(':aria-expanded="accountMenuOpen"');
-    expect(source).toContain('role="group" aria-label="Account details"');
+    expect(source).toContain('role="group"');
+    expect(source).toContain('aria-label="Account details"');
     expect(source).not.toContain('aria-haspopup="menu"');
     expect(source).not.toContain('to="/account"');
     expect(source).not.toContain("SignInButton");

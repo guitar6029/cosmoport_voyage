@@ -57,7 +57,7 @@ test("keeps the hero, auth navigation, and content free of horizontal overflow",
     await expect(navigation.getByRole("link", { name: "Home", exact: true })).toHaveAttribute("href", "/");
     await expect(navigation.getByRole("link", { name: "Sign In" })).toHaveAttribute("href", "/passport-office?intent=sign-in");
     await expect(navigation.getByRole("link", { name: "Register" })).toHaveAttribute("href", "/passport-office?intent=register");
-    await expect(navigation.getByRole("link", { name: "About", exact: true })).toHaveCount(0);
+    await expect(navigation.getByRole("link", { name: "About", exact: true })).toHaveAttribute("href", "/about");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
 });

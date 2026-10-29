@@ -21,4 +21,17 @@ test.describe("CosmoPort Universe About page", () => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     }
   });
+
+  test("keeps the matching Universe navigation sticky while the page scrolls", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/about");
+
+    const header = page.locator(".universe-about__header");
+    const navigation = page.getByRole("navigation", { name: "CosmoPort Universe" });
+    await expect(header).toHaveCSS("position", "sticky");
+    await expect(navigation.getByRole("link", { name: "About", exact: true })).toHaveAttribute("href", "/about");
+    await page.locator(".universe-about__engineering").scrollIntoViewIfNeeded();
+    await expect(navigation).toBeVisible();
+    expect(await navigation.evaluate((element) => Math.abs(element.getBoundingClientRect().top - 12) < 1)).toBe(true);
+  });
 });
