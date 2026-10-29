@@ -1,6 +1,13 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("CosmoPort Universe About page", () => {
+  test("opens About from the floating Universe navigation", async ({ page }) => {
+    await page.goto("/");
+
+    await page.getByRole("navigation", { name: "CosmoPort Universe" }).getByRole("link", { name: "About", exact: true }).click();
+    await expect(page).toHaveURL(/\/about$/);
+  });
+
   test("offers a route back to the Universe home", async ({ page }) => {
     await page.goto("/about");
 
