@@ -84,6 +84,7 @@ test("shows the complete hero artwork at every viewport width", async ({ page })
   }
 });
 
+
 test("keeps every signed-out navigation control usable at 320px", async ({ page }) => {
   await mockGrandConcourseImage(page, 200);
   await page.setViewportSize({ width: 320, height: 900 });

@@ -1,6 +1,3 @@
-Failed to create stream fd: Operation not permitted
-Failed to create stream fd: Operation not permitted
-Failed to create stream fd: Operation not permitted
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { GRAND_CONCOURSE_MEDIA } from "../data/grandConcourseMedia";
