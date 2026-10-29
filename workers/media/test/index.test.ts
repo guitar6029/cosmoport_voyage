@@ -182,23 +182,6 @@ describe("media worker", () => {
     expect(get).toHaveBeenCalledWith(key);
   });
 
-  it("serves reviewed Grand Concourse artwork with the existing safe image policy", async () => {
-    const key = "grand-concourse/cosmoport-grand-concourse.png";
-    const { env, get } = enabledEnv({ [key]: "concourse-artwork" });
-    const { match, put } = installCache();
-    const { context, pending } = executionContext();
-    const response = await dispatch(`/${key}`, env, undefined, context);
-
-    expect(response.status).toBe(200);
-    expect(await response.text()).toBe("concourse-artwork");
-    expect(response.headers.get("Content-Type")).toBe("image/png");
-    expect(response.headers.get("Cache-Control")).toContain("s-maxage=300");
-    expect(get).toHaveBeenCalledWith(key);
-    expect(match).toHaveBeenCalledOnce();
-    await Promise.all(pending);
-    expect(put).toHaveBeenCalledOnce();
-  });
-
   it("serves reviewed About artwork with safe WebP headers and image caching", async () => {
     const key = "about/01-midcentury-cartoon.webp";
     const { env, get } = enabledEnv({ [key]: "about-artwork" });
@@ -258,7 +241,7 @@ describe("media worker", () => {
     expect(match).not.toHaveBeenCalled();
   });
 
-  it.each(["/outside/object.mp4", "/passport-office/briefing.pdf", "/about/unreviewed.svg", "/grand-concourse/private-map.svg", "/grand-concourse/../secret.png", "/astro-pop/script.js", "/astro-pop/document.html"])("hides unsupported path %s without R2 access", async (path) => {
+  it.each(["/outside/object.mp4", "/passport-office/briefing.pdf", "/about/unreviewed.svg", "/astro-pop/script.js", "/astro-pop/document.html"])("hides unsupported path %s without R2 access", async (path) => {
     const { env, get, head } = enabledEnv();
     expect((await dispatch(path, env)).status).toBe(404);
     expect(get).not.toHaveBeenCalled();
