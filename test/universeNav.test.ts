@@ -8,6 +8,7 @@ import UniverseNav from "../app/components/universe/UniverseNav.vue";
 import UniverseMultiverseCollage from "../app/components/universe/UniverseMultiverseCollage.vue";
 import UniverseHomePage from "../app/pages/index.vue";
 import UniverseAboutPage from "../app/pages/about.vue";
+import { GRAND_CONCOURSE_MEDIA, GRAND_CONCOURSE_MEDIA_BASE_URL } from "../app/data/grandConcourseMedia";
 
 type AccountState = "signed-in" | "signed-out" | "loading";
 
@@ -175,17 +176,34 @@ describe("CosmoPort Universe navigation", () => {
     app.unmount();
   });
 
-  it("renders the navigation on the Universe root while preserving both world links", async () => {
+  it("renders the Grand Concourse root with AstroPop available and Voyage unavailable", async () => {
     const html = await renderWithAccountState(UniverseHomePage, "signed-out");
 
     expect(html).toContain('aria-label="CosmoPort Universe"');
-    expect(html).toContain('aria-label="Experiences"');
-    expect(html).toContain('href="/cosmoport-voyage"');
+    expect(html).toContain("Explore the Concourse");
+    expect(html).toContain("Your neighborhood soda shop, now serving the stars.");
+    expect(html).toContain("Enter AstroPop");
     expect(html).toContain('href="/astro-pop"');
-    expect(html).toContain('href="/passport-office"');
-    expect(html).toContain("Visit the Passport Office");
-    expect(html).not.toContain("preview");
+    expect(html).toContain("Opening soon");
+    expect(html).toContain("Under Construction");
+    expect(html).not.toContain('href="/cosmoport-voyage"');
+    expect(html).toContain('href="/passport-office?intent=sign-in"');
+    expect(html).toContain('href="/passport-office?intent=register"');
     expect(html).toContain('href="/about"');
+  });
+
+  it("uses the reviewed Grand Concourse CDN artwork with a motion-safe fallback", async () => {
+    const source = await readFile(resolve(process.cwd(), "app/pages/index.vue"), "utf8");
+
+    expect(GRAND_CONCOURSE_MEDIA_BASE_URL).toBe("https://media.cosmos-universe.com/grand-concourse");
+    expect(GRAND_CONCOURSE_MEDIA.hero).toBe(`${GRAND_CONCOURSE_MEDIA_BASE_URL}/cosmoport-grand-concourse.png`);
+    expect(source).toContain("GRAND_CONCOURSE_MEDIA.hero");
+    expect(source).toContain("heroFailed = ref(false)");
+    expect(source).toContain("heroImage.value?.complete && heroImage.value.naturalWidth === 0");
+    expect(source).toContain("heroImage.value?.decode().catch");
+    expect(source).toContain('@error="heroFailed = true"');
+    expect(source).toContain("object-fit: contain");
+    expect(source).toContain("prefers-reduced-motion: reduce");
   });
 
   it("renders the Universe About page with its destinations, engineering story, and home CTA", async () => {
