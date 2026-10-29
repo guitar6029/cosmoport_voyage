@@ -53,9 +53,58 @@ test("keeps the hero, auth navigation, and content free of horizontal overflow",
     await page.goto("/");
 
     await expect(page.locator(".grand-concourse__hero-art img")).toBeVisible();
-    await expect(page.getByRole("navigation", { name: "CosmoPort Universe" }).getByRole("link", { name: "Sign In" })).toHaveAttribute("href", "/passport-office?intent=sign-in");
+    const navigation = page.getByRole("navigation", { name: "CosmoPort Universe" });
+    await expect(navigation.getByRole("link", { name: "Home", exact: true })).toHaveAttribute("href", "/");
+    await expect(navigation.getByRole("link", { name: "Sign In" })).toHaveAttribute("href", "/passport-office?intent=sign-in");
+    await expect(navigation.getByRole("link", { name: "Register" })).toHaveAttribute("href", "/passport-office?intent=register");
+    await expect(navigation.getByRole("link", { name: "About", exact: true })).toHaveAttribute("href", "/about");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
+});
+
+test("keeps every signed-out navigation control usable at 320px", async ({ page }) => {
+  await mockGrandConcourseImage(page, 200);
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/");
+
+  const navigation = page.getByRole("navigation", { name: "CosmoPort Universe" });
+  const home = navigation.getByRole("link", { name: "Home", exact: true });
+  const about = navigation.getByRole("link", { name: "About", exact: true });
+  const signIn = navigation.getByRole("link", { name: "Sign In" });
+  const register = navigation.getByRole("link", { name: "Register" });
+
+  await expect(home).toBeVisible();
+  await expect(about).toBeVisible();
+  await expect(signIn).toBeVisible();
+  await expect(register).toBeVisible();
+  await expect(signIn).toHaveAttribute("href", "/passport-office?intent=sign-in");
+  await expect(register).toHaveAttribute("href", "/passport-office?intent=register");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  await about.click();
+  await expect(page).toHaveURL(/\/about$/);
+  await page.getByRole("navigation", { name: "CosmoPort Universe" }).getByRole("link", { name: "Home", exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+
+  await page.getByRole("navigation", { name: "CosmoPort Universe" }).getByRole("link", { name: "Sign In" }).click();
+  await expect(page).toHaveURL(/\/passport-office\?intent=sign-in$/);
+  await page.goto("/");
+  await page.getByRole("navigation", { name: "CosmoPort Universe" }).getByRole("link", { name: "Register" }).click();
+  await expect(page).toHaveURL(/\/passport-office\?intent=register$/);
+});
+
+test("keeps the navigation over the hero and sticky through the concourse", async ({ page }) => {
+  await mockGrandConcourseImage(page, 200);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  const header = page.locator(".grand-concourse__header");
+  const navigation = page.getByRole("navigation", { name: "CosmoPort Universe" });
+  await expect(header).toHaveCSS("position", "sticky");
+  await expect(page.locator(".grand-concourse__hero")).toHaveCSS("min-height", "900px");
+  await page.locator("#concourse").scrollIntoViewIfNeeded();
+  await expect(navigation).toBeVisible();
+  expect(await navigation.evaluate((element) => Math.abs(element.getBoundingClientRect().top - 12) < 1)).toBe(true);
 });
 
 // Optional manual smoke check (never run in standard CI):

@@ -1,0 +1,11 @@
+:root {
+  --cp-universe-space-teal: #183d4a;
+  --cp-universe-space-teal-deep: #103947;
+  --cp-universe-cream: #fff8e8;
+  --cp-universe-gold: #ffd281;
+  --cp-universe-rust: #b44d32;
+  --cp-universe-muted-teal: #c5dddd;
+  --cp-universe-plaque-width: 32.5rem;
+  --cp-universe-plaque-radius: 0.7rem;
+  --cp-universe-plaque-shadow: 0 0.4rem 0.9rem rgb(9 31 39 / 0.32);
+}
