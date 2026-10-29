@@ -24,9 +24,9 @@ async function fileApplication() { await beginRegistration({ firstName: firstNam
     </div>
 
     <form v-if="!verifying && stage === 'details'" class="passport-registration__form" @submit.prevent="reviewApplication">
-      <p class="passport-registration__stamp">Traveler registration booklet</p>
-      <h2 id="passport-registration-title">First-time traveler application</h2>
-      <p>Complete the details below, then review them before filing. Your password is never shown on the review page.</p>
+      <p class="passport-registration__stamp">CosmoPort Passport Bureau · Form CP-1957</p>
+      <h2 id="passport-registration-title">Traveler registration</h2>
+      <p>Enter your particulars for Bureau review. Your password is never displayed on the review page.</p>
       <label for="passport-first-name">Given name <span aria-hidden="true">(first name)</span></label>
       <input id="passport-first-name" v-model="firstName" name="firstName" type="text" autocomplete="given-name" required :disabled="pending || !isLoaded">
       <label for="passport-last-name">Family name <span aria-hidden="true">(last name)</span></label>
@@ -41,7 +41,7 @@ async function fileApplication() { await beginRegistration({ firstName: firstNam
     </form>
 
     <div v-else-if="!verifying" class="passport-registration__form passport-registration__review" aria-labelledby="passport-registration-title">
-      <p class="passport-registration__stamp">Review before filing</p><h2 id="passport-registration-title">Confirm traveler details</h2>
+      <p class="passport-registration__stamp">CosmoPort Passport Bureau · Review desk</p><h2 id="passport-registration-title">Confirm registration particulars</h2>
       <dl><div><dt>Traveler</dt><dd>{{ applicantName }}</dd></div><div><dt>Email address</dt><dd>{{ emailAddress.trim() }}</dd></div></dl>
       <p>Your secure launch phrase is protected and will not be displayed here.</p>
       <p v-if="error" class="passport-registration__error" role="alert">{{ error }}</p>
@@ -51,7 +51,7 @@ async function fileApplication() { await beginRegistration({ firstName: firstNam
     </div>
 
     <form v-else class="passport-registration__form" @submit.prevent="verifyCode(code)">
-      <p class="passport-registration__stamp">Email verification</p><h2 id="passport-registration-title">Confirm your contact signal</h2>
+      <p class="passport-registration__stamp">CosmoPort Passport Bureau · Signal verification</p><h2 id="passport-registration-title">Confirm contact signal</h2>
       <p>Enter the code Clerk sent to <strong>{{ emailAddress.trim() }}</strong>. A Clerk security challenge may appear in a separate dialog when required.</p>
       <label for="passport-verification-code">Verification code</label>
       <input id="passport-verification-code" v-model="code" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" required :disabled="pending">
@@ -64,10 +64,10 @@ async function fileApplication() { await beginRegistration({ firstName: firstNam
 </template>
 
 <style scoped>
-.passport-registration { display:grid; grid-template-columns:minmax(11rem,.82fr) minmax(0,1.18fr); gap:clamp(1rem,3vw,2rem); align-items:stretch; margin-top:1rem; }
-.passport-registration__cover { display:grid; min-height:100%; place-items:center; border:2px dashed rgb(23 60 71 / .45); border-radius:.75rem; padding:.75rem; background:rgb(255 253 245 / .55); }.passport-registration__cover img { display:block; width:100%; max-height:36rem; object-fit:contain; }.passport-registration__cover--fallback { color:#173c47; text-align:center; font-weight:700; }
-.passport-registration__form { display:grid; gap:.7rem; align-content:start; }.passport-registration__form p,.passport-registration__form h2 { margin:0; }.passport-registration__form h2 { font-family:Georgia,"Times New Roman",serif; font-size:clamp(1.5rem,3vw,2.15rem); }.passport-registration__stamp { color:#b8493a; font-size:.72rem; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
+.passport-registration { display:grid; grid-template-columns:minmax(18rem,.9fr) minmax(0,1.1fr); gap:clamp(1.25rem,3vw,3rem); align-items:stretch; margin:0; }
+.passport-registration__cover { display:grid; min-height:34rem; place-items:center; overflow:hidden; border:2px solid #173c47; border-radius:.6rem; padding:0; background:#173c47; }.passport-registration__cover img { display:block; width:100%; height:100%; object-fit:contain; }.passport-registration__cover--fallback { color:#fff3d7; text-align:center; font-weight:700; }.passport-registration__cover--fallback p { padding:1.5rem; }
+.passport-registration__form { display:grid; gap:.7rem; align-content:start; padding:clamp(.5rem,1vw,1rem) clamp(.35rem,1vw,1rem); }.passport-registration__form p,.passport-registration__form h2 { margin:0; }.passport-registration__form h2 { font-family:Georgia,"Times New Roman",serif; font-size:clamp(1.5rem,3vw,2.15rem); }.passport-registration__stamp { color:#b8493a; font-size:.72rem; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
 .passport-registration__form label { display:grid; gap:.3rem; font-weight:800; }.passport-registration__form input { border:2px solid #173c47; border-radius:.45rem; padding:.65rem; background:#fffdf5; color:#173c47; font:inherit; }.passport-registration__form button { border:2px solid #173c47; border-radius:.65rem; padding:.72rem; background:#78c5bf; color:#173c47; font:inherit; font-weight:800; cursor:pointer; }.passport-registration__form button:hover { background:#ee8e71; }.passport-registration__form button:focus-visible,.passport-registration__form input:focus-visible { outline:3px solid #b8493a; outline-offset:3px; }.passport-registration__form button:disabled,.passport-registration__form input:disabled { opacity:.65; cursor:wait; }.passport-registration__secondary { background:#fff3d7 !important; }.passport-registration__error { color:#912c21; font-weight:800; }.passport-registration__hint { font-weight:700; }
 .passport-registration__review dl { display:grid; gap:.55rem; margin:0; }.passport-registration__review dl div { display:grid; gap:.12rem; border-bottom:1px solid rgb(23 60 71 / .3); padding-bottom:.4rem; }.passport-registration__review dt { color:#b8493a; font-size:.76rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }.passport-registration__review dd { margin:0; font-weight:800; overflow-wrap:anywhere; }
-@media (max-width:44rem) { .passport-registration { grid-template-columns:1fr; }.passport-registration__cover { min-height:12rem; }.passport-registration__cover img { max-height:20rem; } }
+@media (max-width:44rem) { .passport-registration { grid-template-columns:1fr; }.passport-registration__cover { min-height:18rem; }.passport-registration__cover img { max-height:24rem; }.passport-registration__form { padding:.5rem 0; } }
 </style>

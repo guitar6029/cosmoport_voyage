@@ -35,15 +35,18 @@ function completeRegistration() { isRegistering.value = false; registrationCompl
 
     <NuxtLink class="passport-office__exit" to="/">Exit Office</NuxtLink>
 
-    <section class="passport-office__dialogue" aria-labelledby="passport-office-title">
+    <section v-if="isRegistering" class="passport-office__registration-shell" aria-label="CosmoPort traveler registration">
+      <PassportOfficeRegistration @cancel="cancelRegistration" @complete="completeRegistration" />
+    </section>
+
+    <section v-else class="passport-office__dialogue" aria-labelledby="passport-office-title">
       <p class="passport-office__eyebrow">CosmoPort Passport Bureau</p>
       <h1 id="passport-office-title">Passport Office</h1>
       <p class="passport-office__byline">A message from Stella Starling, your interstellar travel clerk.</p>
       <div class="passport-office__message" role="status" aria-live="polite" aria-atomic="true">
-        <p v-if="isRegistering">Wonderful—let's prepare your CosmoPort account. Complete your traveler registration booklet, then review it before filing.</p><p v-else v-for="line in dialogue.lines" :key="line">{{ line }}</p>
+        <p v-for="line in dialogue.lines" :key="line">{{ line }}</p>
       </div>
-      <PassportOfficeRegistration v-if="isRegistering" @cancel="cancelRegistration" @complete="completeRegistration" />
-      <div v-else-if="dialogue.choices" class="passport-office__choices" aria-label="Choose a response">
+      <div v-if="dialogue.choices" class="passport-office__choices" aria-label="Choose a response">
         <button v-for="choice in dialogue.choices" :key="choice.id" type="button" @click="choose(choice.id)">
           {{ choice.label }}
         </button>
@@ -65,6 +68,7 @@ function completeRegistration() { isRegistering.value = false; registrationCompl
 .passport-office__wash { z-index: -1; background: linear-gradient(135deg, rgb(12 49 61 / .22), rgb(255 247 226 / .24)); }
 .passport-office__exit { position: absolute; top: clamp(1rem, 3vw, 2rem); right: clamp(1rem, 3vw, 2rem); border: 2px solid #173c47; border-radius: 999px; padding: .56rem .86rem; background: rgb(255 247 226 / .93); color: inherit; font-size: .86rem; font-weight: 800; text-decoration: none; }
 .passport-office__dialogue { width: min(100%, 46rem); border: 3px solid #173c47; border-radius: 1.25rem; padding: clamp(1.35rem, 4vw, 3rem); background: rgb(255 243 215 / .97); box-shadow: .7rem .7rem 0 #d9654d, 0 1.25rem 3rem rgb(23 60 71 / .28); }
+.passport-office__registration-shell { width: min(100%, 72rem); border: 3px solid #173c47; border-radius: 1.25rem; padding: clamp(.65rem, 1.5vw, 1rem); background: rgb(255 243 215 / .98); box-shadow: .7rem .7rem 0 #d9654d, 0 1.25rem 3rem rgb(23 60 71 / .28); }
 .passport-office__eyebrow { margin: 0 0 .45rem; color: #b8493a; font-size: .72rem; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
 h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 5vw, 3.75rem); line-height: .95; }
 .passport-office__byline { margin: .7rem 0 0; color: #b8493a; font-weight: 700; line-height: 1.4; }
@@ -74,6 +78,6 @@ h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp
 .passport-office button, .passport-office__actions a { border: 2px solid #173c47; border-radius: .65rem; padding: .85rem 1rem; background: #78c5bf; color: #173c47; font: inherit; font-weight: 800; line-height: 1.25; text-align: left; cursor: pointer; text-decoration: none; }
 .passport-office button:hover, .passport-office__actions a:hover { background: #ee8e71; }
 .passport-office button:focus-visible, .passport-office a:focus-visible { outline: 3px solid #b8493a; outline-offset: 3px; }
-@media (max-width: 44rem) { .passport-office { display: block; padding-top: 5rem; }.passport-office__background { object-position: 62% center; }.passport-office__dialogue { width: auto; }.passport-office__choices, .passport-office__actions { grid-template-columns: 1fr; }.passport-office__exit { z-index: 1; } }
+@media (max-width: 44rem) { .passport-office { display: block; padding-top: 5rem; }.passport-office__background { object-position: 62% center; }.passport-office__dialogue, .passport-office__registration-shell { width: auto; }.passport-office__choices, .passport-office__actions { grid-template-columns: 1fr; }.passport-office__exit { z-index: 1; } }
 @media (prefers-reduced-motion: reduce) { .passport-office * { scroll-behavior: auto; } }
 </style>

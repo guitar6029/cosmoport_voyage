@@ -77,4 +77,12 @@ describe("Passport Office", () => {
     expect(source).toContain("passportCoverFailed = true");
     expect(source).toContain("@media (max-width:44rem)");
   });
+
+  it("keeps Stella's introduction on the main office screen and isolates registration from her dialogue", async () => {
+    const source = await readFile(resolve(process.cwd(), "app/pages/passport-office/index.vue"), "utf8");
+    expect(source).toContain('v-if="isRegistering" class="passport-office__registration-shell"');
+    expect(source).toContain("CosmoPort traveler registration");
+    expect(source).toContain("A message from Stella Starling");
+    expect(source).not.toContain('v-if="isRegistering">Wonderful');
+  });
 });
