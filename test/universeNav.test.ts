@@ -203,7 +203,7 @@ describe("CosmoPort Universe navigation", () => {
     expect(source).toContain("heroImage.value?.complete && heroImage.value.naturalWidth === 0");
     expect(source).toContain("heroImage.value?.decode().catch");
     expect(source).toContain('@error="heroFailed = true"');
-    expect(source).toContain("object-fit: cover");
+    expect(source).toContain("object-fit: contain");
     expect(source).toContain("prefers-reduced-motion: reduce");
   });
 
