@@ -83,7 +83,10 @@ onBeforeUnmount(closeAccountMenu);
 
 <template>
   <nav class="universe-nav" :class="`universe-nav--${presentation}`" aria-label="CosmoPort Universe">
-    <NuxtLink class="universe-nav__link" to="/">Home</NuxtLink>
+    <div class="flex items-center gap-2">
+      <NuxtLink class="universe-nav__link" to="/">Home</NuxtLink>
+      <NuxtLink class="universe-nav__link" to="/about">About</NuxtLink>
+    </div>
 
     <div class="universe-nav__account" aria-live="polite">
       <template v-if="!isLoaded">
