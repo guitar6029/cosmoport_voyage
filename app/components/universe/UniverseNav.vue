@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref } from "vue";
+import UniverseRadioControl from "./UniverseRadioControl.vue";
 
 const { isLoaded, isSignedIn, signOut } = useAuth();
 const { user } = useUser();
@@ -86,6 +87,7 @@ onBeforeUnmount(closeAccountMenu);
     <div class="flex items-center gap-2">
       <NuxtLink class="universe-nav__link" to="/">Home</NuxtLink>
       <NuxtLink class="universe-nav__link" to="/about">About</NuxtLink>
+      <UniverseRadioControl />
     </div>
 
     <div class="universe-nav__account" aria-live="polite">

@@ -26,7 +26,7 @@ npx wrangler dev --local --var MEDIA_DELIVERY_ENABLED:false
 
 `--var MEDIA_DELIVERY_ENABLED:false` injects the Worker's runtime binding; a shell environment variable alone does not override the Wrangler `vars` configuration. `--local` keeps the Worker and R2 binding on local simulation storage.
 
-The Worker accepts only `GET` and `HEAD` for media under the `astro-pop/`, `passport-office/`, `about/`, and `grand-concourse/` prefixes. It permits PNG, JPEG, WebP, MP4, MP3, WAV, and OGG files; validates and decodes paths before R2 access; and supports one byte range per request using R2 native ranged reads. Multiple ranges are deliberately rejected with `416` until multipart response support is separately designed. The latter three prefixes are reviewed public-artwork namespaces for the Passport Office scene, Cosmo Universe About collage, and Grand Concourse homepage illustration.
+The Worker accepts only `GET` and `HEAD` for media under the `astro-pop/`, `passport-office/`, `about/`, `grand-concourse/`, and narrowly scoped `sounds/grand-concourse/` prefixes. It permits PNG, JPEG, WebP, MP4, MP3, WAV, and OGG files; validates and decodes paths before R2 access; and supports one byte range per request using R2 native ranged reads. Multiple ranges are deliberately rejected with `416` until multipart response support is separately designed. The latter prefixes are reviewed public artwork and Grand Concourse radio namespaces.
 
 ## Deployment settings
 

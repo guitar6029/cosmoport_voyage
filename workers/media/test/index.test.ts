@@ -199,6 +199,21 @@ describe("media worker", () => {
     expect(put).toHaveBeenCalledOnce();
   });
 
+  it("serves the reviewed Grand Concourse radio track without image caching", async () => {
+    const key = "sounds/grand-concourse/interplanetary-lounge.mp3";
+    const { env, get } = enabledEnv({ [key]: "radio" });
+    const { match, put } = installCache();
+    const response = await dispatch(`/${key}`, env);
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe("radio");
+    expect(response.headers.get("Content-Type")).toBe("audio/mpeg");
+    expect(response.headers.get("Accept-Ranges")).toBe("bytes");
+    expect(get).toHaveBeenCalledWith(key);
+    expect(match).not.toHaveBeenCalled();
+    expect(put).not.toHaveBeenCalled();
+  });
+
   it("serves reviewed About artwork with safe WebP headers and image caching", async () => {
     const key = "about/01-midcentury-cartoon.webp";
     const { env, get } = enabledEnv({ [key]: "about-artwork" });
@@ -258,7 +273,7 @@ describe("media worker", () => {
     expect(match).not.toHaveBeenCalled();
   });
 
-  it.each(["/outside/object.mp4", "/passport-office/briefing.pdf", "/about/unreviewed.svg", "/grand-concourse/private-map.svg", "/grand-concourse/../secret.png", "/astro-pop/script.js", "/astro-pop/document.html"])("hides unsupported path %s without R2 access", async (path) => {
+  it.each(["/outside/object.mp4", "/sounds/private.mp3", "/sounds/grand-concourse/private-map.svg", "/passport-office/briefing.pdf", "/about/unreviewed.svg", "/grand-concourse/private-map.svg", "/grand-concourse/../secret.png", "/astro-pop/script.js", "/astro-pop/document.html"])("hides unsupported path %s without R2 access", async (path) => {
     const { env, get, head } = enabledEnv();
     expect((await dispatch(path, env)).status).toBe(404);
     expect(get).not.toHaveBeenCalled();
