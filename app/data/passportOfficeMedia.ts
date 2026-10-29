@@ -6,4 +6,5 @@ const cdnMedia = (key: string) => `${PASSPORT_OFFICE_MEDIA_BASE_URL}/${key}`;
 export const PASSPORT_OFFICE_MEDIA = {
   background: cdnMedia("retro-spaceport-passport-bureau.png"),
   passportCover: cdnMedia("cosmoport-passport-cover.png"),
+  passportInterior: cdnMedia("cosmoport-passport-inside.png"),
 } as const;

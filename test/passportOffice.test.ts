@@ -15,9 +15,11 @@ const NuxtLink = defineComponent({
 });
 
 describe("Passport Office", () => {
-  it("maps the approved Passport Bureau background", () => {
+  it("maps the approved Passport Bureau background and registration interior", () => {
     expect(PASSPORT_OFFICE_MEDIA_BASE_URL).toBe("https://media.cosmos-universe.com/passport-office");
     expect(PASSPORT_OFFICE_MEDIA.background).toContain("retro-spaceport-passport-bureau.png");
+    expect(PASSPORT_OFFICE_MEDIA.passportCover).toContain("cosmoport-passport-cover.png");
+    expect(PASSPORT_OFFICE_MEDIA.passportInterior).toContain("cosmoport-passport-inside.png");
   });
 
   it("renders the continuous background, Stella's dialogue, choices, and an accessible exit", async () => {
@@ -63,7 +65,7 @@ describe("Passport Office", () => {
     expect(source).not.toContain("handleImageError");
   });
 
-  it("uses native password-manager fields, a password-safe review, and a contained passport cover", async () => {
+  it("uses native password-manager fields, a password-safe review, and a full-bleed passport interior", async () => {
     const source = await readFile(resolve(process.cwd(), "app/components/passport-office/PassportOfficeRegistration.vue"), "utf8");
     expect(source).toContain('name="firstName"');
     expect(source).toContain('name="lastName"');
@@ -73,7 +75,13 @@ describe("Passport Office", () => {
     expect(source).toContain("Review application");
     expect(source).toContain("Make corrections");
     expect(source).toContain("will not be displayed here");
-    expect(source).toContain("object-fit:contain");
+    expect(source).toContain("PASSPORT_OFFICE_MEDIA.passportInterior");
+    expect(source).toContain("object-fit:cover");
+    expect(source).not.toContain("border:2px dashed");
+    expect(source).toContain("Given Name (First Name)");
+    expect(source).toContain("Family Name (Last Name)");
+    expect(source).toContain("Contact Signal (Email Address)");
+    expect(source).toContain("Secure Launch Phrase (Password)");
     expect(source).toContain("passportCoverFailed = true");
     expect(source).toContain("@media (max-width:44rem)");
   });
