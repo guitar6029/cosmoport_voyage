@@ -78,7 +78,8 @@ describe("CosmoPort Universe navigation", () => {
     const html = await renderWithAccountState(UniverseNav, "signed-in");
 
     expect(html).toContain('src="https://example.test/nova.png"');
-    expect(html).toContain('aria-haspopup="menu"');
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain('aria-haspopup="menu"');
     expect(html).toContain("Account");
     expect(html).not.toContain("Sign Out");
     expect(html).not.toContain("Sign In");
@@ -102,8 +103,8 @@ describe("CosmoPort Universe navigation", () => {
     const accountButton = container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle");
     accountButton?.click();
     await nextTick();
-    expect(container.querySelector('[role="menu"]')?.textContent).toContain("Nova Ray");
-    expect(container.querySelector('[role="menu"]')?.textContent).toContain("nova@example.test");
+    expect(container.querySelector('[role="group"]')?.textContent).toContain("Nova Ray");
+    expect(container.querySelector('[role="group"]')?.textContent).toContain("nova@example.test");
     const button = container.querySelector<HTMLButtonElement>(".universe-nav__menu-sign-out");
 
     button?.click();
@@ -165,10 +166,12 @@ describe("CosmoPort Universe navigation", () => {
     const button = container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle");
     button?.click();
     await nextTick();
-    expect(container.querySelector('[role="menu"]')).not.toBeNull();
-    button?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(container.querySelector('[role="group"]')).not.toBeNull();
+    expect(document.activeElement).toBe(container.querySelector<HTMLButtonElement>(".universe-nav__menu-sign-out"));
+    container.querySelector<HTMLButtonElement>(".universe-nav__menu-sign-out")?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     await nextTick();
-    expect(container.querySelector('[role="menu"]')).toBeNull();
+    expect(container.querySelector('[role="group"]')).toBeNull();
+    expect(document.activeElement).toBe(button);
     app.unmount();
   });
 
@@ -222,7 +225,9 @@ describe("CosmoPort Universe navigation", () => {
     expect(source).toContain('signOut.value({ redirectUrl: "/" })');
     expect(source).toContain('to="/passport-office?intent=sign-in"');
     expect(source).toContain('to="/passport-office?intent=register"');
-    expect(source).toContain('aria-haspopup="menu"');
+    expect(source).toContain(':aria-expanded="accountMenuOpen"');
+    expect(source).toContain('role="group" aria-label="Account details"');
+    expect(source).not.toContain('aria-haspopup="menu"');
     expect(source).not.toContain('to="/account"');
     expect(source).not.toContain("SignInButton");
     expect(source).not.toContain("SignUpButton");

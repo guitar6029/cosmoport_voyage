@@ -48,13 +48,14 @@ test("checks in a recorded development traveler through the custom login UI", as
 
   await accountControl.focus();
   await page.keyboard.press("Enter");
-  const accountMenu = page.getByRole("menu", { name: "Account menu" });
+  const accountMenu = page.getByRole("group", { name: "Account details" });
   await expect(accountMenu).toContainText("Returning Traveler");
   await expect(accountMenu).toContainText(email);
   await page.keyboard.press("Escape");
   await expect(accountMenu).toHaveCount(0);
+  await expect(accountControl).toBeFocused();
 
   await accountControl.click();
-  await accountMenu.getByRole("menuitem", { name: "Sign Out" }).click();
+  await accountMenu.getByRole("button", { name: "Sign Out" }).click();
   await expect(universeNavigation.getByRole("link", { name: "Sign In" })).toBeVisible();
 });

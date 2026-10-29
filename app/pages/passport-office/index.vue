@@ -24,8 +24,14 @@ const requestedIntent = computed<"sign-in" | "register" | undefined>(() => {
 const intentAuthChecked = ref(false);
 const wasSignedInWhenIntentBecameReady = ref(false);
 const authenticatedIntent = computed(() => !intentInProgress.value && intentAuthChecked.value && wasSignedInWhenIntentBecameReady.value && requestedIntent.value);
-const isRegistering = computed(() => clientReady.value && isClerkLoaded.value && isSignedIn.value !== true && (requestedIntent.value === "register" || manualRegistration.value));
-const isReturning = computed(() => clientReady.value && isClerkLoaded.value && isSignedIn.value !== true && (requestedIntent.value === "sign-in" || manualReturning.value));
+// Keep the active form mounted while Clerk activates the new session. Otherwise
+// its completion event can be lost when isSignedIn flips before the form emits.
+const isRegistering = computed(() => clientReady.value && isClerkLoaded.value
+  && (requestedIntent.value === "register" || manualRegistration.value)
+  && (intentInProgress.value || isSignedIn.value !== true));
+const isReturning = computed(() => clientReady.value && isClerkLoaded.value
+  && (requestedIntent.value === "sign-in" || manualReturning.value)
+  && (intentInProgress.value || isSignedIn.value !== true));
 
 const dialogue = computed(() => registrationComplete.value ? { lines: ["Splendid! Your CosmoPort account is ready for takeoff.", "Stella has filed your traveler registration. Passport issuance will open in a future story."], choices: undefined } : dialogueFor(step.value));
 

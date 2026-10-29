@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref } from "vue";
 
 const { isLoaded, isSignedIn, signOut } = useAuth();
 const { user } = useUser();
 const isSigningOut = ref(false);
 const signOutError = ref("");
 const accountMenuOpen = ref(false);
+const accountToggle = ref<HTMLButtonElement>();
+const signOutButton = ref<HTMLButtonElement>();
 
 const userName = computed(() => (
   user.value?.fullName
@@ -41,13 +43,32 @@ const handleSignOut = async () => {
   }
 };
 
-function closeAccountMenu() {
+function closeAccountMenu(restoreFocus = false) {
   accountMenuOpen.value = false;
+
+  if (restoreFocus) {
+    void nextTick(() => accountToggle.value?.focus());
+  }
+}
+
+function openAccountMenu() {
+  accountMenuOpen.value = true;
+  void nextTick(() => signOutButton.value?.focus());
+}
+
+function toggleAccountMenu() {
+  if (accountMenuOpen.value) {
+    closeAccountMenu(true);
+    return;
+  }
+
+  openAccountMenu();
 }
 
 function handleAccountKeydown(event: KeyboardEvent) {
-  if (event.key === "Escape") {
-    closeAccountMenu();
+  if (event.key === "Escape" && accountMenuOpen.value) {
+    event.preventDefault();
+    closeAccountMenu(true);
   }
 }
 
@@ -82,20 +103,20 @@ onBeforeUnmount(closeAccountMenu);
           <button
             class="universe-nav__account-toggle"
             type="button"
-            aria-haspopup="menu"
             :aria-expanded="accountMenuOpen"
             aria-controls="universe-account-menu"
-            @click="accountMenuOpen = !accountMenuOpen"
+            ref="accountToggle"
+            @click="toggleAccountMenu"
           >
             <img v-if="user?.imageUrl" class="universe-nav__avatar" :src="user.imageUrl" alt="" />
             <span v-else class="universe-nav__avatar universe-nav__avatar--fallback" aria-hidden="true">{{ fallbackInitials }}</span>
             <span>Account</span>
             <span class="universe-nav__sr-only">for {{ userName }}</span>
           </button>
-          <div v-if="accountMenuOpen" id="universe-account-menu" class="universe-nav__account-menu" role="menu" aria-label="Account menu">
+          <div v-if="accountMenuOpen" id="universe-account-menu" class="universe-nav__account-menu" role="group" aria-label="Account details">
             <p class="universe-nav__account-name">{{ userName }}</p>
             <p class="universe-nav__account-email">{{ userEmail }}</p>
-            <button class="universe-nav__menu-sign-out" type="button" role="menuitem" :disabled="isSigningOut" @click="handleSignOut">
+            <button ref="signOutButton" class="universe-nav__menu-sign-out" type="button" :disabled="isSigningOut" @click="handleSignOut">
               {{ isSigningOut ? "Signing Out" : "Sign Out" }}
             </button>
           </div>
