@@ -15,13 +15,15 @@ const NuxtLink = defineComponent({
 });
 
 describe("Passport Office", () => {
-  it("maps the approved Passport Bureau background", () => {
+  it("maps the approved Passport Bureau background and registration interior", () => {
     expect(PASSPORT_OFFICE_MEDIA_BASE_URL).toBe("https://media.cosmos-universe.com/passport-office");
     expect(PASSPORT_OFFICE_MEDIA.background).toContain("retro-spaceport-passport-bureau.png");
+    expect(PASSPORT_OFFICE_MEDIA.passportCover).toContain("cosmoport-passport-cover.png");
+    expect(PASSPORT_OFFICE_MEDIA.passportInterior).toContain("cosmoport-passport-inside.png");
   });
 
   it("renders the continuous background, Stella's dialogue, choices, and an accessible exit", async () => {
-    vi.stubGlobal("useAuth", () => ({ isSignedIn: ref(false) }));
+    vi.stubGlobal("useAuth", () => ({ isLoaded: ref(false), isSignedIn: ref(false) }));
     const app = createSSRApp(PassportOfficePage);
     app.component("NuxtLink", NuxtLink);
     app.component("PassportOfficeRegistration", PassportOfficeRegistration);
@@ -30,6 +32,7 @@ describe("Passport Office", () => {
     expect(html).toContain(PASSPORT_OFFICE_MEDIA.background);
     expect(html).toContain("A message from Stella Starling");
     expect(html).toContain("I&#39;d like to apply for a passport!");
+    expect(html).toContain("disabled");
     expect(html).toContain('href="/"');
     expect(html).toContain("Exit Office");
     expect(html).toContain('role="status"');
@@ -59,7 +62,39 @@ describe("Passport Office", () => {
     expect(source).toContain("@error=\"backgroundFailed = true\"");
     expect(source).toContain("@media (max-width: 44rem)");
     expect(source).toContain("grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr))");
+    expect(source).toContain("isLoaded: isClerkLoaded");
+    expect(source).toContain("choicesReady = computed(() => clientReady.value && isClerkLoaded.value)");
+    expect(source).toContain(':disabled="!choicesReady"');
     expect(source).not.toContain("PASSPORT_OFFICE_MEDIA.stella");
     expect(source).not.toContain("handleImageError");
+  });
+
+  it("uses native password-manager fields, a password-safe review, and a full-bleed passport interior", async () => {
+    const source = await readFile(resolve(process.cwd(), "app/components/passport-office/PassportOfficeRegistration.vue"), "utf8");
+    expect(source).toContain('name="firstName"');
+    expect(source).toContain('name="lastName"');
+    expect(source).toContain('name="emailAddress"');
+    expect(source).toContain('name="password"');
+    expect(source).toContain('autocomplete="new-password"');
+    expect(source).toContain("Review application");
+    expect(source).toContain("Make corrections");
+    expect(source).toContain("will not be displayed here");
+    expect(source).toContain("PASSPORT_OFFICE_MEDIA.passportInterior");
+    expect(source).toContain("object-fit:cover");
+    expect(source).not.toContain("border:2px dashed");
+    expect(source).toContain("Given Name (First Name)");
+    expect(source).toContain("Family Name (Last Name)");
+    expect(source).toContain("Contact Signal (Email Address)");
+    expect(source).toContain("Secure Launch Phrase (Password)");
+    expect(source).toContain("passportCoverFailed = true");
+    expect(source).toContain("@media (max-width:44rem)");
+  });
+
+  it("keeps Stella's introduction on the main office screen and isolates registration from her dialogue", async () => {
+    const source = await readFile(resolve(process.cwd(), "app/pages/passport-office/index.vue"), "utf8");
+    expect(source).toContain('v-if="isRegistering" class="passport-office__registration-shell"');
+    expect(source).toContain("CosmoPort traveler registration");
+    expect(source).toContain("A message from Stella Starling");
+    expect(source).not.toContain('v-if="isRegistering">Wonderful');
   });
 });

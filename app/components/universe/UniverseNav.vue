@@ -29,7 +29,7 @@ const handleSignOut = async () => {
   isSigningOut.value = true;
 
   try {
-    await signOut({ redirectUrl: "/" });
+    await signOut.value({ redirectUrl: "/" });
   } catch {
     signOutError.value = "We couldn't sign you out. Please try again.";
   } finally {

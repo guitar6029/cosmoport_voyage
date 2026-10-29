@@ -18,7 +18,7 @@ const user = ref<{ fullName?: string; imageUrl?: string } | null>(null);
 vi.stubGlobal("useAuth", () => ({
   isLoaded: ref(authState.value !== "loading"),
   isSignedIn: ref(authState.value === "signed-in"),
-  signOut,
+  signOut: ref(signOut),
 }));
 vi.stubGlobal("useUser", () => ({ user }));
 vi.stubGlobal("useSeoMeta", vi.fn());
@@ -197,7 +197,7 @@ describe("CosmoPort Universe navigation", () => {
 
     expect(source).toContain("useAuth()");
     expect(source).toContain("useUser()");
-    expect(source).toContain('signOut({ redirectUrl: "/" })');
+    expect(source).toContain('signOut.value({ redirectUrl: "/" })');
     expect(source).not.toContain("SignInButton");
     expect(source).not.toContain("SignUpButton");
     expect(source).not.toContain("UserButton");
