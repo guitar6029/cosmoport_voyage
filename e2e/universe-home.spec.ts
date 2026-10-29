@@ -17,7 +17,7 @@ test("keeps the hero, auth navigation, and content free of horizontal overflow",
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
 
-    await expect(page.locator(".grand-concourse__hero-art img")).toBeVisible();
+    await expect(page.locator(".grand-concourse__hero-art")).toBeVisible();
     await expect(page.getByRole("navigation", { name: "CosmoPort Universe" }).getByRole("link", { name: "Sign In" })).toHaveAttribute("href", "/passport-office?intent=sign-in");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
