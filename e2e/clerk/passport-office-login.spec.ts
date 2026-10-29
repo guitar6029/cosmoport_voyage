@@ -41,9 +41,11 @@ test("checks in a recorded development traveler through the custom login UI", as
   }
 
   await expect(page).toHaveURL("/");
+  await page.setViewportSize({ width: 320, height: 900 });
   const universeNavigation = page.getByRole("navigation", { name: "CosmoPort Universe" });
   const accountControl = universeNavigation.getByRole("button", { name: /Account for Returning Traveler/ });
   await expect(accountControl).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await expect.poll(() => page.evaluate(() => ({ userId: window.Clerk?.user?.id, sessionId: window.Clerk?.session?.id }))).toMatchObject({ userId: user.id });
 
   await accountControl.focus();

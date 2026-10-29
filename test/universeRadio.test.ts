@@ -143,6 +143,9 @@ describe("CosmoPort Radio", () => {
     container.querySelector<HTMLButtonElement>(".universe-radio__toggle")?.click();
     await nextTick();
     expect(container.querySelector('[role="group"]')?.textContent).toContain("CosmoPort Radio");
+    expect(container.querySelectorAll("svg[aria-hidden='true']")).toHaveLength(2);
+    expect(container.querySelector(".universe-radio__toggle svg path")?.getAttribute("d")).toContain("M17.25 9.75");
+    expect(container.querySelector(".universe-radio__action svg path")?.getAttribute("d")).toContain("M5.25 5.653");
     expect(container.querySelector<HTMLInputElement>('input[type="range"]')?.getAttribute("aria-label")).toBe("Radio volume");
     container.querySelector<HTMLInputElement>('input[type="range"]')?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     await nextTick();
