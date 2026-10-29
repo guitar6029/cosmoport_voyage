@@ -63,6 +63,77 @@ describe("CosmoPort Radio", () => {
     expect(player.currentTime).toBe(0);
   });
 
+  it("cancels a pending play request when entering a mini-app", async () => {
+    let resolvePlay: () => void = () => undefined;
+    const pendingPlay = new Promise<void>((resolve) => { resolvePlay = resolve; });
+    const audioConstructor = vi.fn((src: string) => {
+      const player = new FakeAudio(src);
+      player.play.mockReturnValue(pendingPlay);
+      return player;
+    });
+    vi.stubGlobal("Audio", audioConstructor);
+    const { useUniverseRadio } = await import("../app/composables/useUniverseRadio");
+    const radio = useUniverseRadio();
+
+    const start = radio.play();
+    radio.stopForMiniApp();
+    resolvePlay();
+    await start;
+
+    const player = audioConstructor.mock.results[0]?.value as FakeAudio;
+    expect(player.pause).toHaveBeenCalled();
+    expect(radio.playbackState.value).toBe("paused");
+    expect(radio.isPlaying.value).toBe(false);
+  });
+
+  it("ignores a stale play rejection after Pause", async () => {
+    let rejectPlay: (reason?: unknown) => void = () => undefined;
+    const pendingPlay = new Promise<void>((_resolve, reject) => { rejectPlay = reject; });
+    const audioConstructor = vi.fn((src: string) => {
+      const player = new FakeAudio(src);
+      player.play.mockReturnValue(pendingPlay);
+      return player;
+    });
+    vi.stubGlobal("Audio", audioConstructor);
+    const { useUniverseRadio } = await import("../app/composables/useUniverseRadio");
+    const radio = useUniverseRadio();
+
+    const start = radio.play();
+    radio.pause();
+    rejectPlay(new Error("autoplay interrupted"));
+    await start;
+
+    expect(radio.playbackState.value).toBe("paused");
+    expect(radio.errorMessage.value).toBe("");
+  });
+
+  it("keeps the newest rapid Play request in control", async () => {
+    let resolveFirst: () => void = () => undefined;
+    let resolveSecond: () => void = () => undefined;
+    const firstPlay = new Promise<void>((resolve) => { resolveFirst = resolve; });
+    const secondPlay = new Promise<void>((resolve) => { resolveSecond = resolve; });
+    const audioConstructor = vi.fn((src: string) => {
+      const player = new FakeAudio(src);
+      player.play.mockReturnValueOnce(firstPlay).mockReturnValueOnce(secondPlay);
+      return player;
+    });
+    vi.stubGlobal("Audio", audioConstructor);
+    const { useUniverseRadio } = await import("../app/composables/useUniverseRadio");
+    const radio = useUniverseRadio();
+
+    const first = radio.play();
+    const second = radio.play();
+    resolveFirst();
+    await first;
+
+    const player = audioConstructor.mock.results[0]?.value as FakeAudio;
+    expect(player.pause).not.toHaveBeenCalled();
+    expect(radio.playbackState.value).toBe("loading");
+    resolveSecond();
+    await second;
+    expect(radio.playbackState.value).toBe("playing");
+  });
+
   it("offers keyboard-accessible play, mute, and volume controls in a compact popover", async () => {
     const container = document.createElement("div");
     const app = createApp(UniverseRadioControl);
