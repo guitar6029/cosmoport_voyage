@@ -42,6 +42,19 @@ test("checks in a recorded development traveler through the custom login UI", as
 
   await expect(page).toHaveURL("/");
   const universeNavigation = page.getByRole("navigation", { name: "CosmoPort Universe" });
-  await expect(universeNavigation.getByRole("button", { name: "Sign Out" })).toBeVisible();
+  const accountControl = universeNavigation.getByRole("button", { name: /Account for Returning Traveler/ });
+  await expect(accountControl).toBeVisible();
   await expect.poll(() => page.evaluate(() => ({ userId: window.Clerk?.user?.id, sessionId: window.Clerk?.session?.id }))).toMatchObject({ userId: user.id });
+
+  await accountControl.focus();
+  await page.keyboard.press("Enter");
+  const accountMenu = page.getByRole("menu", { name: "Account menu" });
+  await expect(accountMenu).toContainText("Returning Traveler");
+  await expect(accountMenu).toContainText(email);
+  await page.keyboard.press("Escape");
+  await expect(accountMenu).toHaveCount(0);
+
+  await accountControl.click();
+  await accountMenu.getByRole("menuitem", { name: "Sign Out" }).click();
+  await expect(universeNavigation.getByRole("link", { name: "Sign In" })).toBeVisible();
 });

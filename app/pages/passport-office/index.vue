@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import PassportOfficeLogin from "../../components/passport-office/PassportOfficeLogin.vue";
 import PassportOfficeRegistration from "../../components/passport-office/PassportOfficeRegistration.vue";
 import { dialogueFor, openingDialogueStep, type PassportOfficeChoice } from "../../data/passportOfficeDialogue";
@@ -8,15 +8,24 @@ import { PASSPORT_OFFICE_MEDIA } from "../../data/passportOfficeMedia";
 type DialogueStep = "opening" | PassportOfficeChoice;
 
 const step = ref<DialogueStep>(openingDialogueStep());
-const isRegistering = ref(false);
-const isReturning = ref(false);
 const registrationComplete = ref(false);
+const intentInProgress = ref(false);
 // The opening choices are server-rendered. Keep them inert until Vue has
 // hydrated so an early click cannot be lost before its event listeners exist.
 const clientReady = ref(false);
 const { isLoaded: isClerkLoaded, isSignedIn } = useAuth();
+const route = useRoute();
 const backgroundFailed = ref(false);
 const choicesReady = computed(() => clientReady.value && isClerkLoaded.value);
+const requestedIntent = computed<"sign-in" | "register" | undefined>(() => {
+  const intent = route.query.intent;
+  return intent === "sign-in" || intent === "register" ? intent : undefined;
+});
+const intentAuthChecked = ref(false);
+const wasSignedInWhenIntentBecameReady = ref(false);
+const authenticatedIntent = computed(() => !intentInProgress.value && intentAuthChecked.value && wasSignedInWhenIntentBecameReady.value && requestedIntent.value);
+const isRegistering = computed(() => clientReady.value && isClerkLoaded.value && isSignedIn.value !== true && (requestedIntent.value === "register" || manualRegistration.value));
+const isReturning = computed(() => clientReady.value && isClerkLoaded.value && isSignedIn.value !== true && (requestedIntent.value === "sign-in" || manualReturning.value));
 
 const dialogue = computed(() => registrationComplete.value ? { lines: ["Splendid! Your CosmoPort account is ready for takeoff.", "Stella has filed your traveler registration. Passport issuance will open in a future story."], choices: undefined } : dialogueFor(step.value));
 
@@ -24,23 +33,33 @@ onMounted(() => {
   clientReady.value = true;
 });
 
+watch([clientReady, isClerkLoaded], ([hydrated, clerkReady]) => {
+  if (hydrated && clerkReady && !intentAuthChecked.value) {
+    wasSignedInWhenIntentBecameReady.value = isSignedIn.value === true;
+    intentAuthChecked.value = true;
+  }
+}, { immediate: true });
+
+const manualRegistration = ref(false);
+const manualReturning = ref(false);
+
 function choose(choice: PassportOfficeChoice) {
   if (choice === "apply" && !registrationComplete.value && isSignedIn.value !== true) {
-    isRegistering.value = true;
+    manualRegistration.value = true;
     return;
   }
   if (choice === "returning") {
-    isReturning.value = true;
+    manualReturning.value = true;
     return;
   }
 
   step.value = choice === "apply" ? "returning" : choice;
 }
 function restart() { step.value = openingDialogueStep(); registrationComplete.value = false; }
-function cancelRegistration() { isRegistering.value = false; }
-function completeRegistration() { isRegistering.value = false; registrationComplete.value = true; }
-function cancelLogin() { isReturning.value = false; }
-async function completeLogin() { isReturning.value = false; await navigateTo("/"); }
+async function cancelRegistration() { intentInProgress.value = false; manualRegistration.value = false; await navigateTo("/passport-office"); }
+function completeRegistration() { intentInProgress.value = false; manualRegistration.value = false; registrationComplete.value = true; }
+async function cancelLogin() { intentInProgress.value = false; manualReturning.value = false; await navigateTo("/passport-office"); }
+async function completeLogin() { intentInProgress.value = false; manualReturning.value = false; await navigateTo("/"); }
 </script>
 
 <template>
@@ -58,12 +77,21 @@ async function completeLogin() { isReturning.value = false; await navigateTo("/"
 
     <NuxtLink class="passport-office__exit" to="/">Exit Office</NuxtLink>
 
-    <section v-if="isRegistering" class="passport-office__registration-shell" aria-label="CosmoPort traveler registration">
-      <PassportOfficeRegistration @cancel="cancelRegistration" @complete="completeRegistration" />
+    <section v-if="authenticatedIntent" class="passport-office__dialogue" aria-labelledby="passport-office-title">
+      <p class="passport-office__eyebrow">CosmoPort Passport Bureau</p>
+      <h1 id="passport-office-title">Already cleared for departure</h1>
+      <div class="passport-office__message" role="status" aria-live="polite">
+        <p>Your CosmoPort session is already active, traveler. There is no need to {{ authenticatedIntent === "register" ? "register again" : "sign in again" }}.</p>
+      </div>
+      <div class="passport-office__actions"><NuxtLink to="/">Return to the Universe</NuxtLink></div>
+    </section>
+
+    <section v-else-if="isRegistering" class="passport-office__registration-shell" aria-label="CosmoPort traveler registration">
+      <PassportOfficeRegistration @begin="intentInProgress = true" @cancel="cancelRegistration" @complete="completeRegistration" />
     </section>
 
     <section v-else-if="isReturning" class="passport-office__registration-shell" aria-label="CosmoPort returning traveler login">
-      <PassportOfficeLogin :is-signed-in="isSignedIn === true" @cancel="cancelLogin" @complete="completeLogin" />
+      <PassportOfficeLogin :is-signed-in="isSignedIn === true" @begin="intentInProgress = true" @cancel="cancelLogin" @complete="completeLogin" />
     </section>
 
     <section v-else class="passport-office__dialogue" aria-labelledby="passport-office-title">

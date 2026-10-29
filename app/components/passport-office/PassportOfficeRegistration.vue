@@ -4,7 +4,7 @@ import { useSignUp } from "@clerk/nuxt/composables";
 import { PASSPORT_OFFICE_MEDIA } from "../../data/passportOfficeMedia";
 import { usePassportOfficeRegistration } from "../../composables/usePassportOfficeRegistration";
 
-const emit = defineEmits<{ cancel: []; complete: [] }>();
+const emit = defineEmits<{ begin: []; cancel: []; complete: [] }>();
 const { isLoaded, signUp, setActive } = useSignUp();
 const stage = ref<"details" | "review">("details");
 const passportCoverFailed = ref(false);
@@ -13,7 +13,7 @@ const applicantName = computed(() => `${firstName.value.trim()} ${lastName.value
 const { verifying, pending, error, begin: beginRegistration, verify: verifyCode, resend } = usePassportOfficeRegistration(signUp, setActive, isLoaded, () => emit("complete"));
 function reviewApplication() { stage.value = "review"; }
 function correctApplication() { stage.value = "details"; }
-async function fileApplication() { await beginRegistration({ firstName: firstName.value, lastName: lastName.value, emailAddress: emailAddress.value, password: password.value }); }
+async function fileApplication() { emit("begin"); await beginRegistration({ firstName: firstName.value, lastName: lastName.value, emailAddress: emailAddress.value, password: password.value }); }
 </script>
 
 <template>
