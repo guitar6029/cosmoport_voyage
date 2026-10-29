@@ -1,6 +1,3 @@
-Failed to create stream fd: Operation not permitted
-Failed to create stream fd: Operation not permitted
-Failed to create stream fd: Operation not permitted
 import { expect, test, type Page } from "@playwright/test";
 
 const GRAND_CONCOURSE_CDN_URL = "https://media.cosmos-universe.com/grand-concourse/cosmoport-grand-concourse.png";
@@ -65,17 +62,15 @@ test("keeps the hero, auth navigation, and content free of horizontal overflow",
   }
 });
 
-test("shows the complete hero artwork below the desktop breakpoint", async ({ page }) => {
+test("shows the complete hero artwork at every viewport width", async ({ page }) => {
   await mockGrandConcourseImage(page, 200);
 
-  for (const width of [320, 375, 768]) {
+  for (const width of [320, 375, 768, 900, 1024, 1200, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
 
-    const hero = page.locator(".grand-concourse__hero");
     const image = page.locator(".grand-concourse__hero-art img");
     const cta = page.getByRole("link", { name: "Explore the Concourse" });
-    await expect(hero).toHaveCSS("min-height", "0px");
     await expect(image).toHaveCSS("object-fit", "contain");
     await expect(cta).toHaveCSS("position", "relative");
     expect(await page.evaluate(() => {
@@ -89,15 +84,6 @@ test("shows the complete hero artwork below the desktop breakpoint", async ({ pa
   }
 });
 
-test("retains the immersive cover hero at the desktop breakpoint", async ({ page }) => {
-  await mockGrandConcourseImage(page, 200);
-  await page.setViewportSize({ width: 1024, height: 900 });
-  await page.goto("/");
-
-  await expect(page.locator(".grand-concourse__hero")).toHaveCSS("min-height", "900px");
-  await expect(page.locator(".grand-concourse__hero-art img")).toHaveCSS("object-fit", "cover");
-  await expect(page.getByRole("link", { name: "Explore the Concourse" })).toHaveCSS("position", "absolute");
-});
 
 test("keeps every signed-out navigation control usable at 320px", async ({ page }) => {
   await mockGrandConcourseImage(page, 200);
@@ -140,7 +126,7 @@ test("keeps the navigation over the hero and sticky through the concourse", asyn
   const header = page.locator(".grand-concourse__header");
   const navigation = page.getByRole("navigation", { name: "CosmoPort Universe" });
   await expect(header).toHaveCSS("position", "sticky");
-  await expect(page.locator(".grand-concourse__hero")).toHaveCSS("min-height", "900px");
+  await expect(page.locator(".grand-concourse__hero")).toHaveCSS("min-height", "0px");
   await page.locator("#concourse").scrollIntoViewIfNeeded();
   await expect(navigation).toBeVisible();
   expect(await navigation.evaluate((element) => Math.abs(element.getBoundingClientRect().top - 12) < 1)).toBe(true);
