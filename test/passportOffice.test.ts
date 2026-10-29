@@ -62,4 +62,19 @@ describe("Passport Office", () => {
     expect(source).not.toContain("PASSPORT_OFFICE_MEDIA.stella");
     expect(source).not.toContain("handleImageError");
   });
+
+  it("uses native password-manager fields, a password-safe review, and a contained passport cover", async () => {
+    const source = await readFile(resolve(process.cwd(), "app/components/passport-office/PassportOfficeRegistration.vue"), "utf8");
+    expect(source).toContain('name="firstName"');
+    expect(source).toContain('name="lastName"');
+    expect(source).toContain('name="emailAddress"');
+    expect(source).toContain('name="password"');
+    expect(source).toContain('autocomplete="new-password"');
+    expect(source).toContain("Review application");
+    expect(source).toContain("Make corrections");
+    expect(source).toContain("will not be displayed here");
+    expect(source).toContain("object-fit:contain");
+    expect(source).toContain("passportCoverFailed = true");
+    expect(source).toContain("@media (max-width:44rem)");
+  });
 });

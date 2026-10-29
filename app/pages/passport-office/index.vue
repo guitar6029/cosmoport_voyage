@@ -12,7 +12,7 @@ const registrationComplete = ref(false);
 const { isSignedIn } = useAuth();
 const backgroundFailed = ref(false);
 
-const dialogue = computed(() => registrationComplete.value ? { lines: ["Splendid! Your CosmoPort account is ready for takeoff.", "Passport issuance will open in a future story."], choices: undefined } : dialogueFor(step.value));
+const dialogue = computed(() => registrationComplete.value ? { lines: ["Splendid! Your CosmoPort account is ready for takeoff.", "Stella has filed your traveler registration. Passport issuance will open in a future story."], choices: undefined } : dialogueFor(step.value));
 
 function choose(choice: PassportOfficeChoice) { if (choice === "apply" && !registrationComplete.value && !isSignedIn.value) isRegistering.value = true; else step.value = choice === "apply" ? "returning" : choice; }
 function restart() { step.value = openingDialogueStep(); registrationComplete.value = false; }
@@ -40,7 +40,7 @@ function completeRegistration() { isRegistering.value = false; registrationCompl
       <h1 id="passport-office-title">Passport Office</h1>
       <p class="passport-office__byline">A message from Stella Starling, your interstellar travel clerk.</p>
       <div class="passport-office__message" role="status" aria-live="polite" aria-atomic="true">
-        <p v-if="isRegistering">Wonderful—let's prepare your CosmoPort account. Start with an email and a password.</p><p v-else v-for="line in dialogue.lines" :key="line">{{ line }}</p>
+        <p v-if="isRegistering">Wonderful—let's prepare your CosmoPort account. Complete your traveler registration booklet, then review it before filing.</p><p v-else v-for="line in dialogue.lines" :key="line">{{ line }}</p>
       </div>
       <PassportOfficeRegistration v-if="isRegistering" @cancel="cancelRegistration" @complete="completeRegistration" />
       <div v-else-if="dialogue.choices" class="passport-office__choices" aria-label="Choose a response">
