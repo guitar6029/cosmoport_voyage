@@ -23,7 +23,7 @@ export const PASSPORT_OFFICE_DIALOGUE: Record<"opening" | PassportOfficeChoice, 
   returning: {
     lines: [
       "Welcome back! Always a pleasure to see a familiar face!",
-      "Returning-traveler passport inspection will be available in a later story.",
+      "Present your credentials at the identity-verification desk.",
     ],
   },
   browse: {

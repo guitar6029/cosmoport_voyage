@@ -7,6 +7,7 @@ import { ref } from "vue";
 import { dialogueFor, openingDialogueStep, PASSPORT_OFFICE_DIALOGUE } from "../app/data/passportOfficeDialogue";
 import { PASSPORT_OFFICE_MEDIA, PASSPORT_OFFICE_MEDIA_BASE_URL } from "../app/data/passportOfficeMedia";
 import PassportOfficePage from "../app/pages/passport-office/index.vue";
+import PassportOfficeLogin from "../app/components/passport-office/PassportOfficeLogin.vue";
 import PassportOfficeRegistration from "../app/components/passport-office/PassportOfficeRegistration.vue";
 
 const NuxtLink = defineComponent({
@@ -27,6 +28,7 @@ describe("Passport Office", () => {
     const app = createSSRApp(PassportOfficePage);
     app.component("NuxtLink", NuxtLink);
     app.component("PassportOfficeRegistration", PassportOfficeRegistration);
+    app.component("PassportOfficeLogin", PassportOfficeLogin);
     const html = await renderToString(app);
 
     expect(html).toContain(PASSPORT_OFFICE_MEDIA.background);
@@ -48,7 +50,7 @@ describe("Passport Office", () => {
 
   it("keeps dialogue branching data-driven and provides restart navigation", () => {
     expect(PASSPORT_OFFICE_DIALOGUE.apply.lines.join(" ")).toContain("application counter is being prepared");
-    expect(PASSPORT_OFFICE_DIALOGUE.returning.lines.join(" ")).toContain("later story");
+    expect(PASSPORT_OFFICE_DIALOGUE.returning.lines.join(" ")).toContain("Welcome back");
     expect(PASSPORT_OFFICE_DIALOGUE.browse.lines.join(" ")).toContain("paperwork robot");
     expect(dialogueFor("apply").lines[0]).toContain("Splendid");
     expect(dialogueFor(openingDialogueStep()).choices).toHaveLength(3);
@@ -96,5 +98,27 @@ describe("Passport Office", () => {
     expect(source).toContain("CosmoPort traveler registration");
     expect(source).toContain("A message from Stella Starling");
     expect(source).not.toContain('v-if="isRegistering">Wonderful');
+  });
+
+  it("opens the custom returning-traveler form with password-manager and Device Trust support", async () => {
+    const page = await readFile(resolve(process.cwd(), "app/pages/passport-office/index.vue"), "utf8");
+    const login = await readFile(resolve(process.cwd(), "app/components/passport-office/PassportOfficeLogin.vue"), "utf8");
+    const flow = await readFile(resolve(process.cwd(), "app/composables/usePassportOfficeLogin.ts"), "utf8");
+    expect(page).toContain('v-else-if="isReturning"');
+    expect(page).toContain("PassportOfficeLogin");
+    expect(page).toContain('await navigateTo("/")');
+    expect(login).toContain("Returning Traveler Check-In");
+    expect(login).toContain("CosmoPort Passport Bureau · Identity Verification");
+    expect(login).toContain('autocomplete="email"');
+    expect(login).toContain('autocomplete="current-password"');
+    expect(login).toContain("Present Credentials");
+    expect(login).toContain("Back to the Office");
+    expect(login).toContain("PASSPORT_OFFICE_MEDIA.passportInterior");
+    expect(login).toContain("passportInteriorFailed = true");
+    expect(login).not.toContain("Review application");
+    expect(flow).toContain('status === "needs_client_trust"');
+    expect(flow).toContain('status === "needs_second_factor"');
+    expect(flow).toContain("prepareSecondFactor");
+    expect(flow).toContain("attemptSecondFactor");
   });
 });

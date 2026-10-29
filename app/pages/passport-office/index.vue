@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import PassportOfficeLogin from "../../components/passport-office/PassportOfficeLogin.vue";
 import PassportOfficeRegistration from "../../components/passport-office/PassportOfficeRegistration.vue";
 import { dialogueFor, openingDialogueStep, type PassportOfficeChoice } from "../../data/passportOfficeDialogue";
 import { PASSPORT_OFFICE_MEDIA } from "../../data/passportOfficeMedia";
@@ -8,6 +9,7 @@ type DialogueStep = "opening" | PassportOfficeChoice;
 
 const step = ref<DialogueStep>(openingDialogueStep());
 const isRegistering = ref(false);
+const isReturning = ref(false);
 const registrationComplete = ref(false);
 // The opening choices are server-rendered. Keep them inert until Vue has
 // hydrated so an early click cannot be lost before its event listeners exist.
@@ -27,12 +29,18 @@ function choose(choice: PassportOfficeChoice) {
     isRegistering.value = true;
     return;
   }
+  if (choice === "returning") {
+    isReturning.value = true;
+    return;
+  }
 
   step.value = choice === "apply" ? "returning" : choice;
 }
 function restart() { step.value = openingDialogueStep(); registrationComplete.value = false; }
 function cancelRegistration() { isRegistering.value = false; }
 function completeRegistration() { isRegistering.value = false; registrationComplete.value = true; }
+function cancelLogin() { isReturning.value = false; }
+async function completeLogin() { isReturning.value = false; await navigateTo("/"); }
 </script>
 
 <template>
@@ -52,6 +60,10 @@ function completeRegistration() { isRegistering.value = false; registrationCompl
 
     <section v-if="isRegistering" class="passport-office__registration-shell" aria-label="CosmoPort traveler registration">
       <PassportOfficeRegistration @cancel="cancelRegistration" @complete="completeRegistration" />
+    </section>
+
+    <section v-else-if="isReturning" class="passport-office__registration-shell" aria-label="CosmoPort returning traveler login">
+      <PassportOfficeLogin :is-signed-in="isSignedIn === true" @cancel="cancelLogin" @complete="completeLogin" />
     </section>
 
     <section v-else class="passport-office__dialogue" aria-labelledby="passport-office-title">
