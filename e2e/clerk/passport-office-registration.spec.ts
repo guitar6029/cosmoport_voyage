@@ -12,17 +12,17 @@ test("files a corrected Passport Office application and activates its session", 
   await page.goto("/passport-office");
   await page.getByRole("button", { name: "I'd like to apply for a passport!" }).click();
 
-  await page.getByLabel("Given name").fill("Nova");
-  await page.getByLabel("Family name").fill("Voyager");
-  await page.getByLabel("Contact signal").fill(email);
-  await page.getByLabel("Secure launch phrase").fill("Passw0rd!ForClerk");
+  await page.getByLabel("Given Name (First Name)").fill("Nova");
+  await page.getByLabel("Family Name (Last Name)").fill("Voyager");
+  await page.getByLabel("Contact Signal (Email Address)").fill(email);
+  await page.getByLabel("Secure Launch Phrase (Password)").fill("Passw0rd!ForClerk");
   await page.getByRole("button", { name: "Review application" }).click();
   await expect(page.getByText("Nova Voyager")).toBeVisible();
   await expect(page.getByText(email)).toBeVisible();
   await expect(page.getByText("Passw0rd!ForClerk")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Make corrections" }).click();
-  await page.getByLabel("Family name").fill("Starling");
+  await page.getByLabel("Family Name (Last Name)").fill("Starling");
   await page.getByRole("button", { name: "Review application" }).click();
   await page.getByRole("button", { name: "File application" }).click();
   await page.getByLabel("Verification code").fill("424242");
