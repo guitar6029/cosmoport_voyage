@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import PassportOfficeRegistration from "../../components/passport-office/PassportOfficeRegistration.vue";
 import { dialogueFor, openingDialogueStep, type PassportOfficeChoice } from "../../data/passportOfficeDialogue";
 import { PASSPORT_OFFICE_MEDIA } from "../../data/passportOfficeMedia";
@@ -9,12 +9,27 @@ type DialogueStep = "opening" | PassportOfficeChoice;
 const step = ref<DialogueStep>(openingDialogueStep());
 const isRegistering = ref(false);
 const registrationComplete = ref(false);
-const { isSignedIn } = useAuth();
+// The opening choices are server-rendered. Keep them inert until Vue has
+// hydrated so an early click cannot be lost before its event listeners exist.
+const clientReady = ref(false);
+const { isLoaded: isClerkLoaded, isSignedIn } = useAuth();
 const backgroundFailed = ref(false);
+const choicesReady = computed(() => clientReady.value && isClerkLoaded.value);
 
 const dialogue = computed(() => registrationComplete.value ? { lines: ["Splendid! Your CosmoPort account is ready for takeoff.", "Stella has filed your traveler registration. Passport issuance will open in a future story."], choices: undefined } : dialogueFor(step.value));
 
-function choose(choice: PassportOfficeChoice) { if (choice === "apply" && !registrationComplete.value && !isSignedIn.value) isRegistering.value = true; else step.value = choice === "apply" ? "returning" : choice; }
+onMounted(() => {
+  clientReady.value = true;
+});
+
+function choose(choice: PassportOfficeChoice) {
+  if (choice === "apply" && !registrationComplete.value && isSignedIn.value !== true) {
+    isRegistering.value = true;
+    return;
+  }
+
+  step.value = choice === "apply" ? "returning" : choice;
+}
 function restart() { step.value = openingDialogueStep(); registrationComplete.value = false; }
 function cancelRegistration() { isRegistering.value = false; }
 function completeRegistration() { isRegistering.value = false; registrationComplete.value = true; }
@@ -47,7 +62,7 @@ function completeRegistration() { isRegistering.value = false; registrationCompl
         <p v-for="line in dialogue.lines" :key="line">{{ line }}</p>
       </div>
       <div v-if="dialogue.choices" class="passport-office__choices" aria-label="Choose a response">
-        <button v-for="choice in dialogue.choices" :key="choice.id" type="button" @click="choose(choice.id)">
+        <button v-for="choice in dialogue.choices" :key="choice.id" type="button" :disabled="!choicesReady" @click="choose(choice.id)">
           {{ choice.label }}
         </button>
       </div>
@@ -76,7 +91,8 @@ h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp
 .passport-office__message p { margin: 0; }.passport-office__message p + p { margin-top: .75rem; }
 .passport-office__choices, .passport-office__actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .75rem; }
 .passport-office button, .passport-office__actions a { border: 2px solid #173c47; border-radius: .65rem; padding: .85rem 1rem; background: #78c5bf; color: #173c47; font: inherit; font-weight: 800; line-height: 1.25; text-align: left; cursor: pointer; text-decoration: none; }
-.passport-office button:hover, .passport-office__actions a:hover { background: #ee8e71; }
+.passport-office button:hover:not(:disabled), .passport-office__actions a:hover { background: #ee8e71; }
+.passport-office button:disabled { cursor: wait; opacity: .66; }
 .passport-office button:focus-visible, .passport-office a:focus-visible { outline: 3px solid #b8493a; outline-offset: 3px; }
 @media (max-width: 44rem) { .passport-office { display: block; padding-top: 5rem; }.passport-office__background { object-position: 62% center; }.passport-office__dialogue, .passport-office__registration-shell { width: auto; }.passport-office__choices, .passport-office__actions { grid-template-columns: 1fr; }.passport-office__exit { z-index: 1; } }
 @media (prefers-reduced-motion: reduce) { .passport-office * { scroll-behavior: auto; } }

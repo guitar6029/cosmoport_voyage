@@ -41,15 +41,26 @@ export async function cleanupClerkTestUsers() {
   const clerk = await assertDevelopmentClerkEnvironment(); const manifest = await readManifest();
   for (const entry of manifest.users) {
     if (!passportTestAddress.test(entry.email)) throw new Error(`Refusing to clean an address outside the Passport Office Clerk test namespace: ${entry.email}`);
-    const listed = await clerk.users.getUserList({ emailAddress: [entry.email] });
-    for (const user of listed.data) {
-      const matchingEmail = user.emailAddresses.some((address) => address.emailAddress.toLowerCase() === entry.email.toLowerCase());
-      if (!matchingEmail || (entry.clerkUserId && user.id !== entry.clerkUserId)) throw new Error(`Refusing to delete an unrelated user for ${entry.email}.`);
-      await recordClerkUserId(entry.email, user.id);
-      entry.clerkUserId = user.id;
-      await clerk.users.deleteUser(user.id);
-      entry.deletedAt = new Date().toISOString();
-      await writeManifest(manifest);
-    }
+    // A manifest entry without a recorded ID is evidence only. Never discover a
+    // deletion target by email: cleanup may act solely on the exact recorded ID.
+    if (!entry.clerkUserId) continue;
+    const listed = await clerk.users.getUserList({ userId: [entry.clerkUserId] });
+    if (listed.data.length === 0) continue;
+    if (listed.data.length !== 1) throw new Error(`Refusing to delete an ambiguous Clerk user for ${entry.email}.`);
+    const user = listed.data[0];
+    const matchingEmail = user.emailAddresses.some((address) => address.emailAddress.toLowerCase() === entry.email.toLowerCase());
+    if (user.id !== entry.clerkUserId || !matchingEmail) throw new Error(`Refusing to delete an unrelated user for ${entry.email}.`);
+    await clerk.users.deleteUser(user.id);
+    entry.deletedAt = new Date().toISOString();
+    await writeManifest(manifest);
+  }
+}
+
+export async function assertRecordedClerkTestUsersDeleted() {
+  const clerk = await assertDevelopmentClerkEnvironment(); const manifest = await readManifest();
+  for (const entry of manifest.users) {
+    if (!entry.clerkUserId) continue;
+    const listed = await clerk.users.getUserList({ userId: [entry.clerkUserId] });
+    if (listed.data.length !== 0) throw new Error(`Clerk test-user cleanup did not delete the recorded user for ${entry.email}.`);
   }
 }

@@ -23,7 +23,7 @@ describe("Passport Office", () => {
   });
 
   it("renders the continuous background, Stella's dialogue, choices, and an accessible exit", async () => {
-    vi.stubGlobal("useAuth", () => ({ isSignedIn: ref(false) }));
+    vi.stubGlobal("useAuth", () => ({ isLoaded: ref(false), isSignedIn: ref(false) }));
     const app = createSSRApp(PassportOfficePage);
     app.component("NuxtLink", NuxtLink);
     app.component("PassportOfficeRegistration", PassportOfficeRegistration);
@@ -32,6 +32,7 @@ describe("Passport Office", () => {
     expect(html).toContain(PASSPORT_OFFICE_MEDIA.background);
     expect(html).toContain("A message from Stella Starling");
     expect(html).toContain("I&#39;d like to apply for a passport!");
+    expect(html).toContain("disabled");
     expect(html).toContain('href="/"');
     expect(html).toContain("Exit Office");
     expect(html).toContain('role="status"');
@@ -61,6 +62,9 @@ describe("Passport Office", () => {
     expect(source).toContain("@error=\"backgroundFailed = true\"");
     expect(source).toContain("@media (max-width: 44rem)");
     expect(source).toContain("grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr))");
+    expect(source).toContain("isLoaded: isClerkLoaded");
+    expect(source).toContain("choicesReady = computed(() => clientReady.value && isClerkLoaded.value)");
+    expect(source).toContain(':disabled="!choicesReady"');
     expect(source).not.toContain("PASSPORT_OFFICE_MEDIA.stella");
     expect(source).not.toContain("handleImageError");
   });
