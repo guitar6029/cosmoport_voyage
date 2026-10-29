@@ -79,7 +79,7 @@ Budget alerts and usage notifications are **notifications, not spending caps**. 
 
 ## Public media prefixes
 
-The Worker exposes only the reviewed `astro-pop/`, `passport-office/`, `about/`, and `grand-concourse/` key prefixes. The Passport Office namespace is intentionally public artwork, the About namespace contains public concept artwork for the Cosmo Universe About collage, and the Grand Concourse namespace is limited to the approved landing-page illustration; keep all non-public objects outside these namespaces and cover new application references with tests.
+The Worker exposes only the reviewed `astro-pop/`, `passport-office/`, `about/`, `grand-concourse/`, and `sounds/grand-concourse/` key prefixes. The Passport Office namespace is intentionally public artwork, the About namespace contains public concept artwork for the Cosmo Universe About collage, the Grand Concourse namespace is limited to the approved landing-page illustration, and the narrow sounds namespace is limited to approved Grand Concourse radio; keep all non-public objects outside these namespaces and cover new application references with tests.
 
 ## Safe image edge caching
 

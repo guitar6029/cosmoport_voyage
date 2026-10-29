@@ -72,11 +72,13 @@ test("keeps every signed-out navigation control usable at 320px", async ({ page 
   const about = navigation.getByRole("link", { name: "About", exact: true });
   const signIn = navigation.getByRole("link", { name: "Sign In" });
   const register = navigation.getByRole("link", { name: "Register" });
+  const radio = navigation.getByRole("button", { name: "Open CosmoPort Radio controls" });
 
   await expect(home).toBeVisible();
   await expect(about).toBeVisible();
   await expect(signIn).toBeVisible();
   await expect(register).toBeVisible();
+  await expect(radio).toBeVisible();
   await expect(signIn).toHaveAttribute("href", "/passport-office?intent=sign-in");
   await expect(register).toHaveAttribute("href", "/passport-office?intent=register");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
