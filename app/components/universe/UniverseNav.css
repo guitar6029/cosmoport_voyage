@@ -233,6 +233,26 @@
   opacity: .7;
 }
 
+.universe-nav__menu-link {
+  background: transparent;
+  color: var(--cp-universe-cream);
+  text-decoration: none;
+}
+
+.universe-nav__menu-link:hover {
+  background: var(--cp-universe-gold);
+  color: var(--cp-universe-space-teal-deep);
+}
+
+.universe-nav__menu-link:hover .universe-nav__menu-icon {
+  color: inherit;
+}
+
+.universe-nav__menu-link:focus-visible {
+  outline: 3px solid var(--cp-universe-cream);
+  outline-offset: 3px;
+}
+
 .universe-nav__menu-soon {
   margin-left: auto;
   color: var(--cp-universe-muted-teal);
