@@ -17,10 +17,13 @@ vi.mock("h3", () => ({
 }));
 
 type AccessHandler = (event: object) => Promise<{ authorized: true }>;
-type TestEvent = { context: { auth?: () => { userId?: string | null } }; clientRole?: string };
+type TestEvent = {
+  context: { auth?: () => { isAuthenticated?: boolean; userId?: string | null } };
+  clientRole?: string;
+};
 
-const eventFor = (userId?: string | null): TestEvent => ({
-  context: userId === undefined ? {} : { auth: () => ({ userId }) },
+const eventFor = (userId?: string | null, isAuthenticated = true): TestEvent => ({
+  context: userId === undefined ? {} : { auth: () => ({ isAuthenticated, userId }) },
 });
 
 describe("Mission Control access handler", () => {
@@ -38,6 +41,11 @@ describe("Mission Control access handler", () => {
     await expect(handler(eventFor())).rejects.toMatchObject({ statusCode: 401 });
     expect(mocks.getUser).not.toHaveBeenCalled();
     expect(mocks.headers).toHaveBeenCalledWith(expect.anything(), "Cache-Control", "no-store");
+  });
+
+  it("returns 401 when a user ID is present but Clerk marks the session unauthenticated", async () => {
+    await expect(handler(eventFor("user_not_authenticated", false))).rejects.toMatchObject({ statusCode: 401 });
+    expect(mocks.getUser).not.toHaveBeenCalled();
   });
 
   it("returns 403 for an authenticated ordinary user", async () => {

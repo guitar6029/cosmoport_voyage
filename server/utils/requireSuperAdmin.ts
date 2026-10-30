@@ -2,6 +2,7 @@ import { clerkClient } from "@clerk/nuxt/server";
 import { createError, setResponseHeader, type H3Event } from "h3";
 
 type ClerkAuth = {
+  isAuthenticated?: boolean;
   userId?: string | null;
 };
 
@@ -28,7 +29,7 @@ export async function requireSuperAdmin(event: H3Event): Promise<void> {
   const auth = (event.context as { auth?: () => ClerkAuth }).auth?.();
   const userId = auth?.userId;
 
-  if (!userId) {
+  if (auth?.isAuthenticated !== true || typeof userId !== "string" || userId.trim().length === 0) {
     deny(event, 401, "Unauthorized");
   }
 

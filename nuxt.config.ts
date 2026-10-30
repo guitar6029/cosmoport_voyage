@@ -5,6 +5,9 @@ import astroPopDatabaseHealth from "./server/dev-handlers/astroPopDatabaseHealth
 
 const usePlaywrightAuthMock = process.env.PLAYWRIGHT_TEST === "true";
 const playwrightAuthMock = fileURLToPath(new URL("./e2e/support/clerk-mock.ts", import.meta.url));
+const playwrightServerAuthMock = fileURLToPath(
+  new URL("./e2e/support/clerk-server-mock.ts", import.meta.url),
+);
 
 export default defineNuxtConfig({
   modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt", ...(usePlaywrightAuthMock ? [] : ["@clerk/nuxt"])],
@@ -51,7 +54,12 @@ export default defineNuxtConfig({
       exclude: ["@clerk/vue", "@clerk/shared", "@clerk/clerk-js"],
     },
     resolve: usePlaywrightAuthMock
-      ? { alias: { "@clerk/nuxt/composables": playwrightAuthMock } }
+      ? {
+          alias: {
+            "@clerk/nuxt/composables": playwrightAuthMock,
+            "@clerk/nuxt/server": playwrightServerAuthMock,
+          },
+        }
       : undefined,
   },
   imports: usePlaywrightAuthMock
@@ -63,6 +71,9 @@ export default defineNuxtConfig({
       }
     : undefined,
   nitro: {
+    alias: usePlaywrightAuthMock
+      ? { "@clerk/nuxt/server": playwrightServerAuthMock }
+      : undefined,
     devHandlers: [
       {
         route: "/api/astro-pop/db-health",
