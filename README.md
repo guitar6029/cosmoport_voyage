@@ -1,77 +1,105 @@
-# CosmoPort Voyage
+# CosmoPort Universe
 
-CosmoPort Voyage is an interactive fictional space-tourism website with a 1950s Space Age retrofuturist / Atompunk visual direction.
+A collection of interconnected fictional experiences set in a colorful, 1950s-inspired **Atomic Age / Atompunk future**. The Grand Concourse serves as the shared entry point to a retrofuturistic world of interplanetary travel, neighborhood soda shops, and more.
 
-This repository currently contains the minimal Nuxt frontend foundation with the official Sanity integration configured for future content management. No CMS content is fetched yet.
+This is a **portfolio / product-engineering project**, not a real travel-booking service or fulfillment business. It combines immersive UI and storytelling with practical application architecture, integrations, and testing.
 
-## Tech Stack
+## Explore the Universe
 
-- Nuxt 4
-- Vue 3
-- TypeScript
-- Tailwind CSS v4
-- DaisyUI v5
-- Vitest
+| Experience | Route | Current state |
+| --- | --- | --- |
+| **Grand Concourse** | `/` | Main Universe homepage with responsive illustrated hero, experience directory, navigation, and CosmoPort Radio controls |
+| **Astro Pop Soda Co.** | `/astro-pop` | Interactive fictional storefront with flavor pages, crate builder/cart, Stripe Checkout integration, and order confirmation |
+| **Passport Office** | `/passport-office` | Custom traveler registration, email verification, and returning-traveler sign-in powered by Clerk |
+| **CosmoPort Voyage** | `/cosmoport-voyage` | Illustrated space-tourism landing page and destination sections; search, comparison, and booking are **not** implemented |
+| **About the Universe** | `/about` | The shared world introduction and multiverse artwork |
 
-## Local Development
+Astro Pop also includes an Our Story page (`/astro-pop/our-story`), individual flavor routes (`/astro-pop/flavors/[slug]`), and a cart (`/astro-pop/cart`).
+
+**Still planned:** issued traveler passports/profiles, cross-app personalization, deeper Cosmos Voyage functionality, and customer/operations tooling. Existing registration and login do **not** imply that passport issuance or account dashboards exist today.
+
+## What has been built
+
+- **Shared Universe experience:** Grand Concourse illustration, responsive floating navigation, signed-in/out controls, About page, and user-controlled radio playback.
+- **Astro Pop shopping flow:** flavor catalog and detail pages, a six-bottle crate/cart, delivery-plan presentation, animated customer testimonials, checkout status feedback, and notifications.
+- **Checkout and persistence:** server-side cart validation, Stripe Checkout session creation, webhook-driven Neon/Postgres order recording, duplicate-event handling, guest verification, and bounded status polling.
+- **Authentication:** shared Clerk identity instance with a custom Passport Office UI for registration/email verification and sign-in. Public browsing and guest checkout remain available.
+- **Media delivery:** a separate Cloudflare Worker serves allowlisted public assets from R2 through `media.cosmos-universe.com`, with read-only access, safe request handling, image caching, byte-range support, and operational safeguards.
+- **Content foundation:** Sanity integration and a standalone Studio with a `destination` schema. The current CosmoPort Voyage page is still built from local/static content rather than live CMS data.
+
+## Technology
+
+| Layer | Tools |
+| --- | --- |
+| Web application | Nuxt 4, Vue 3, TypeScript, Nitro |
+| UI and state | Tailwind CSS v4, DaisyUI v5, Pinia |
+| Authentication | Clerk (`@clerk/nuxt`) |
+| Commerce and data | Stripe, Neon serverless Postgres, Zod |
+| Media | Cloudflare R2, Workers, Cache API |
+| Content | Sanity CMS / standalone Sanity Studio (partially integrated) |
+| Configuration | Doppler-managed development environment |
+| Quality | Vitest, Playwright, GitHub Actions |
+
+The repository includes a Nuxt app, Nitro API routes, database migrations, a standalone Sanity Studio, and an independently configured media Worker. Not every integration is required to browse every public page.
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js 22.23.4
-- npm
+- Node.js **22.23.4** (see `.nvmrc`) and npm
+- [Doppler](https://docs.doppler.com/docs/install-cli), configured for the `cosmoport-universe` project's `dev` environment, for integrated local development
+- Optional: [Stripe CLI](https://docs.stripe.com/stripe-cli) for local checkout/webhook testing
 
-### Install dependencies
+### Run the Nuxt application
 
 ```bash
+nvm use
 npm ci
+npm run doppler:dev
 ```
 
-### Start the development server
+Open `http://localhost:3000`.
+
+`npm run dev` starts Nuxt without Doppler; use it only when the necessary configuration is already supplied by your environment. See `.env.example` for **variable names only**. Never commit populated environment files, credentials, or API secrets.
+
+### Local Stripe webhook forwarding
+
+For a functional local checkout-to-order-recording flow, keep the Nuxt server running and start the Stripe CLI in a **second terminal**:
 
 ```bash
-npm run dev
+npm run stripe:webhook:dev
 ```
 
-Nuxt serves the app at `http://localhost:3000` by default.
+The script forwards supported Stripe checkout events to `/api/astro-pop/stripe-webhook`. The CLI must be authenticated and the matching webhook secret must be provided through the development environment. If the listener is stopped, a completed local checkout may not be recorded in Neon until its event is delivered. Use Stripe test-mode credentials for development.
 
-### Run tests
+### Tests and build
 
 ```bash
 npm run test
-```
-
-### Build for production
-
-```bash
+npm run test:e2e
 npm run build
 ```
 
-## Project Structure
+Clerk-specific end-to-end tests have a separate configuration and require suitable Clerk development/test credentials:
 
-- `app/app.vue` – Nuxt application shell
-- `app/pages/index.vue` – universe directory linking to both experiences
-- `app/pages/astro-pop.vue` – AstroPop Soda Co. page
-- `app/pages/cosmoport-voyage.vue` – CosmoPort Voyage page
-- `app/components/astro-pop/` – AstroPop sections and cards
-- `app/components/cosmoport-voyage/` – CosmoPort destination sections
-- `app/components/shared/` – brand-independent UI components
-- `app/site.ts` – shared site metadata
-- `app/assets/css/main.css` – Tailwind and DaisyUI entrypoint
+```bash
+npm run test:e2e:clerk
+```
 
-Pages and components explicitly import their component dependencies. Keep brand-specific components in their respective folders and reusable, brand-independent components in `shared/`.
+To test the independent Cloudflare media Worker:
 
-## Sanity setup
+```bash
+npm --prefix workers/media ci
+npm --prefix workers/media test
+npm --prefix workers/media run typecheck
+npm --prefix workers/media run validate:wrangler
+```
 
-The Nuxt Sanity module reads these values from the environment:
+See [media Worker README](workers/media/README.md) and [operations guide](workers/media/OPERATIONS.md) before changing its deployment, access, or emergency controls. A successful app build does not validate live Cloudflare configuration.
 
-- `SANITY_PROJECT_ID` – the project ID shown in the Sanity dashboard under the project settings
-- `SANITY_DATASET` – the dataset name shown in the Sanity project configuration, usually `production`
+### Sanity Studio (optional)
 
-Copy `.env.example` to `.env` for local development and fill in the values. The integration is configured in `nuxt.config.ts` with a fixed API version. The project does not yet define schemas, queries, or application content views, so live CMS connectivity is not required for the current test or build commands.
-
-### Sanity Studio
-
-The standalone Studio lives in `studio/` and remains independent from the Nuxt application. Its project and dataset are configured in `studio/sanity.config.ts` and `studio/sanity.cli.ts`.
+The Studio lives separately under `studio/` and currently defines a destination document schema.
 
 ```bash
 cd studio
@@ -79,39 +107,36 @@ npm ci
 npm run dev
 ```
 
-The Studio runs at `http://localhost:3333`. It currently has no destination schemas. When it is ready to host, run `npm run deploy` from `studio/` and follow Sanity's deployment prompts.
+Its local development server typically runs at `http://localhost:3333`. Configure the `SANITY_PROJECT_ID` and `SANITY_DATASET` values for the intended environment. The main Voyage landing page does not yet read destination entries from Sanity.
 
-## Clerk shared account foundation
+## Repository layout
 
-The Nuxt app uses the official `@clerk/nuxt` module as the CosmoPort Universe identity foundation. Configure both applications to use the same Clerk instance; it belongs to the Universe rather than to either Astro Pop Soda Co. or CosmoPort Voyage.
-
-Set these Doppler-managed variables for each environment:
-
-- `NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY` – the Clerk publishable key, safe to expose to the browser.
-- `NUXT_CLERK_SECRET_KEY` – the corresponding server-only Clerk secret key.
-
-For local development, use Doppler's shared Universe development configuration rather than a populated local `.env` file:
-
-```bash
-npm run doppler:dev
+```text
+app/
+  pages/                 # Grand Concourse, About, Astro Pop, Voyage, Passport Office
+  components/            # Experience-specific and shared Vue components
+  composables/           # Radio, auth flows, checkout, notifications
+  data/                  # Page content and media mappings
+server/
+  api/astro-pop/         # Checkout, status, and Stripe webhook routes
+database/migrations/     # Database schema changes
+shared/                  # Shared checkout status types
+workers/media/           # Standalone Cloudflare R2 delivery Worker
+studio/                  # Standalone Sanity Studio and destination schema
+e2e/                     # Playwright end-to-end tests
+test/                    # Unit/integration tests
+docs/                    # Architecture notes, audits, test plans, style guide
+AGENTS.md                # Repository workflow and agent safeguards
 ```
 
-That command runs the app with the `cosmoport-universe` project and `dev` configuration, where the two Clerk variables must be set to development keys from the shared Clerk instance. `.env.example` documents the required names only; do not commit keys, create substitute credentials, or expose the secret key through Nuxt public runtime configuration.
+The shared media Worker and Sanity Studio have their **own** configuration/dependency context; they are not separate routes served by the Nuxt application.
 
-The integration intentionally leaves all existing routes public: anonymous browsing and guest checkout continue to work, and no Stripe, Neon, order, or webhook behavior is changed. Clerk's built-in server middleware is registered automatically by the module, but no application routes are protected yet. When an authenticated feature is added, obtain its user identity from Clerk's server-side `event.context.auth()` result; never trust a user ID supplied by the client.
+## Development and contribution workflow
 
-The future root-level account routes are reserved for:
+Repository work follows [AGENTS.md](AGENTS.md): use an isolated feature branch/worktree from the latest `origin/main`, keep changes focused, validate them, and open a PR. Never develop directly on `main` or merge a PR without explicit authorization.
 
-- `/sign-in`
-- `/sign-up`
-- `/account`
-
-They are not implemented in this foundation change.
-
-### CI and deployment configuration
-
-`@clerk/nuxt` can complete a Nuxt production build without Clerk keys because its keys are runtime configuration. That is appropriate for CI validation: keep the variables absent in build-only CI and do not add fake keys. A deployed server must receive a valid matching publishable/secret key pair through Doppler before it handles requests. Clerk's development keyless fallback is not a production configuration and must not be relied upon for deployment.
+Useful technical references include the [Astro Pop database notes](docs/ASTRO-POP-DATABASE.md), [CosmoPort visual style guide](docs/COSMOPORT-VISUAL-STYLE-GUIDE.md), and [Passport Office Clerk testing guide](docs/PASSPORT-OFFICE-CLERK-INTEGRATION-TESTS.md).
 
 ---
 
-Copyright © 2025
+CosmoPort Universe is a fictional creative and engineering project.

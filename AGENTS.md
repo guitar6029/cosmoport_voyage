@@ -3,28 +3,26 @@
 ## Repository workflow
 
 - Read this `AGENTS.md` before beginning any task.
-- Verify the current branch and working tree status before modifying files.
-- Never develop directly on `main`; create or use a dedicated feature branch for each task.
-- Do not push directly to `main`. Use pull requests for all changes.
-- Keep pull requests focused and reasonably small.
-- Never merge a pull request without explicit authorization.
-- Preserve unrelated changes and existing worktrees.
-- Never reset, discard, or delete existing work without authorization.
+- Verify current checkout, branch, worktrees, and uncommitted changes before modifying files.
+- **Never develop directly on `main` or push directly to `main`.** Create a dedicated feature branch/worktree and submit a pull request.
+- Keep PRs focused and reasonably small. Preserve unrelated work.
+- **Never merge a PR without explicit user authorization.**
+- Do not reset, delete, overwrite, stash, or clean other people's changes, branches, or worktrees.
 
-## Parallel-agent branch and worktree isolation (mandatory)
+## Parallel-agent worktree isolation (mandatory)
 
-These rules apply whenever multiple AI agents might operate on the repository, even if they are assigned different tasks.
+These rules apply whenever several AI agents may be working in the repository.
 
-- **One agent = one dedicated worktree + one dedicated feature branch.** Do not share a working directory between concurrent agents, and do not work in another agent's worktree.
-- **Never switch branches inside an existing or shared checkout** to start a new task. A checkout on a feature branch may belong to another agent; a checkout on `main` may also be in use. Leave both untouched.
-- **Never assume the current branch is a safe starting point.** All independent task branches must start explicitly from the latest fetched `origin/main`, not the current `HEAD`, another feature branch, or potentially stale local `main`. Only use another base with explicit approval for a dependent task.
-- Each feature or independently assigned piece of work gets a distinct, descriptively named branch and worktree path. Do not reuse an agent's existing branch.
-- Branches and Git metadata are shared across worktrees. Never reset, rebase, force-push, rename, delete, or otherwise manipulate branches owned by another agent.
-- Never stash, clean, reset, discard, or overwrite another agent's uncommitted changes. If ownership or repository state is uncertain, stop and report the conflict rather than "fixing" the state.
+- **One agent = one dedicated worktree + one dedicated feature branch.** Never share another agent's checkout.
+- Do not switch branches inside an existing or shared checkout to begin a new task.
+- Create independent task branches from the latest fetched `origin/main`, not from the current checkout's HEAD or a stale local `main`, unless explicitly approved otherwise.
+- Use unique, descriptive names for each task branch and worktree.
+- Treat existing worktrees, branches, and uncommitted changes as owned by someone else unless clearly assigned to you.
+- Never force-push, reset, rebase, rename, or delete another agent's branch. Do not silently resolve uncertain ownership.
 
-### Required preflight: before editing any file
+### Required preflight before editing
 
-Run these commands in the checkout where the agent started:
+From the checkout where you start, run:
 
 ```sh
 pwd
@@ -34,69 +32,102 @@ git status --short --branch
 git worktree list --porcelain
 ```
 
-Identify the current branch, worktree root, other registered worktrees, and any uncommitted changes. Treat existing checkouts and changes as belonging to someone else unless clearly assigned otherwise. Do not change or clean them.
+Identify ownership and the intended working location. If the repository is dirty or worktree ownership is unclear, do not disturb existing changes.
 
-### Create a fresh isolated task worktree
+### Create an isolated task worktree
 
-For each new agent/task, from an existing repository checkout run:
+From an existing repository checkout, for example:
 
 ```sh
 git fetch origin main
-git worktree add -b feat/astro-pop-flavor-details ../cosmoport_voyage-flavor-details origin/main
-cd ../cosmoport_voyage-flavor-details
+git worktree add -b docs/refresh-universe-readme ../cosmoport_voyage-readme origin/main
+cd ../cosmoport_voyage-readme
 git rev-parse --show-toplevel
 git branch --show-current
 git status --short --branch
 ```
 
-The branch and path above are examples: use **new unique names** appropriate to the assigned task. Check that both names are unused before creating them. `git worktree add -b ... origin/main` creates the new branch at the fetched remote main commit *without changing the original checkout*. If the fetch fails, do not claim the new branch is based on the latest main; report the blocker.
+Choose a unique branch and path instead of reusing this illustrative example. If fetching fails, report the failure rather than claiming to be up to date. Never switch the original checkout's branch.
 
-### While working and before committing or pushing
+### While editing and before pushing
 
-- Run all edits, installs, tests, builds, and commits from the agent's assigned worktree. Do not edit files through paths into the primary checkout or other worktrees.
-- Recheck `git rev-parse --show-toplevel`, `git branch --show-current`, and `git status --short --branch` before commits and pushes. Stop if the worktree root or branch differs from the assignment.
-- Review `git diff` and staged changes to ensure the PR contains only the assigned scope. Never mix another agent's task into the current branch.
-- Open a PR against `main`. Do not merge it without explicit authorization.
-- Do not remove worktrees or branches as automatic cleanup. Clean up only after their work is finished and removal is explicitly authorized; do not delete dirty worktrees.
+- Perform edits, installs, builds, tests, and commits only in the agent-owned worktree.
+- Recheck the worktree root, branch, and `git status --short --branch` before committing and pushing.
+- Review `git diff` and staged changes; do not mix unrelated tasks.
+- Open a PR targeting `main` and **leave merging to explicit user approval**.
+- Do not remove branches or worktrees as automatic cleanup; request authorization after work is finished, particularly for dirty worktrees.
 
 ## Project overview
 
-- CosmoPort Voyage is being rebuilt as an interactive fictional space-tourism website.
-- Visual direction: 1950s Space Age retrofuturism / Atompunk.
-- The application lives at the repository root and uses Nuxt 4, Vue 3, TypeScript, Tailwind CSS v4, and DaisyUI v5.
-- Vitest is used for testing.
-- Sanity CMS is planned for future integration.
-- Python, FastAPI, and MongoDB have been removed from the project.
+**CosmoPort Universe** is a multi-experience, 1950s Space Age / Atompunk fictional world. The Nuxt 4 application includes:
+
+- **Grand Concourse (`/`):** Universe homepage, shared navigation and account controls, and CosmoPort Radio.
+- **Astro Pop Soda Co. (`/astro-pop`):** fictional storefront with flavor details, crate/cart, Stripe Checkout integration, server-side validation, notifications, and Neon-backed orders via Stripe webhooks.
+- **Passport Office (`/passport-office`):** custom Clerk registration, email verification, and returning-traveler sign-in. Passport issuance and traveler profiles are **not** implemented.
+- **CosmoPort Voyage (`/cosmoport-voyage`):** destination-marketing landing page; trip search, comparison, and booking are **not** implemented. It is currently presented as under construction from the homepage.
+- **About (`/about`):** shared world introduction.
+
+Do not describe the repository as a minimal frontend, claim its checkout is real-world fulfillment, or describe planned features as implemented. Keep the [README](README.md) aligned with shipped capabilities.
+
+### Architecture and existing integrations
+
+- **Web:** Nuxt 4, Vue 3, TypeScript, Nitro, Tailwind v4, DaisyUI v5; Pinia for Astro Pop cart state and Zod for request validation.
+- **Authentication:** `@clerk/nuxt` and a shared Universe Clerk instance. Public routes/guest checkout remain available. Trust server-side Clerk identities for authenticated endpoints, not arbitrary client IDs.
+- **Commerce:** Stripe Checkout and webhook handlers in `server/api/astro-pop/`; Neon/Postgres order persistence and migrations in `database/migrations/`. Preserve webhook idempotency, error/retry semantics, server-side validation, and guest credential verification.
+- **Media:** separately deployable Cloudflare Worker under `workers/media/` reading R2 objects from reviewed public prefixes. Respect allowlists, fail-closed behavior, caching rules, rate-limiting configuration, byte ranges, and the emergency controls described in `workers/media/OPERATIONS.md`. Do not casually change live CDN/WAF settings.
+- **CMS:** `@nuxtjs/sanity` and separate `studio/` app with a destination schema. The current Voyage page does not fetch live CMS content.
+- **Configuration:** Node 22.23.4 (`.nvmrc`), Doppler (`cosmoport-universe` / `dev`) for integrated local development, and `.env.example` for variable names only. Do not create or commit populated secrets files.
+
+Preserve existing systems; **do not introduce new services, authentication mechanisms, payment flows, or infrastructure changes without clear task scope and approval**. Adding a feature to an existing integration still requires normal validation and security review.
 
 ## Development standards
 
-- Follow existing project conventions.
-- Prefer simple solutions over unnecessary abstractions.
-- Avoid introducing dependencies without a clear reason.
-- Keep components focused and reusable.
-- Maintain responsive layouts and accessibility.
-- Do not introduce backend services, authentication, or payment systems without approval.
+- Follow repository conventions; inspect relevant components, composables, routes, and existing tests before changing behavior.
+- Prefer straightforward, focused solutions over unnecessary abstractions or new dependencies.
+- Keep brand-specific code in the corresponding experience folders; put truly reusable UI in shared components.
+- Keep responsive layouts, accessibility, keyboard support, loading/error states, and reduced-motion behavior in mind.
+- Maintain the shared fictional universe's approved retrofuturist visual identity without copying existing franchises.
+- Keep server-side logic authoritative for payments, identity, and persisted orders.
+- Avoid touching unrelated Cloudflare deployment, Stripe settings, Clerk settings, database state, or external resources as part of UI-only tasks.
 
 ## Validation
 
-- Inspect the root `package.json` before choosing commands.
-- If Node/npm is unavailable, check whether `nvm use 22.23.4` is appropriate.
-- Install dependencies with `npm ci`.
-- Run the test suite with `npm run test`.
-- Run the production build with `npm run build`.
-- Report what passed, failed, or could not be verified.
-- Once CI is established, ensure required checks pass before merging.
+Inspect the root `package.json` before selecting commands. At the repository root:
+
+```sh
+nvm use 22.23.4
+npm ci
+npm run test
+npm run test:e2e
+npm run build
+```
+
+Integrated local development uses `npm run doppler:dev`. Local webhook forwarding uses `npm run stripe:webhook:dev` in a separate terminal while the Nuxt server is running; it is not automatically started by `npm run dev`.
+
+Clerk-specific Playwright tests use `npm run test:e2e:clerk` and require suitable development/test configuration. The media Worker has separate dependencies and test commands:
+
+```sh
+npm --prefix workers/media ci
+npm --prefix workers/media test
+npm --prefix workers/media run typecheck
+npm --prefix workers/media run validate:wrangler
+```
+
+Run task-relevant focused tests and full checks when practical. Report exactly which commands passed, failed, or were not run. Do not claim live CDN, webhook, or authentication behavior is verified by a build alone. Validate production behavior separately when the task requires it.
 
 ## Security
 
-- Never read or expose `.env` files, credentials, API tokens, or secrets.
-- Never commit sensitive configuration.
-- Use example configuration files to understand required environment variable names.
-- Do not expose privileged Sanity API tokens in frontend code.
+- Never read, print, or expose `.env` contents, credentials, private keys, tokens, API secrets, or personal data.
+- Never commit secret-bearing files or embed backend secrets in public Nuxt runtime config or frontend code.
+- Use `.env.example` for required names only and Doppler for actual environment configuration.
+- Keep Clerk secret keys server-side and derive identity from verified server-side auth context.
+- Verify Stripe webhooks and maintain idempotent persistence/retry behavior.
+- Follow media Worker's explicit public-prefix allowlists, least-privilege R2 access, and documented incident controls.
 
 ## Task completion
 
-- Summarize the files changed.
-- Report verification results.
-- Identify blockers or unresolved issues.
-- Do not expand the task beyond its approved scope.
+- Summarize the files changed and meaningful decisions.
+- Report the results of checks actually performed, including limitations.
+- Surface blockers and unresolved risks.
+- Do not expand the task scope or merge the PR without user authorization.
+
