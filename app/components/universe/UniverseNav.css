@@ -112,18 +112,17 @@
   align-items: center;
   gap: .45rem;
   min-height: 2.75rem;
-  border: 1px solid var(--cp-universe-gold);
+  border: 1px solid transparent;
   border-radius: .6rem;
   padding: .15rem .45rem .15rem .15rem;
-  background: var(--cp-universe-cream);
-  color: var(--cp-universe-space-teal-deep);
+  background: transparent;
+  color: var(--cp-universe-gold);
   cursor: pointer;
 }
 
 .universe-nav__account-toggle:hover,
 .universe-nav__account-toggle[aria-expanded="true"] {
-  border-color: var(--cp-universe-cream);
-  background: var(--cp-universe-gold);
+  background: color-mix(in srgb, var(--cp-universe-gold) 12%, transparent);
 }
 
 .universe-nav__account-toggle:focus-visible,
