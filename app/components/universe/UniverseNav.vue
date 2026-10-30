@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import UniverseRadioControl from "./UniverseRadioControl.vue";
 
 const { isLoaded, isSignedIn, signOut } = useAuth();
@@ -7,6 +7,7 @@ const { user } = useUser();
 const isSigningOut = ref(false);
 const signOutError = ref("");
 const accountMenuOpen = ref(false);
+const profileRoot = ref<HTMLDivElement>();
 const accountToggle = ref<HTMLButtonElement>();
 const signOutButton = ref<HTMLButtonElement>();
 
@@ -51,6 +52,10 @@ const handleSignOut = async () => {
 };
 
 function closeAccountMenu(restoreFocus = false) {
+  if (isSigningOut.value) {
+    return;
+  }
+
   accountMenuOpen.value = false;
 
   if (restoreFocus) {
@@ -59,7 +64,9 @@ function closeAccountMenu(restoreFocus = false) {
 }
 
 function openAccountMenu() {
+  signOutError.value = "";
   accountMenuOpen.value = true;
+  // Upcoming Account/Settings destinations aren't actionable yet.
   void nextTick(() => signOutButton.value?.focus());
 }
 
@@ -73,13 +80,28 @@ function toggleAccountMenu() {
 }
 
 function handleAccountKeydown(event: KeyboardEvent) {
-  if (event.key === "Escape" && accountMenuOpen.value) {
+  if (event.key === "Escape" && accountMenuOpen.value && !isSigningOut.value) {
     event.preventDefault();
     closeAccountMenu(true);
   }
 }
 
-onBeforeUnmount(closeAccountMenu);
+function closeOnOutsideInteraction(event: Event) {
+  if (accountMenuOpen.value && !isSigningOut.value
+    && event.target instanceof Node && !profileRoot.value?.contains(event.target)) {
+    closeAccountMenu();
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("pointerdown", closeOnOutsideInteraction);
+  document.addEventListener("focusin", closeOnOutsideInteraction);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("pointerdown", closeOnOutsideInteraction);
+  document.removeEventListener("focusin", closeOnOutsideInteraction);
+});
 </script>
 
 <template>
@@ -104,289 +126,61 @@ onBeforeUnmount(closeAccountMenu);
       </template>
 
       <template v-else>
-        <div class="universe-nav__profile" @keydown="handleAccountKeydown">
-          <button class="universe-nav__account-toggle" type="button" :aria-expanded="accountMenuOpen"
-            aria-controls="universe-account-menu" ref="accountToggle" @click="toggleAccountMenu">
+        <div ref="profileRoot" class="universe-nav__profile" @keydown="handleAccountKeydown">
+          <button ref="accountToggle" class="universe-nav__account-toggle" type="button"
+            :aria-label="'Account for ' + userName" :aria-expanded="accountMenuOpen"
+            aria-controls="universe-account-menu" @click="toggleAccountMenu">
             <img v-if="user?.imageUrl" class="universe-nav__avatar" :src="user.imageUrl" alt="" />
-            <span v-else class="universe-nav__avatar universe-nav__avatar--fallback" aria-hidden="true">{{
-              fallbackInitials }}</span>
-            <span>Account</span>
-            <span class="universe-nav__sr-only">for {{ userName }}</span>
+            <span v-else class="universe-nav__avatar universe-nav__avatar--fallback" aria-hidden="true">{{ fallbackInitials }}</span>
+            <svg class="universe-nav__chevron" :class="{ 'universe-nav__chevron--open': accountMenuOpen }"
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
           </button>
-          <div v-if="accountMenuOpen" id="universe-account-menu" class="universe-nav__account-menu" role="group"
-            aria-label="Account details">
-            <p class="universe-nav__account-name">{{ userName }}</p>
-            <p class="universe-nav__account-email">{{ userEmail }}</p>
-            <button ref="signOutButton" class="universe-nav__menu-sign-out" type="button" :disabled="isSigningOut"
-              @click="handleSignOut">
-              {{ isSigningOut ? "Signing Out" : "Sign Out" }}
+
+          <div v-if="accountMenuOpen" id="universe-account-menu" class="universe-nav__account-menu"
+            role="group" aria-label="Account details">
+            <div class="universe-nav__account-identity">
+              <p class="universe-nav__account-name">{{ userName }}</p>
+              <p class="universe-nav__account-email">{{ userEmail }}</p>
+            </div>
+            <hr class="universe-nav__menu-divider" />
+            <div class="universe-nav__menu-item universe-nav__menu-item--unavailable" aria-disabled="true">
+              <svg class="universe-nav__menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="3.5" />
+                <path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" />
+              </svg>
+              <span>Account</span>
+              <span class="universe-nav__menu-soon">Soon</span>
+            </div>
+            <div class="universe-nav__menu-item universe-nav__menu-item--unavailable" aria-disabled="true">
+              <svg class="universe-nav__menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15" />
+                <circle cx="9" cy="6.5" r="2" fill="var(--cp-universe-space-teal)" />
+                <circle cx="15" cy="12" r="2" fill="var(--cp-universe-space-teal)" />
+                <circle cx="9" cy="17.5" r="2" fill="var(--cp-universe-space-teal)" />
+              </svg>
+              <span>Settings</span>
+              <span class="universe-nav__menu-soon">Soon</span>
+            </div>
+            <hr class="universe-nav__menu-divider" />
+            <button ref="signOutButton" class="universe-nav__menu-item universe-nav__menu-sign-out"
+              type="button" :disabled="isSigningOut" @click="handleSignOut">
+              <svg class="universe-nav__menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+              </svg>
+              <span>{{ isSigningOut ? "Signing Out" : "Sign Out" }}</span>
             </button>
+            <p v-if="signOutError" class="universe-nav__sign-out-error" role="alert">{{ signOutError }}</p>
           </div>
-          <p v-if="signOutError" class="universe-nav__sign-out-error" role="alert">{{ signOutError }}</p>
         </div>
       </template>
     </div>
   </nav>
 </template>
 
-<style scoped>
-.universe-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  width: min(100% - 1.5rem, var(--cp-universe-plaque-width));
-  min-height: 3.75rem;
-  margin: 0 auto;
-  border: 1px solid var(--cp-universe-gold);
-  border-radius: var(--cp-universe-plaque-radius);
-  padding: 0.4rem 0.5rem 0.4rem 0.85rem;
-  background: var(--cp-universe-space-teal);
-  box-shadow: var(--cp-universe-plaque-shadow);
-  color: var(--cp-universe-cream);
-}
-
-.universe-nav__account {
-  display: flex;
-  align-items: center;
-}
-
-.universe-nav__link {
-  border-bottom: 2px solid transparent;
-  padding: 0.45rem 0.15rem;
-  color: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-
-.universe-nav__link:hover,
-.universe-nav__link:focus-visible,
-.universe-nav__link.router-link-exact-active {
-  border-color: var(--cp-universe-gold);
-  color: var(--cp-universe-gold);
-}
-
-.universe-nav__account {
-  justify-content: flex-end;
-  gap: 0.45rem;
-  min-width: 0;
-  min-height: 2.75rem;
-}
-
-.universe-nav__button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.75rem;
-  border: 1px solid var(--cp-universe-gold);
-  border-radius: 0.4rem;
-  padding: 0.5rem 0.9rem;
-  background: var(--cp-universe-gold);
-  color: var(--cp-universe-space-teal-deep);
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.universe-nav__button:disabled {
-  cursor: not-allowed;
-  opacity: 0.58;
-}
-
-.universe-nav__button--quiet {
-  background: transparent;
-  color: var(--cp-universe-cream);
-}
-
-.universe-nav__button:hover {
-  border-color: var(--cp-universe-cream);
-  background: var(--cp-universe-cream);
-}
-
-.universe-nav__button--quiet:hover {
-  background: var(--cp-universe-gold);
-  color: var(--cp-universe-space-teal-deep);
-}
-
-.universe-nav__link:focus-visible,
-.universe-nav__button:focus-visible {
-  outline: 3px solid var(--cp-universe-cream);
-  outline-offset: 3px;
-}
-
-.universe-nav__loading {
-  color: var(--cp-universe-muted-teal);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.universe-nav__profile {
-  display: flex;
-  position: relative;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.universe-nav__controls {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.universe-nav__account-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  border: 1px solid var(--cp-universe-gold);
-  border-radius: 0.4rem;
-  padding: .2rem .7rem .2rem .2rem;
-  background: var(--cp-universe-cream);
-  color: var(--cp-universe-space-teal-deep);
-  font: inherit;
-  font-size: .82rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.universe-nav__account-toggle:hover,
-.universe-nav__account-toggle[aria-expanded="true"] {
-  border-color: var(--cp-universe-cream);
-  background: var(--cp-universe-gold);
-}
-
-.universe-nav__account-toggle:focus-visible,
-.universe-nav__menu-sign-out:focus-visible {
-  outline: 3px solid var(--cp-universe-cream);
-  outline-offset: 3px;
-}
-
-.universe-nav__account-menu {
-  position: absolute;
-  z-index: 2;
-  right: 0;
-  top: calc(100% + .5rem);
-  display: grid;
-  width: min(18rem, 80vw);
-  gap: .35rem;
-  border: 1px solid var(--cp-universe-gold);
-  border-radius: var(--cp-universe-plaque-radius);
-  padding: .8rem;
-  background: var(--cp-universe-space-teal);
-  box-shadow: var(--cp-universe-plaque-shadow);
-  color: var(--cp-universe-cream);
-}
-
-.universe-nav__account-name,
-.universe-nav__account-email {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-
-.universe-nav__account-name {
-  font-weight: 800;
-}
-
-.universe-nav__account-email {
-  color: var(--cp-universe-muted-teal);
-  font-size: .78rem;
-}
-
-.universe-nav__menu-sign-out {
-  margin-top: .35rem;
-  border: 1px solid var(--cp-universe-gold);
-  border-radius: .45rem;
-  padding: .55rem .7rem;
-  background: var(--cp-universe-gold);
-  color: var(--cp-universe-space-teal-deep);
-  font: inherit;
-  font-size: .78rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.universe-nav__menu-sign-out:hover:not(:disabled) {
-  border-color: var(--cp-universe-cream);
-  background: var(--cp-universe-cream);
-}
-
-.universe-nav__sign-out-error {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 0.35rem);
-  width: min(18rem, 80vw);
-  margin: 0;
-  border: 1px solid var(--cp-universe-rust);
-  border-radius: 0.35rem;
-  padding: 0.5rem 0.65rem;
-  background: var(--cp-universe-cream);
-  color: #8d301e;
-  font-size: 0.74rem;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.universe-nav__avatar {
-  display: block;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1px solid var(--cp-universe-space-teal-deep);
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.universe-nav__avatar--fallback {
-  display: grid;
-  place-items: center;
-  background: var(--cp-universe-rust);
-  color: var(--cp-universe-cream);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.universe-nav__sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-}
-
-@media (max-width: 28rem) {
-  .universe-nav {
-    width: min(100% - 1rem, var(--cp-universe-plaque-width));
-    gap: 0.45rem;
-    padding-inline: 0.55rem;
-  }
-
-  .universe-nav__account {
-    gap: 0.35rem;
-    min-width: 0;
-  }
-
-  .universe-nav__link {
-    font-size: 0.7rem;
-    letter-spacing: 0.06em;
-  }
-
-  .universe-nav__controls {
-    gap: 0.35rem;
-  }
-
-  .universe-nav__button {
-    padding-inline: 0.6rem;
-    font-size: 0.73rem;
-  }
-}
-</style>
+<style scoped src="./UniverseNav.css"></style>

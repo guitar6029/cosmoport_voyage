@@ -87,6 +87,49 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).not.toContain("Register");
   });
 
+  it("uses a compact avatar-only trigger with a chevron and accessible name", async () => {
+    const html = await renderWithAccountState(UniverseNav, "signed-in");
+    expect(html).toContain('aria-label="Account for Nova Ray"');
+    expect(html).toContain('universe-nav__chevron');
+    expect(html).not.toContain("<span>Account</span>");
+    const styles = await readFile(resolve(process.cwd(), "app/components/universe/UniverseNav.css"), "utf8");
+    expect(styles).toContain("border-radius: .5rem");
+    expect(styles).toContain("width: min(14.5rem, calc(100vw - 1rem))");
+  });
+
+  it("shows future destinations without linking to unfinished routes", async () => {
+    const { app, container } = mountSignedInNavigation();
+    container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle")?.click();
+    await nextTick();
+    const menu = container.querySelector('[role="group"]');
+    expect(menu?.textContent).toContain("Account");
+    expect(menu?.textContent).toContain("Settings");
+    expect(menu?.querySelectorAll('[aria-disabled="true"]')).toHaveLength(2);
+    expect(menu?.querySelectorAll("a")).toHaveLength(0);
+    expect(container.querySelector(".universe-nav__chevron--open")).not.toBeNull();
+    app.unmount();
+  });
+
+  it("dismisses the dropdown on outside pointer interaction and focus departure", async () => {
+    const { app, container } = mountSignedInNavigation();
+    const trigger = container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle");
+    trigger?.click();
+    await nextTick();
+    document.body.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+    await nextTick();
+    expect(container.querySelector('[role="group"]')).toBeNull();
+
+    trigger?.click();
+    await nextTick();
+    const outside = document.createElement("button");
+    document.body.appendChild(outside);
+    outside.focus();
+    await nextTick();
+    expect(container.querySelector('[role="group"]')).toBeNull();
+    expect(document.activeElement).toBe(outside);
+    app.unmount();
+  });
+
   it("uses a branded fallback avatar when Clerk has no image", async () => {
     authState.value = "signed-in";
     user.value = { fullName: "Nova Ray" };
