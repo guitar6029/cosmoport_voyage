@@ -90,6 +90,19 @@ Preserve existing systems; **do not introduce new services, authentication mecha
 - Keep server-side logic authoritative for payments, identity, and persisted orders.
 - Avoid touching unrelated Cloudflare deployment, Stripe settings, Clerk settings, database state, or external resources as part of UI-only tasks.
 
+### Vue component styling
+
+Keep Vue Single-File Components readable without creating unnecessary files.
+
+- Keep component styles inline at **50 or fewer nonblank CSS lines**.
+- At **51–100 nonblank CSS lines**, use judgment based on readability.
+- Above **100 nonblank CSS lines** across a component's style blocks, extract styles into a colocated stylesheet unless there is a clear reason not to.
+- Name the file after its component, e.g. `AstroPopHero.vue` → `AstroPopHero.css`. For scoped styles, reference it with `<style scoped src="./AstroPopHero.css"></style>`.
+- Preserve scoped versus global behavior, existing style-block order, preprocessors, selectors, media queries, animations, responsive behavior and visual output. Keep separate style blocks when they have different semantics.
+- Keep global styles, shared utilities and design tokens in their existing shared locations.
+- Consider decomposing oversized components rather than simply moving their CSS.
+- Treat extraction as a behavior-preserving refactor: run relevant tests and visual/responsive checks, and avoid unrelated redesigns.
+
 ## Validation
 
 Inspect the root `package.json` before selecting commands. At the repository root:
