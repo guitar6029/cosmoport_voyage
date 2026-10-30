@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import UniverseRadioControl from "./UniverseRadioControl.vue";
 
 const { isLoaded, isSignedIn, signOut } = useAuth();
@@ -12,7 +12,6 @@ const accountToggle = ref<HTMLButtonElement>();
 const signOutButton = ref<HTMLButtonElement>();
 
 const hasAdminAccess = ref(false);
-
 
 withDefaults(defineProps<{
   presentation?: "overlay" | "surface";
@@ -104,17 +103,17 @@ onMounted(() => {
   document.addEventListener("pointerdown", closeOnOutsideInteraction);
   document.addEventListener("focusin", closeOnOutsideInteraction);
   watch(isSignedIn, (signedIn) => {
-    hasAdminAccess.value = false
-    if (!signedIn) return
+    hasAdminAccess.value = false;
+    if (!signedIn) return;
 
-    $fetch<{ authorized: boolean }>('/api/admin/access')
+    $fetch<{ authorized: boolean }>("/api/admin/access")
       .then(({ authorized }) => {
-        hasAdminAccess.value = authorized === true
+        hasAdminAccess.value = authorized === true;
       })
       .catch(() => {
-        hasAdminAccess.value = false
-      })
-  }, { immediate: true })
+        hasAdminAccess.value = false;
+      });
+  }, { immediate: true });
 });
 
 onBeforeUnmount(() => {
@@ -184,7 +183,7 @@ onBeforeUnmount(() => {
                 <circle cx="12" cy="8" r="3.5" />
                 <path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" />
               </svg>
-              <span>Admin Dashboard</span>
+              <span>Mission Control</span>
             </NuxtLink>
             <div class="universe-nav__menu-item universe-nav__menu-item--unavailable" aria-disabled="true">
               <svg class="universe-nav__menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"

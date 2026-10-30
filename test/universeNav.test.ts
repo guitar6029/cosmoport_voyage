@@ -3,7 +3,7 @@ import { createApp, createSSRApp, defineComponent, h, nextTick, ref } from "vue"
 import { renderToString } from "vue/server-renderer";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import UniverseNav from "../app/components/universe/UniverseNav.vue";
 import UniverseMultiverseCollage from "../app/components/universe/UniverseMultiverseCollage.vue";
 import UniverseHomePage from "../app/pages/index.vue";
@@ -13,6 +13,7 @@ import { GRAND_CONCOURSE_MEDIA, GRAND_CONCOURSE_MEDIA_BASE_URL } from "../app/da
 type AccountState = "signed-in" | "signed-out" | "loading";
 
 const signOut = vi.fn();
+const adminAccess = vi.fn<() => Promise<{ authorized: boolean }>>();
 const authState = ref<AccountState>("loading");
 const user = ref<{ fullName?: string; imageUrl?: string; primaryEmailAddress?: { emailAddress: string } } | null>(null);
 
@@ -23,6 +24,7 @@ vi.stubGlobal("useAuth", () => ({
 }));
 vi.stubGlobal("useUser", () => ({ user }));
 vi.stubGlobal("useSeoMeta", vi.fn());
+vi.stubGlobal("$fetch", adminAccess);
 
 const mountSignedInNavigation = () => {
   authState.value = "signed-in";
@@ -38,6 +40,11 @@ const mountSignedInNavigation = () => {
 };
 
 const flushSignOut = async () => {
+  await Promise.resolve();
+  await nextTick();
+};
+
+const flushAdminAccess = async () => {
   await Promise.resolve();
   await nextTick();
 };
@@ -58,6 +65,10 @@ const renderWithAccountState = (component: typeof UniverseNav | typeof UniverseH
 };
 
 describe("CosmoPort Universe navigation", () => {
+  beforeEach(() => {
+    adminAccess.mockResolvedValue({ authorized: false });
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
     document.body.replaceChildren();
@@ -107,6 +118,63 @@ describe("CosmoPort Universe navigation", () => {
     expect(menu?.querySelectorAll('[aria-disabled="true"]')).toHaveLength(2);
     expect(menu?.querySelectorAll("a")).toHaveLength(0);
     expect(container.querySelector(".universe-nav__chevron--open")).not.toBeNull();
+    app.unmount();
+  });
+
+  it("shows an authorized Super Admin a keyboard-accessible Mission Control link", async () => {
+    adminAccess.mockResolvedValueOnce({ authorized: true });
+    const { app, container } = mountSignedInNavigation();
+    await flushAdminAccess();
+
+    container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle")?.click();
+    await nextTick();
+
+    const missionControl = container.querySelector<HTMLAnchorElement>('a[href="/admin"]');
+    expect(adminAccess).toHaveBeenCalledWith("/api/admin/access");
+    expect(missionControl?.textContent).toContain("Mission Control");
+    expect(missionControl?.classList).toContain("universe-nav__menu-link");
+    expect(missionControl?.getAttribute("tabindex")).toBeNull();
+    missionControl?.focus();
+    expect(document.activeElement).toBe(missionControl);
+    app.unmount();
+  });
+
+  it("keeps Mission Control hidden from regular authenticated users", async () => {
+    const { app, container } = mountSignedInNavigation();
+    await flushAdminAccess();
+
+    container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle")?.click();
+    await nextTick();
+
+    expect(adminAccess).toHaveBeenCalledWith("/api/admin/access");
+    expect(container.querySelector('a[href="/admin"]')).toBeNull();
+    app.unmount();
+  });
+
+  it("does not request or show Mission Control for signed-out visitors", async () => {
+    authState.value = "signed-out";
+    user.value = null;
+    const container = document.createElement("div");
+    const app = createApp(UniverseNav);
+    app.component("NuxtLink", NuxtLink);
+    document.body.appendChild(container);
+    app.mount(container);
+    await flushAdminAccess();
+
+    expect(adminAccess).not.toHaveBeenCalled();
+    expect(container.textContent).not.toContain("Mission Control");
+    app.unmount();
+  });
+
+  it("keeps Mission Control hidden when authorization fails", async () => {
+    adminAccess.mockRejectedValueOnce(new Error("Authorization unavailable"));
+    const { app, container } = mountSignedInNavigation();
+    await flushAdminAccess();
+
+    container.querySelector<HTMLButtonElement>(".universe-nav__account-toggle")?.click();
+    await nextTick();
+
+    expect(container.querySelector('a[href="/admin"]')).toBeNull();
     app.unmount();
   });
 
