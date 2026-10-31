@@ -15,7 +15,7 @@ async function mockGrandConcourseImage(page: Page, status: 200 | 404) {
 test("presents AstroPop as the only active Grand Concourse experience", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Explore the Concourse" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Explore the Concourse" })).toHaveAttribute("href", "#concourse");
   await expect(page.getByRole("link", { name: "Enter Astro Pop Soda Co." })).toHaveAttribute("href", "/app/astro-pop");
   await expect(page.getByText("Under Construction", { exact: true })).toBeVisible();
   await expect(page.locator('a[href="/app/cosmoport-voyage"]')).toHaveCount(0);
