@@ -1,49 +1,35 @@
+import {
+  createError,
+  defineEventHandler,
+  getRouterParam,
+  readBody,
+  setResponseHeader,
+} from "h3";
 import { z } from "zod";
+import { requireSuperAdmin } from "../../../utils/requireSuperAdmin";
 import { updateCosmoportAppStatus } from "../../../utils/cosmoportCoreDatabase";
 
 const appIdSchema = z.string().min(1).max(64).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
-const updateAppSchema = z.strictObject({
-    enabled: z.boolean(),
-});
+const updateAppSchema = z.strictObject({ enabled: z.boolean() });
 
 export default defineEventHandler(async (event) => {
+  setResponseHeader(event, "Cache-Control", "no-store");
+  await requireSuperAdmin(event);
 
-    await requireSuperAdmin(event);
+  const idResult = appIdSchema.safeParse(getRouterParam(event, "id"));
+  if (!idResult.success) {
+    throw createError({ statusCode: 400, statusMessage: "Invalid app ID" });
+  }
 
-    const result = appIdSchema.safeParse(
-        getRouterParam(event, "id"),
+  const bodyResult = updateAppSchema.safeParse(await readBody(event));
+  if (!bodyResult.success) {
+    throw createError({ statusCode: 400, statusMessage: "Invalid request body" });
+  }
 
-    );
+  const app = await updateCosmoportAppStatus(idResult.data, bodyResult.data.enabled);
+  if (!app) {
+    throw createError({ statusCode: 404, statusMessage: "App not found" });
+  }
 
-    if (!result.success) {
-        throw createError({
-            status: 400,
-            statusText: "Invalid app ID",
-        });
-    }
-
-    const body = await readBody(event);
-
-    const bodyResult = updateAppSchema.safeParse(body);
-
-    if (!bodyResult.success) {
-        throw createError({
-            statusCode: 400,
-            statusMessage: "Invalid request body",
-        });
-    }
-
-    const appId = result.data;
-    const enabledStatus = bodyResult.data.enabled;
-    const updatedApp = await updateCosmoportAppStatus(appId, enabledStatus);
-
-    if (!updatedApp) {
-        throw createError({
-            statusCode: 404,
-            statusMessage: "App not found",
-        });
-    }
-
-    return { app: updatedApp };
-
+  return { app };
 });

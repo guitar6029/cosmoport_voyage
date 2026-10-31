@@ -1,46 +1,63 @@
 <script setup lang="ts">
-import { updateCosmoportAppStatus, type CosmoportApp } from '../../../server/utils/cosmoportCoreDatabase';
+import type { CosmoportApp } from "../../../shared/types/cosmoportApp";
 
 const props = defineProps<{
-    appId: string;
-    enabled: boolean;
+  appId: string;
+  appTitle: string;
+  enabled: boolean;
 }>();
-
 
 const emit = defineEmits<{
-    updated: [app: CosmoportApp];
-
+  updated: [app: CosmoportApp];
 }>();
 
-const loading = ref(false);
+const saving = ref(false);
 const error = ref<string | null>(null);
 
-const handleCosmoportAppEnableStatus = async () => {
-    if (loading.value) return;
+async function handleChange(event: Event) {
+  const checkbox = event.target as HTMLInputElement;
+  if (saving.value) return;
 
-    loading.value = true;
-    error.value = null;
+  const requestedEnabled = checkbox.checked;
+  saving.value = true;
+  error.value = null;
 
-    try {
-        const response = await $fetch(`/api/admin/apps/${props.appId}`, {
-            method: "PATCH",
-            body: {
-                enabled: !props.enabled,
-            },
-        });
+  try {
+    const { app } = await $fetch<{ app: CosmoportApp }>(
+      `/api/admin/apps/${encodeURIComponent(props.appId)}`,
+      {
+        method: "PATCH",
+        body: { enabled: requestedEnabled },
+      },
+    );
 
-        emit('updated', response.app);
-    } catch {
-        error.value = "Unable to update app status.";
-    } finally {
-        loading.value = false;
-    }
-};
-
+    checkbox.checked = app.enabled;
+    emit("updated", app);
+  } catch {
+    // A native checkbox flips before the server confirms the write.
+    // Reset it to the last known, server-confirmed value on failure.
+    checkbox.checked = props.enabled;
+    error.value = "Unable to update app status. Please try again.";
+  } finally {
+    saving.value = false;
+  }
+}
 </script>
 
 <template>
-    <label for="enabled" class="label">Enable App</label>
-    <input type="checkbox" :checked="enabled" :disabled="loading" @change="handleCosmoportAppEnableStatus"
-        class="toggle" />
+  <div class="flex flex-col items-start gap-1">
+    <label class="flex cursor-pointer items-center gap-3">
+      <span class="text-sm font-semibold">{{ enabled ? "Enabled" : "Disabled" }}</span>
+      <input
+        type="checkbox"
+        class="toggle"
+        :checked="enabled"
+        :disabled="saving"
+        :aria-label="`Enable ${appTitle}`"
+        @change="handleChange"
+      />
+    </label>
+    <span v-if="saving" role="status" class="text-xs">Saving…</span>
+    <p v-if="error" role="alert" class="text-sm text-red-800">{{ error }}</p>
+  </div>
 </template>
