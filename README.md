@@ -1,10 +1,16 @@
 # CosmoPort Universe
 
-A collection of interconnected fictional experiences set in a colorful, 1950s-inspired **Atomic Age / Atompunk future**. The Grand Concourse serves as the shared entry point to a retrofuturistic world of interplanetary travel, neighborhood soda shops, and more.
+**Live universe:** https://cosmos-universe.com
 
-This is a **portfolio / product-engineering project**, not a real travel-booking service or fulfillment business. It combines immersive UI and storytelling with practical application architecture, integrations, and testing.
+**Public launch:** October 31, 2026 · **Status:** Live and evolving
+
+**CosmoPort Universe** is a publicly accessible, interconnected collection of fictional experiences built around a colorful, 1950s-inspired **Atomic Age / Atompunk future**. The Grand Concourse connects imaginative destinations, from a neighborhood soda shop to an interplanetary travel terminal, through a shared web application and identity system.
+
+This is a **portfolio / product-engineering project**, not a real travel-booking service or fulfillment business. It combines immersive UI and storytelling with real application architecture, production deployment, third-party integrations, and automated testing. The public launch marks the beginning of an evolving ecosystem—not the completion of every planned experience.
 
 ## Explore the Universe
+
+**[Visit the live site →](https://cosmos-universe.com)** — browse the public experiences; account features require registration. The storefront is a fictional demonstration and Stripe checkout uses test-mode infrastructure, not live retail fulfillment.
 
 | Experience | Route | Current state |
 | --- | --- | --- |
@@ -16,7 +22,7 @@ This is a **portfolio / product-engineering project**, not a real travel-booking
 
 Astro Pop also includes an Our Story page (`/astro-pop/our-story`), individual flavor routes (`/astro-pop/flavors/[slug]`), and a cart (`/astro-pop/cart`).
 
-**Still planned:** issued traveler passports/profiles, cross-app personalization, deeper Cosmos Voyage functionality, and customer/operations tooling. Existing registration and login do **not** imply that passport issuance or account dashboards exist today.
+**Still planned:** issued traveler passports/profiles and account dashboard, cross-app personalization, an interactive Grand Concourse terminal map/directory, deeper CosmoPort Voyage functionality, and internal Mission Control/operations tooling. Existing registration and login do **not** imply that passport issuance or account dashboards exist today.
 
 ## What has been built
 
@@ -26,6 +32,26 @@ Astro Pop also includes an Our Story page (`/astro-pop/our-story`), individual f
 - **Authentication:** shared Clerk identity instance with a custom Passport Office UI for registration/email verification and sign-in. Public browsing and guest checkout remain available.
 - **Media delivery:** a separate Cloudflare Worker serves allowlisted public assets from R2 through `media.cosmos-universe.com`, with read-only access, safe request handling, image caching, byte-range support, and operational safeguards.
 - **Content foundation:** Sanity integration and a standalone Studio with a `destination` schema. The current CosmoPort Voyage page is still built from local/static content rather than live CMS data.
+
+## Engineering highlights
+
+The live site is more than a collection of static pages. Its implementation demonstrates:
+
+- **Integrated product flows:** component-driven Vue/Nuxt interfaces, shared navigation, persistent cart state, and responsive, accessible interaction patterns.
+- **Server-authoritative commerce:** validated checkout inputs, signed Stripe webhook processing, idempotent Neon/Postgres order persistence, and verified guest order lookups. Stripe remains in **test mode**; this is not a real retail checkout.
+- **Shared authentication:** Clerk-backed registration, email verification, sign-in and sign-out, presented through a custom in-universe Passport Office.
+- **Cloud media delivery:** public media hosted in Cloudflare R2 and served by a dedicated read-only Worker with explicit allowlists, caching, byte-range handling, and documented operational controls.
+- **Production delivery:** Nuxt deployment on Vercel, a custom domain, managed configuration via Doppler, and separate development/production resources.
+- **Quality and maintainability:** Vitest, Playwright, GitHub Actions, focused pull requests, and repository guidelines for safe, incremental changes.
+
+## Roadmap
+
+These are **planned**, not shipping features:
+
+1. **Traveler accounts:** issued passports, profiles, and a personalized dashboard.
+2. **Interactive Grand Concourse:** an explorable map/directory connecting future terminals and apps.
+3. **Mission Control:** internal administration and operational visibility.
+4. **Expanded experiences:** deeper Voyage interactions and additional themed destinations.
 
 ## Technology
 
