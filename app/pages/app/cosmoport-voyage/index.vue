@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DestinationSection from "../../../components/app/cosmoport-voyage/DestinationSection.vue";
-import PearlwaterCoastSection from "../../../components/app/cosmoport-voyage/PearlwaterCoastSection.vue";
-import SaffronExpanseSection from "../../../components/app/cosmoport-voyage/SaffronExpanseSection.vue";
+import DestinationSection from "../../../components/cosmoport-voyage/DestinationSection.vue";
+import PearlwaterCoastSection from "../../../components/cosmoport-voyage/PearlwaterCoastSection.vue";
+import SaffronExpanseSection from "../../../components/cosmoport-voyage/SaffronExpanseSection.vue";
 </script>
 
 <template>
@@ -48,4 +48,4 @@ import SaffronExpanseSection from "../../../components/app/cosmoport-voyage/Saff
   </div>
 </template>
 
-<style scoped src="../../cosmoport-voyage.css"></style>
+<style scoped src="./index.css"></style>
