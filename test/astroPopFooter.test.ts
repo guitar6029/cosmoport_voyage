@@ -4,9 +4,9 @@ import { createSSRApp, defineComponent, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it, vi } from "vitest";
 import AstroPopFooter from "../app/components/astro-pop/AstroPopFooter.vue";
-import AstroPopPage from "../app/pages/astro-pop/index.vue";
+import AstroPopPage from "../app/pages/app/astro-pop/index.vue";
 
-vi.stubGlobal("useRoute", () => ({ path: "/astro-pop" }));
+vi.stubGlobal("useRoute", () => ({ path: "/app/astro-pop" }));
 
 const NuxtLink = defineComponent({
   props: { to: { type: String, required: true } },
@@ -47,11 +47,11 @@ describe("AstroPop footer", () => {
         id: "astropop-footer-explore-title",
         title: "Explore AstroPop",
         links: [
-          ["/astro-pop/our-story", "Our Story"],
-          ["/astro-pop/#astropop-flavors-title", "Our Marvelous Flavors"],
-          ["/astro-pop/#pack-your-pop-title", "Pack Your Pop"],
-          ["/astro-pop/#astropop-delivery-plans", "Delivery Plans"],
-          ["/astro-pop/#astropop-delivery-testimonials", "Happy Neighbors"],
+          ["/app/astro-pop/our-story", "Our Story"],
+          ["/app/astro-pop/#astropop-flavors-title", "Our Marvelous Flavors"],
+          ["/app/astro-pop/#pack-your-pop-title", "Pack Your Pop"],
+          ["/app/astro-pop/#astropop-delivery-plans", "Delivery Plans"],
+          ["/app/astro-pop/#astropop-delivery-testimonials", "Happy Neighbors"],
         ],
       },
       {
@@ -59,7 +59,7 @@ describe("AstroPop footer", () => {
         title: "The Cosmoport Universe",
         links: [
           ["/", "Universe Directory"],
-          ["/cosmoport-voyage", "Cosmoport Voyage"],
+          ["/app/cosmoport-voyage", "Cosmoport Voyage"],
           ["#", "Back to Top"],
         ],
       },
@@ -86,10 +86,10 @@ describe("AstroPop footer", () => {
     expect(html).toMatch(/<\/main>\s*<footer\b/);
 
     const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)![0];
-    expect(footer).toContain('href="/astro-pop/#astropop-flavors-title"');
-    expect(footer).toContain('href="/astro-pop/#pack-your-pop-title"');
-    expect(footer).toContain('href="/astro-pop/#astropop-delivery-plans"');
-    expect(footer).toContain('href="/astro-pop/#astropop-delivery-testimonials"');
+    expect(footer).toContain('href="/app/astro-pop/#astropop-flavors-title"');
+    expect(footer).toContain('href="/app/astro-pop/#pack-your-pop-title"');
+    expect(footer).toContain('href="/app/astro-pop/#astropop-delivery-plans"');
+    expect(footer).toContain('href="/app/astro-pop/#astropop-delivery-testimonials"');
     expect(footer).toContain('href="#"');
     for (const page of ["index", "cosmoport-voyage"]) {
       expect(existsSync(new URL(`../app/pages/${page}.vue`, import.meta.url))).toBe(true);

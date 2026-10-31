@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => {
     readBody: vi.fn(),
     setCredential: vi.fn(),
     stripeClient,
+    appEnabled: vi.fn(),
   };
 });
 
@@ -20,6 +21,10 @@ vi.mock("nuxt/server", () => ({
   createError: mocks.createError,
   defineEventHandler: <T>(handler: T) => handler,
   readBody: mocks.readBody,
+}));
+
+vi.mock("../server/utils/cosmoportCoreDatabase", () => ({
+  getCosmoportAppEnabled: mocks.appEnabled,
 }));
 
 vi.mock("stripe", () => ({
@@ -54,6 +59,7 @@ describe("Astro Pop checkout creation handler", () => {
     vi.stubEnv("ASTROPOP_STRIPE_SECRET_KEY", "sk_test_checkout_handler");
     vi.stubEnv("COSMOPORT_APP_URL", "https://example.test");
     vi.clearAllMocks();
+    mocks.appEnabled.mockResolvedValue(true);
     mocks.readBody.mockResolvedValue(cart);
     mocks.getCredential.mockReturnValue(existingCredential);
     mocks.getFingerprint.mockReturnValue("f".repeat(64));
@@ -66,6 +72,18 @@ describe("Astro Pop checkout creation handler", () => {
 
   afterAll(() => {
     vi.unstubAllEnvs();
+  });
+
+  it("blocks new sessions while the app is disabled", async () => {
+    mocks.appEnabled.mockResolvedValue(false);
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 503 });
+    expect(mocks.stripeClient.checkout.sessions.create).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when availability is unverified", async () => {
+    mocks.appEnabled.mockRejectedValue(new Error("DB outage"));
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 503 });
+    expect(mocks.stripeClient.checkout.sessions.create).not.toHaveBeenCalled();
   });
 
   it("stores only the guest fingerprint in Stripe metadata", async () => {

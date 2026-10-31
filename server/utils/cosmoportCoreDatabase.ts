@@ -52,3 +52,18 @@ export async function updateCosmoportAppStatus(
 
   return rows[0] ?? null;
 }
+
+export async function getCosmoportAppEnabled(
+  id: string,
+  connectionString = process.env.COSMOPORT_CORE_POOLED_URL,
+): Promise<boolean | null> {
+  const sql = getCoreSql(connectionString);
+
+  const rows = await sql`
+    SELECT enabled
+    FROM public.apps
+    WHERE id = ${id}
+  `;
+
+  return (rows[0]?.enabled as boolean | undefined) ?? null;
+}

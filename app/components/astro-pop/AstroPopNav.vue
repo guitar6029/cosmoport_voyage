@@ -5,7 +5,7 @@ import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
 
 const route = useRoute();
 const crateStore = useAstroPopCrateStore();
-const isHomepage = computed(() => route.path === "/astro-pop");
+const isHomepage = computed(() => route.path === "/app/astro-pop");
 const isMenuOpen = ref(false);
 const isMobileMenu = ref(true);
 const menuTrigger = ref<HTMLButtonElement>();
@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
     <NuxtLink
       v-if="!isHomepage && !isMobileNavigation()"
       class="navigation__cap"
-      to="/astro-pop"
+      to="/app/astro-pop"
       aria-label="Astro Pop home"
     >
       <img :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
@@ -137,10 +137,10 @@ onBeforeUnmount(() => {
         <a href="#astropop-delivery-plans">Delivery</a>
         <a href="#astropop-delivery-testimonials">Reviews</a>
       </template>
-      <NuxtLink v-else to="/astro-pop/#astropop-flavors-title">Shop Flavors</NuxtLink>
+      <NuxtLink v-else to="/app/astro-pop/#astropop-flavors-title">Shop Flavors</NuxtLink>
     </div>
 
-    <NuxtLink to="/astro-pop/cart" class="navigation__cart" :aria-label="`Cart, ${crateStore.totalBottles} bottles`">
+    <NuxtLink to="/app/astro-pop/cart" class="navigation__cart" :aria-label="`Cart, ${crateStore.totalBottles} bottles`">
       <img :src="ASTRO_POP_MEDIA.cartCrate" alt="" aria-hidden="true" loading="lazy" />
       <span class="navigation__cart-count" aria-hidden="true">{{ crateStore.totalBottles }}</span>
     </NuxtLink>
@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
           <NuxtLink
             v-if="!isHomepage"
             class="navigation-drawer__home-link"
-            to="/astro-pop"
+            to="/app/astro-pop"
             aria-label="Astro Pop home"
             @click="closeMenu(false)"
           >
@@ -173,7 +173,7 @@ onBeforeUnmount(() => {
             <a href="#astropop-delivery-testimonials" @click="closeMenu(false)">Reviews</a>
             <a href="#astropop-title" @click="closeMenu(false)">Back to Top</a>
           </template>
-          <NuxtLink v-else to="/astro-pop/#astropop-flavors-title" @click="closeMenu(false)">Shop Flavors</NuxtLink>
+          <NuxtLink v-else to="/app/astro-pop/#astropop-flavors-title" @click="closeMenu(false)">Shop Flavors</NuxtLink>
         </nav>
       </aside>
     </div>

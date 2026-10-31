@@ -30,7 +30,7 @@ test.beforeEach(({ page }) => {
     );
   });
   page.on("response", (response) => {
-    if (response.url().includes("/astro-pop/cart")) {
+    if (response.url().includes("/app/astro-pop/cart")) {
       diagnostics.responses.push(`${response.status()} ${response.url()}`);
     }
   });
@@ -69,7 +69,7 @@ test.afterEach(async ({ page }, testInfo) => {
 const configureCheckout = async (
   page: Page,
   sessionId: string,
-  checkoutUrl = `/astro-pop/checkout/success?session_id=${sessionId}`,
+  checkoutUrl = `/app/astro-pop/checkout/success?session_id=${sessionId}`,
 ) => {
   await page.route("**/api/astro-pop/checkout", async (route) => {
     await route.fulfill({
@@ -86,7 +86,7 @@ const seedCartAndOpenCart = async (page: Page) => {
       window.sessionStorage.setItem(${JSON.stringify(cartInitializationKey)}, "true");
     }
   `);
-  await page.goto("/astro-pop/cart");
+  await page.goto("/app/astro-pop/cart");
   await expect(page.getByText("2 of 6 bottles")).toBeVisible();
 };
 
@@ -114,7 +114,7 @@ test("clears the persisted cart only after a verified checkout return", async ({
   await expect(page.evaluate(() => window.sessionStorage.getItem("astropop-pending-checkout"))).resolves.toBeNull();
   await expect(page.evaluate(() => window.sessionStorage.getItem("astropop-completed-checkout"))).resolves.toContain(sessionId);
 
-  await page.goto("/astro-pop/cart");
+  await page.goto("/app/astro-pop/cart");
   await expect(page.getByText("Your rocket crate is ready for liftoff.")).toBeVisible();
 });
 
@@ -122,7 +122,7 @@ test("keeps the cart when checkout is cancelled and restores it after refresh", 
   await configureCheckout(
     page,
     "cs_e2e_cancelled",
-    "/astro-pop/cart?checkout=cancelled",
+    "/app/astro-pop/cart?checkout=cancelled",
   );
   await seedCartAndOpenCart(page);
   await clickCheckout(page);
@@ -153,7 +153,7 @@ test("uses one immutable cart snapshot for the checkout request and pending sess
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
-        url: "/astro-pop/cart?checkout=external",
+        url: "/app/astro-pop/cart?checkout=external",
         sessionId,
       }),
     });
@@ -228,14 +228,14 @@ test("does not access a checkout without a matching browser record", async ({ pa
   await seedCartAndOpenCart(page);
   await clickCheckout(page);
   await expect(page).toHaveURL(/cs_e2e_expected/);
-  await page.goto("/astro-pop/checkout/success?session_id=cs_e2e_other");
+  await page.goto("/app/astro-pop/checkout/success?session_id=cs_e2e_other");
 
   await expect(page.getByText("We could not confirm this checkout for this browser.")).toBeVisible();
   await expect(page.evaluate(() => window.localStorage.getItem("astropop-crate"))).resolves.toBe(JSON.stringify(cartItems));
 });
 
 test("does not access a checkout when this browser has no checkout record", async ({ page }) => {
-  await page.goto("/astro-pop/checkout/success?session_id=cs_e2e_missing_record");
+  await page.goto("/app/astro-pop/checkout/success?session_id=cs_e2e_missing_record");
 
   await expect(page.getByText("We could not confirm this checkout for this browser.")).toBeVisible();
   await expect(page.evaluate(() => window.sessionStorage.getItem("astropop-pending-checkout"))).resolves.toBeNull();
@@ -244,7 +244,7 @@ test("does not access a checkout when this browser has no checkout record", asyn
 
 test("confirms payment and preserves a cart changed after checkout started", async ({ page }) => {
   const sessionId = "cs_e2e_changed_cart";
-  await configureCheckout(page, sessionId, "/astro-pop/cart?checkout=external");
+  await configureCheckout(page, sessionId, "/app/astro-pop/cart?checkout=external");
   await page.route("**/api/astro-pop/checkout/status?*", async (route) => {
     await route.fulfill({
       contentType: "application/json",
@@ -255,7 +255,7 @@ test("confirms payment and preserves a cart changed after checkout started", asy
   await seedCartAndOpenCart(page);
   await clickCheckout(page);
   await page.getByRole("button", { name: "Increase Atomic Cherry Fizz quantity" }).click();
-  await page.goto(`/astro-pop/checkout/success?session_id=${sessionId}`);
+  await page.goto(`/app/astro-pop/checkout/success?session_id=${sessionId}`);
 
   await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible();
   await expect(page.getByText("Your payment and order are confirmed.")).toBeVisible();
@@ -282,7 +282,7 @@ test("revalidates a refreshed confirmation and preserves products added afterwar
   await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible();
   await expect(page.getByText("Your current cart was left untouched.")).toBeVisible();
 
-  await page.goto("/astro-pop/cart");
+  await page.goto("/app/astro-pop/cart");
   await page.evaluate(() => {
     window.localStorage.setItem(
       "astropop-crate",
@@ -290,7 +290,7 @@ test("revalidates a refreshed confirmation and preserves products added afterwar
     );
   });
   await page.reload();
-  await page.goto(`/astro-pop/checkout/success?session_id=${sessionId}`);
+  await page.goto(`/app/astro-pop/checkout/success?session_id=${sessionId}`);
 
   await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible();
   await expect(page.getByText("Your current cart was left untouched.")).toBeVisible();

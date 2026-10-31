@@ -4,7 +4,7 @@ import { createPinia } from "pinia";
 import { describe, expect, it } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 import AstroPopCheckoutButton from "../app/components/astro-pop/AstroPopCheckoutButton.vue";
-import AstroPopCartPage from "../app/pages/astro-pop/cart.vue";
+import AstroPopCartPage from "../app/pages/app/astro-pop/cart.vue";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
 const renderCart = async (addBottles = false) => {
@@ -32,8 +32,8 @@ describe("AstroPop cart page", () => {
 
     expect(html).toContain("Your rocket crate is ready for liftoff.");
     expect(html).toContain("Choose your flavors");
-    expect(html).toContain('href="/astro-pop"');
-    expect(html).toContain('href="/astro-pop#pack-your-pop-title"');
+    expect(html).toContain('href="/app/astro-pop"');
+    expect(html).toContain('href="/app/astro-pop#pack-your-pop-title"');
     expect(html).not.toContain("Bottle roster");
   });
 
@@ -44,6 +44,6 @@ describe("AstroPop cart page", () => {
     expect(html).toContain(ASTROPOP_FLAVORS[0].bottleImage);
     expect(html).toContain("2 of 6 bottles");
     expect(html).toContain("Proceed to Checkout");
-    expect(html).toContain('href="/astro-pop#pack-your-pop-title"');
+    expect(html).toContain('href="/app/astro-pop#pack-your-pop-title"');
   });
 });

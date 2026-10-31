@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
     <div class="bottle-selection-card__actions">
       <NuxtLink
         class="bottle-selection-card__details-link"
-        :to="`/astro-pop/flavors/${flavor.id}`"
+        :to="`/app/astro-pop/flavors/${flavor.id}`"
       >
         View Details
       </NuxtLink>

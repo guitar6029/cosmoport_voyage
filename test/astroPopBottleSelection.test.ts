@@ -38,7 +38,7 @@ describe("AstroPop bottle selection card", () => {
     expect(html).toContain(flavor.name.split(" ")[0]);
     expect(html).toContain(flavor.name.split(" ").slice(1).join(" "));
     expect(html).toContain("View Details");
-    expect(html).toContain(`href="/astro-pop/flavors/${flavor.id}"`);
+    expect(html).toContain(`href="/app/astro-pop/flavors/${flavor.id}"`);
     expect(html).toContain("Add Bottle");
     expect(html).not.toContain("disabled");
   });
@@ -47,7 +47,7 @@ describe("AstroPop bottle selection card", () => {
     for (const flavor of ASTROPOP_FLAVORS) {
       const html = await renderComponent(AstroPopBottleSelectionCard, { flavor });
 
-      expect(html).toContain(`href="/astro-pop/flavors/${flavor.id}"`);
+      expect(html).toContain(`href="/app/astro-pop/flavors/${flavor.id}"`);
     }
   });
 
