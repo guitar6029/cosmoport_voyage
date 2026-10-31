@@ -88,6 +88,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      ...(process.env.NODE_ENV === "production" ? { script: [{ src: "/_vercel/insights/script.js", defer: true }] } : {}),
       title: SITE_TITLE,
       meta: [
         { name: "description", content: SITE_DESCRIPTION },
