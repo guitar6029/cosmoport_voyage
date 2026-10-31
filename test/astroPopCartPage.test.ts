@@ -3,7 +3,7 @@ import { renderToString } from "vue/server-renderer";
 import { createPinia } from "pinia";
 import { describe, expect, it } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
-import AstroPopCheckoutButton from "../app/components/app/astro-pop/AstroPopCheckoutButton.vue";
+import AstroPopCheckoutButton from "../app/components/astro-pop/AstroPopCheckoutButton.vue";
 import AstroPopCartPage from "../app/pages/app/astro-pop/cart.vue";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 

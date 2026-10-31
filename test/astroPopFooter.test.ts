@@ -3,7 +3,7 @@ import { createPinia } from "pinia";
 import { createSSRApp, defineComponent, h } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it, vi } from "vitest";
-import AstroPopFooter from "../app/components/app/astro-pop/AstroPopFooter.vue";
+import AstroPopFooter from "../app/components/astro-pop/AstroPopFooter.vue";
 import AstroPopPage from "../app/pages/app/astro-pop/index.vue";
 
 vi.stubGlobal("useRoute", () => ({ path: "/app/astro-pop" }));

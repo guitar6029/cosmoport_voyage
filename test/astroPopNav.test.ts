@@ -2,7 +2,7 @@ import { createSSRApp, defineComponent, h } from "vue";
 import { createPinia } from "pinia";
 import { renderToString } from "vue/server-renderer";
 import { describe, expect, it, vi } from "vitest";
-import AstroPopNav from "../app/components/app/astro-pop/AstroPopNav.vue";
+import AstroPopNav from "../app/components/astro-pop/AstroPopNav.vue";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 

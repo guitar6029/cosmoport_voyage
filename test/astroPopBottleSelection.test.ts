@@ -5,8 +5,8 @@ import { renderToString } from "vue/server-renderer";
 import { createPinia, setActivePinia } from "pinia";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
-import AstroPopBottleSelectionCard from "../app/components/app/astro-pop/AstroPopBottleSelectionCard.vue";
-import AstroPopPackYourPopSection from "../app/components/app/astro-pop/AstroPopPackYourPopSection.vue";
+import AstroPopBottleSelectionCard from "../app/components/astro-pop/AstroPopBottleSelectionCard.vue";
+import AstroPopPackYourPopSection from "../app/components/astro-pop/AstroPopPackYourPopSection.vue";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
 const NuxtLinkStub = {
