@@ -4,5 +4,7 @@ import UniverseRadioProvider from "./components/universe/UniverseRadioProvider.v
 
 <template>
   <UniverseRadioProvider />
-  <NuxtPage />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
