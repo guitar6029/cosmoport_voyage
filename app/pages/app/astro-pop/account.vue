@@ -1,6 +1,5 @@
 <script setup lang="ts">
 definePageMeta({
-    layout: "astro-pop-account",
     middleware: ["astro-pop-account-auth"],
 });
 
@@ -11,21 +10,31 @@ useSeoMeta({
 </script>
 
 <template>
-    <section class="account">
-        <header class="account__header">
-            <h1>My Account</h1>
-            <AstroPopNav variant="account" />
-        </header>
+    <div class="astro-pop-account-page">
+        <AstroPopNav />
+        <section class="account">
+            <header class="account__header">
+                <h1>My Account</h1>
+            </header>
 
         <div class="account__content">
             <h2>Order History</h2>
             <p>Your recent Astro Pop orders will appear here.</p>
-        </div>
-    </section>
+            </div>
+        </section>
+    </div>
 </template>
 
 <style scoped>
+.astro-pop-account-page {
+    min-height: 100vh;
+    background: #ead5b0;
+}
+
 .account {
+    width: min(100% - 2rem, 1200px);
+    margin-inline: auto;
+    padding-block: 2rem 4rem;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -39,6 +48,7 @@ useSeoMeta({
 
 .account__header h1 {
     font-size: clamp(1.75rem, 4vw, 2.5rem);
+    color: #452c35;
 }
 
 .account__header nav {
@@ -59,6 +69,7 @@ useSeoMeta({
 }
 
 .account__content {
+    color: #452c35;
     flex: 1;
     min-height: 320px;
 }
