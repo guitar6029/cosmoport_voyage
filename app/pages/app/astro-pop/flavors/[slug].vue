@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import AstroPopNav from "../../../components/astro-pop/AstroPopNav.vue";
-import { ASTROPOP_FLAVORS } from "../../../data/astroPopFlavors";
-import { useAstroPopCrateStore } from "../../../stores/astroPopCrate";
+import AstroPopNav from "../../../../components/astro-pop/AstroPopNav.vue";
+import { ASTROPOP_FLAVORS } from "../../../../data/astroPopFlavors";
+import { useAstroPopCrateStore } from "../../../../stores/astroPopCrate";
 
 const route = useRoute();
 const slug = Array.isArray(route.params.slug) ? route.params.slug[0] : route.params.slug;
@@ -41,7 +41,7 @@ const addBottle = () => {
     :class="`astropop-flavor-detail-page--${flavor.theme}`"
   >
     <section class="astropop-flavor-hero" :aria-labelledby="`${flavor.id}-title`">
-      <NuxtLink class="astropop-flavor-hero__back-link" to="/astro-pop">
+      <NuxtLink class="astropop-flavor-hero__back-link" to="/app/astro-pop">
         <span aria-hidden="true">←</span> Back to AstroPop
       </NuxtLink>
 

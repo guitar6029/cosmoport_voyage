@@ -12,7 +12,7 @@ test.describe("CosmoPort Universe About page", () => {
     await page.goto("/about");
 
     await expect(page.getByRole("heading", { name: /One Universe/ })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Visit Astro Pop/ })).toHaveAttribute("href", "/astro-pop");
+    await expect(page.getByRole("link", { name: /Visit Astro Pop/ })).toHaveAttribute("href", "/app/astro-pop");
     await expect(page.getByText("In development", { exact: true })).toBeVisible();
     await expect(page.locator(".universe-multiverse-collage img")).toHaveCount(6);
 

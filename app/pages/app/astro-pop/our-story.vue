@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AstroPopFooter from "../../components/astro-pop/AstroPopFooter.vue";
-import AstroPopNav from "../../components/astro-pop/AstroPopNav.vue";
-import { ASTRO_POP_MEDIA } from "../../data/astroPopMedia";
-import DecorativeImage from "../../components/shared/DecorativeImage.vue";
+import AstroPopFooter from "../../../components/astro-pop/AstroPopFooter.vue";
+import AstroPopNav from "../../../components/astro-pop/AstroPopNav.vue";
+import { ASTRO_POP_MEDIA } from "../../../data/astroPopMedia";
+import DecorativeImage from "../../../components/shared/DecorativeImage.vue";
 
 useHead({
   title: "Our Story | AstroPop Soda Co.",
@@ -26,7 +26,7 @@ useHead({
         />
         <div class="astropop-our-story-hero__wash" aria-hidden="true" />
 
-        <NuxtLink class="astropop-our-story-hero__back-link" to="/astro-pop">
+        <NuxtLink class="astropop-our-story-hero__back-link" to="/app/astro-pop">
           <span aria-hidden="true">←</span> Back to AstroPop
         </NuxtLink>
 
@@ -143,7 +143,7 @@ useHead({
 
         <div class="astropop-neighborhood__closing">
           <p>Made for good times, since 1957.</p>
-          <NuxtLink to="/astro-pop/#astropop-flavors-title">Explore Our Flavors</NuxtLink>
+          <NuxtLink to="/app/astro-pop/#astropop-flavors-title">Explore Our Flavors</NuxtLink>
         </div>
       </section>
     </main>

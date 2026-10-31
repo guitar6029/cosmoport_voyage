@@ -3,7 +3,7 @@ import { createApp, defineComponent, h, nextTick } from "vue";
 import { createPinia } from "pinia";
 import { describe, expect, it } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
-import AstroPopCartPage from "../app/pages/astro-pop/cart.vue";
+import AstroPopCartPage from "../app/pages/app/astro-pop/cart.vue";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
 const mountCart = (quantity = 2, otherQuantity = 0) => {

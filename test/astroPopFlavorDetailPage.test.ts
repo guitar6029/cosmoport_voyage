@@ -4,10 +4,10 @@ import { renderToString } from "vue/server-renderer";
 import { createPinia, setActivePinia } from "pinia";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
-import AstroPopFlavorDetailPage from "../app/pages/astro-pop/flavors/[slug].vue";
+import AstroPopFlavorDetailPage from "../app/pages/app/astro-pop/flavors/[slug].vue";
 import { useAstroPopCrateStore } from "../app/stores/astroPopCrate";
 
-const route = { path: "/astro-pop/flavors", params: { slug: "" } };
+const route = { path: "/app/astro-pop/flavors", params: { slug: "" } };
 const useHead = vi.fn();
 
 vi.stubGlobal("useRoute", () => route);
@@ -57,7 +57,7 @@ describe("AstroPop flavor detail page", () => {
     }
     expect(html).toContain(flavor.bottleImage);
     expect(html).toContain(flavor.slogan);
-    expect(html).toContain(`href="/astro-pop"`);
+    expect(html).toContain(`href="/app/astro-pop"`);
     expect(useHead).toHaveBeenCalledWith({ title: `${flavor.name} | AstroPop Soda Co.` });
   });
 

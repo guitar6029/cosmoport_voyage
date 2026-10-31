@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { ASTROPOP_FLAVORS } from "../../data/astroPopFlavors";
-import type { AstroPopFlavorId } from "../../stores/astroPopCrate";
-import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
+import { ASTROPOP_FLAVORS } from "../../../data/astroPopFlavors";
+import type { AstroPopFlavorId } from "../../../stores/astroPopCrate";
+import { useAstroPopCrateStore } from "../../../stores/astroPopCrate";
 
 const crateStore = useAstroPopCrateStore();
 const announcement = ref("");
@@ -71,7 +71,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
 <template>
   <main class="astropop-cart-page">
     <header class="astropop-cart-page__header">
-      <NuxtLink class="astropop-cart-page__back" to="/astro-pop"
+      <NuxtLink class="astropop-cart-page__back" to="/app/astro-pop"
         >← Back to AstroPop</NuxtLink
       >
       <p class="astropop-eyebrow astropop-cart-page__eyebrow">
@@ -95,7 +95,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
       </p>
       <NuxtLink
         class="astropop-cart-page__button"
-        to="/astro-pop#pack-your-pop-title"
+        to="/app/astro-pop#pack-your-pop-title"
         >Choose your flavors</NuxtLink
       >
     </section>
@@ -196,7 +196,7 @@ const removeItem = (flavorId: AstroPopFlavorId, name: string) => {
         </p>
         <NuxtLink
           class="astropop-cart-summary__continue"
-          to="/astro-pop#pack-your-pop-title"
+          to="/app/astro-pop#pack-your-pop-title"
           >Continue shopping</NuxtLink
         >
        <AstroPopCheckoutButton />

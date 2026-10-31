@@ -48,7 +48,7 @@ useSeoMeta({
             <p class="destination-postcard__status">Now open</p>
             <h3>Astro Pop<br>Soda Co.</h3>
             <p>A nostalgic soda-commerce experience, bubbling with flavor, character, and a fully considered shopping journey.</p>
-            <NuxtLink class="destination-postcard__link" to="/astro-pop">Visit Astro Pop <span aria-hidden="true">→</span></NuxtLink>
+            <NuxtLink class="destination-postcard__link" to="/app/astro-pop">Visit Astro Pop <span aria-hidden="true">→</span></NuxtLink>
           </article>
 
           <article class="destination-postcard destination-postcard--voyage">

@@ -1,3 +1,5 @@
+import { getCosmoportAppEnabled } from "../../utils/cosmoportCoreDatabase";
+import { getE2eAppEnabled } from "../../utils/e2eAppRegistry";
 import {
     createAstroPopGuestCredential,
     getAstroPopGuestCredential,
@@ -52,6 +54,19 @@ const checkoutSchema = z.object({
 export default defineEventHandler(async (event) => {
 
 
+    // Block new checkout sessions, without disrupting existing Stripe transactions.
+    let enabled: boolean | null;
+    try {
+        enabled = import.meta.dev && process.env.PLAYWRIGHT_TEST === "true"
+            ? getE2eAppEnabled("astro-pop")
+            : await getCosmoportAppEnabled("astro-pop");
+    } catch {
+        throw createError({ status: 503, statusText: "App availability unavailable" });
+    }
+    if (enabled !== true) {
+        throw createError({ status: 503, statusText: "Astro Pop checkout is currently unavailable" });
+    }
+
     const body = await readBody(event);
     const cart = checkoutSchema.safeParse(body);
 
@@ -105,7 +120,7 @@ export default defineEventHandler(async (event) => {
 
     const stripe = new Stripe(secretKey)
 
-    const successUrl = new URL('/astro-pop/checkout/success', appUrl).toString()
+    const successUrl = new URL('/app/astro-pop/checkout/success', appUrl).toString()
 
 
     const existingGuestCredential = getAstroPopGuestCredential(event);
@@ -122,7 +137,7 @@ export default defineEventHandler(async (event) => {
         },
         success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: new URL(
-            '/astro-pop/cart?checkout=cancelled',
+            '/app/astro-pop/cart?checkout=cancelled',
             appUrl
         ).toString(),
     })

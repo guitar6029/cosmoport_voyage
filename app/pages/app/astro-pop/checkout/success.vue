@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import AstroPopNotificationContainer from "../../../components/astro-pop/AstroPopNotificationContainer.vue";
-import { useAstroPopNotifications, type AstroPopNotificationOptions } from "../../../composables/astro-pop/useAstroPopNotifications";
-import { useAstroPopCheckoutConfirmation, type AstroPopCheckoutFinalOutcome } from "../../../composables/useAstroPopCheckoutConfirmation";
-import { useAstroPopCrateStore } from "../../../stores/astroPopCrate";
+import AstroPopNotificationContainer from "../../../../components/astro-pop/AstroPopNotificationContainer.vue";
+import { useAstroPopNotifications, type AstroPopNotificationOptions } from "../../../../composables/astro-pop/useAstroPopNotifications";
+import { useAstroPopCheckoutConfirmation, type AstroPopCheckoutFinalOutcome } from "../../../../composables/useAstroPopCheckoutConfirmation";
+import { useAstroPopCrateStore } from "../../../../stores/astroPopCrate";
 
 const route = useRoute();
 const crateStore = useAstroPopCrateStore();
@@ -99,7 +99,7 @@ onMounted(() => {
       <h1>{{ status === "confirmed" ? "Thank you for your order" : "Checkout update" }}</h1>
       <p :role="status === 'confirmed' ? undefined : 'alert'">{{ message }}</p>
       <p v-if="cartMessage">{{ cartMessage }}</p>
-      <NuxtLink to="/astro-pop/cart">Return to your cart</NuxtLink>
+      <NuxtLink to="/app/astro-pop/cart">Return to your cart</NuxtLink>
     </template>
   </main>
 </template>
