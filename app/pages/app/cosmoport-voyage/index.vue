@@ -9,7 +9,7 @@ import SaffronExpanseSection from "../../../components/cosmoport-voyage/SaffronE
     <main id="hero" class="hero-shell">
       <img
         class="hero-image"
-        src="/images/app/cosmoport-voyage/hero/hero-world.png"
+        src="/images/cosmoport-voyage/hero/hero-world.png"
         alt="A silver rocketliner above a futuristic seaside spaceport resort"
       />
       <div class="hero-scrim" aria-hidden="true"></div>
@@ -28,7 +28,7 @@ import SaffronExpanseSection from "../../../components/cosmoport-voyage/SaffronE
         <div class="hero-description-panel">
           <img
             class="hero-text-panel"
-            src="/images/app/cosmoport-voyage/hero/hero-text-panel.png"
+            src="/images/cosmoport-voyage/hero/hero-text-panel.png"
             alt=""
             aria-hidden="true"
           />

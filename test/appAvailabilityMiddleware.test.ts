@@ -27,20 +27,25 @@ describe("Global mini-app availability middleware", () => {
   );
 
   it("allows a registered enabled mini-app, including nested paths", async () => {
-    mocks.request.mockResolvedValue({ enabled: true });
+    mocks.request.mockResolvedValue({ allowed: true });
     await expect(guard(path("/app/astro-pop/flavors/cherry"))).resolves.toBeUndefined();
     expect(mocks.request).toHaveBeenCalledWith("/api/apps/astro-pop/access");
   });
 
+  it("allows a verified Super Admin when the API grants access despite a disabled flag", async () => {
+    mocks.request.mockResolvedValue({ allowed: true });
+    await expect(guard(path("/app/cosmoport-voyage"))).resolves.toBeUndefined();
+  });
+
   it("redirects a disabled mini-app without rendering the page", async () => {
-    mocks.request.mockResolvedValue({ enabled: false });
+    mocks.request.mockResolvedValue({ allowed: false });
     await expect(guard(path("/app/cosmoport-voyage/destinations"))).resolves.toEqual({
       redirect: "/coming-soon",
     });
   });
 
   it("does not assume a missing database record is public", async () => {
-    mocks.request.mockResolvedValue({ enabled: null });
+    mocks.request.mockResolvedValue({ allowed: null });
     await expect(guard(path("/app/unknown"))).resolves.toEqual({
       error: { statusCode: 404, statusMessage: "Application not found" },
     });

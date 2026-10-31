@@ -12,12 +12,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return abortNavigation(createError({ statusCode: 404, statusMessage: "Application not found" }));
   }
 
-  let enabled: boolean | null;
+  let allowed: boolean | null;
   try {
     const response = await useRequestFetch()<{
-      enabled: boolean | null;
+      allowed: boolean | null;
     }>(`/api/apps/${encodeURIComponent(appId)}/access`);
-    enabled = response.enabled;
+    allowed = response.allowed;
   } catch {
     // Availability cannot be established. Never show a managed app by default.
     return abortNavigation(createError({
@@ -26,8 +26,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }));
   }
 
-  if (enabled === true) return;
-  if (enabled === false) return navigateTo("/coming-soon");
+  if (allowed === true) return;
+  if (allowed === false) return navigateTo("/coming-soon");
 
   return abortNavigation(createError({ statusCode: 404, statusMessage: "Application not found" }));
 });
