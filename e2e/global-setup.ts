@@ -13,7 +13,7 @@ export default async function warmAstroPopCart() {
       window.localStorage.setItem("astropop-crate", JSON.stringify(items));
     }, cartItems);
 
-    const response = await page.goto(`${baseURL}/astro-pop/cart`);
+    const response = await page.goto(`${baseURL}/app/astro-pop/cart`);
 
     if (!response?.ok()) {
       throw new Error(`Astro Pop cart warmup returned HTTP ${response?.status()}`);

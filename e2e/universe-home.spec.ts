@@ -16,12 +16,12 @@ test("presents AstroPop as the only active Grand Concourse experience", async ({
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Explore the Concourse" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Enter AstroPop" })).toHaveAttribute("href", "/astro-pop");
+  await expect(page.getByRole("link", { name: "Enter AstroPop" })).toHaveAttribute("href", "/app/astro-pop");
   await expect(page.getByText("Under Construction", { exact: true })).toBeVisible();
-  await expect(page.locator('a[href="/cosmoport-voyage"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/app/cosmoport-voyage"]')).toHaveCount(0);
 
   await page.getByRole("link", { name: "Enter AstroPop" }).click();
-  await expect(page).toHaveURL(/\/astro-pop$/);
+  await expect(page).toHaveURL(/\/app/astro-pop$/);
 });
 
 test("renders the Grand Concourse illustration when the CDN returns a valid PNG", async ({ page }) => {
@@ -42,7 +42,7 @@ test("shows the designed fallback when the Grand Concourse image is unavailable"
   await expect(page.locator(".grand-concourse__hero-fallback")).toBeVisible();
   await expect(page.locator(".grand-concourse__hero-art img")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Explore the Concourse" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Enter AstroPop" })).toHaveAttribute("href", "/astro-pop");
+  await expect(page.getByRole("link", { name: "Enter AstroPop" })).toHaveAttribute("href", "/app/astro-pop");
 });
 
 test("keeps the hero, auth navigation, and content free of horizontal overflow", async ({ page }) => {
