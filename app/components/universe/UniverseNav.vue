@@ -183,7 +183,7 @@ onBeforeUnmount(() => {
                 <circle cx="12" cy="8" r="3.5" />
                 <path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" />
               </svg>
-              <span>Mission Control</span>
+              <span>Admin Dashboard</span>
             </NuxtLink>
             <div class="universe-nav__menu-item universe-nav__menu-item--unavailable" aria-disabled="true">
               <svg class="universe-nav__menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
