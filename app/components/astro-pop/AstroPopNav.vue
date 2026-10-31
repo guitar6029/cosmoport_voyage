@@ -6,6 +6,10 @@ import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
 const route = useRoute();
 const crateStore = useAstroPopCrateStore();
 const isHomepage = computed(() => route.path === "/app/astro-pop");
+const isAccountPage = computed(() =>
+  route.path === "/app/astro-pop/account" ||
+  route.path.startsWith("/app/astro-pop/account/"),
+);
 const isMenuOpen = ref(false);
 const isMobileMenu = ref(true);
 const menuTrigger = ref<HTMLButtonElement>();
@@ -13,15 +17,6 @@ const closeButton = ref<HTMLButtonElement>();
 const drawer = ref<HTMLElement>();
 let previousBodyOverflow = "";
 let mobileQuery: MediaQueryList | undefined;
-
-const props = withDefaults(
-  defineProps<{
-    variant?: "storefront" | "account"
-  }>(),
-  {
-    variant: "storefront"
-  },
-);
 
 const isMobileNavigation = () => isMobileMenu.value;
 
@@ -133,8 +128,8 @@ onBeforeUnmount(() => {
 
     <div class="navigation__links" aria-label="AstroPop sections">
 
-      <template v-if="props.variant === 'account'">
-        <NuxtLink to="/app/astro-pop/account/orders">
+      <template v-if="isAccountPage">
+        <NuxtLink to="/app/astro-pop/account">
           Orders
         </NuxtLink>
       </template>
@@ -183,7 +178,10 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <nav aria-label="AstroPop mobile sections">
-          <template v-if="isHomepage">
+          <template v-if="isAccountPage">
+            <NuxtLink to="/app/astro-pop/account" @click="closeMenu(false)">Orders</NuxtLink>
+          </template>
+          <template v-else-if="isHomepage">
             <a href="#astropop-flavors-title" @click="closeMenu(false)">Flavors</a>
             <a href="#pack-your-pop-title" @click="closeMenu(false)">Pack Your Pop</a>
             <a href="#astropop-delivery-plans" @click="closeMenu(false)">Delivery</a>
