@@ -121,7 +121,7 @@ describe("CosmoPort Universe navigation", () => {
     app.unmount();
   });
 
-  it("shows an authorized Super Admin a keyboard-accessible Mission Control link", async () => {
+  it("shows an authorized Super Admin a keyboard-accessible Admin Dashboard link", async () => {
     adminAccess.mockResolvedValueOnce({ authorized: true });
     const { app, container } = mountSignedInNavigation();
     await flushAdminAccess();
@@ -131,7 +131,7 @@ describe("CosmoPort Universe navigation", () => {
 
     const missionControl = container.querySelector<HTMLAnchorElement>('a[href="/admin"]');
     expect(adminAccess).toHaveBeenCalledWith("/api/admin/access");
-    expect(missionControl?.textContent).toContain("Mission Control");
+    expect(missionControl?.textContent).toContain("Admin Dashboard");
     expect(missionControl?.classList).toContain("universe-nav__menu-link");
     expect(missionControl?.getAttribute("tabindex")).toBeNull();
     missionControl?.focus();
@@ -139,7 +139,7 @@ describe("CosmoPort Universe navigation", () => {
     app.unmount();
   });
 
-  it("keeps Mission Control hidden from regular authenticated users", async () => {
+  it("keeps Admin Dashboard hidden from regular authenticated users", async () => {
     const { app, container } = mountSignedInNavigation();
     await flushAdminAccess();
 
@@ -151,7 +151,7 @@ describe("CosmoPort Universe navigation", () => {
     app.unmount();
   });
 
-  it("does not request or show Mission Control for signed-out visitors", async () => {
+  it("does not request or show Admin Dashboard for signed-out visitors", async () => {
     authState.value = "signed-out";
     user.value = null;
     const container = document.createElement("div");
@@ -162,11 +162,11 @@ describe("CosmoPort Universe navigation", () => {
     await flushAdminAccess();
 
     expect(adminAccess).not.toHaveBeenCalled();
-    expect(container.textContent).not.toContain("Mission Control");
+    expect(container.textContent).not.toContain("Admin Dashboard");
     app.unmount();
   });
 
-  it("keeps Mission Control hidden when authorization fails", async () => {
+  it("keeps Admin Dashboard hidden when authorization fails", async () => {
     adminAccess.mockRejectedValueOnce(new Error("Authorization unavailable"));
     const { app, container } = mountSignedInNavigation();
     await flushAdminAccess();

@@ -1,21 +1,15 @@
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware(async () => {
+  try {
+    // The server endpoint checks the current Clerk session and private role.
+    // useRequestFetch forwards the incoming cookies during SSR.
+    const { authorized } = await useRequestFetch()<{
+      authorized: boolean;
+    }>("/api/admin/access");
 
-    const { isSignedIn } = useAuth();
+    if (authorized === true) return;
+  } catch {
+    // A failed access check must not allow navigation.
+  }
 
-    if (!isSignedIn.value) return;
-
-    try {
-        const response = await useRequestFetch()<{
-            authorized: boolean
-        }>('/api/admin/access')
-
-        const isAdmin = response.authorized === true
-        if (!isAdmin) {
-            //redirect to home
-            return navigateTo("/");
-        }
-    } catch {
-        // redirect to home
-        return navigateTo("/");
-    }
-})
+  return navigateTo("/");
+});
