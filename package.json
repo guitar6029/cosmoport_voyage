@@ -22,7 +22,6 @@
     "@nuxtjs/sanity": "^2.5.0",
     "@pinia/nuxt": "^1.0.3",
     "@vue/devtools-api": "^8.2.1",
-    "@vercel/analytics": "^2.0.1",
     "nuxt": "^4.0.0",
     "pinia": "^4.1.0",
     "stripe": "^23.0.1",
