@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import AstroPopNotificationContainer from "../../../../components/app/astro-pop/AstroPopNotificationContainer.vue";
+import AstroPopNotificationContainer from "../../../../components/astro-pop/AstroPopNotificationContainer.vue";
 import { useAstroPopNotifications, type AstroPopNotificationOptions } from "../../../../composables/app/astro-pop/useAstroPopNotifications";
 import { useAstroPopCheckoutConfirmation, type AstroPopCheckoutFinalOutcome } from "../../../../composables/useAstroPopCheckoutConfirmation";
 import { useAstroPopCrateStore } from "../../../../stores/astroPopCrate";

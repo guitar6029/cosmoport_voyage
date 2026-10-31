@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AstroPopFooter from "../../../components/app/astro-pop/AstroPopFooter.vue";
-import AstroPopNav from "../../../components/app/astro-pop/AstroPopNav.vue";
+import AstroPopFooter from "../../../components/astro-pop/AstroPopFooter.vue";
+import AstroPopNav from "../../../components/astro-pop/AstroPopNav.vue";
 import { ASTRO_POP_MEDIA } from "../../../data/astroPopMedia";
 import DecorativeImage from "../../../components/shared/DecorativeImage.vue";
 

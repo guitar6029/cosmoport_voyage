@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import AstroPopNav from "../../../../components/app/astro-pop/AstroPopNav.vue";
+import AstroPopNav from "../../../../components/astro-pop/AstroPopNav.vue";
 import { ASTROPOP_FLAVORS } from "../../../../data/astroPopFlavors";
 import { useAstroPopCrateStore } from "../../../../stores/astroPopCrate";
 

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import AstroPopFlavorSection from "../../../components/app/astro-pop/AstroPopFlavorSection.vue";
-import AstroPopPackYourPopSection from "../../../components/app/astro-pop/AstroPopPackYourPopSection.vue";
-import AstroPopDeliverySection from "../../../components/app/astro-pop/AstroPopDeliverySection.vue";
-import AstroPopDeliveryPlansSection from "../../../components/app/astro-pop/AstroPopDeliveryPlansSection.vue";
-import AstroPopDeliveryTestimonialsSection from "../../../components/app/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
-import AstroPopFooter from "../../../components/app/astro-pop/AstroPopFooter.vue";
+import AstroPopFlavorSection from "../../../components/astro-pop/AstroPopFlavorSection.vue";
+import AstroPopPackYourPopSection from "../../../components/astro-pop/AstroPopPackYourPopSection.vue";
+import AstroPopDeliverySection from "../../../components/astro-pop/AstroPopDeliverySection.vue";
+import AstroPopDeliveryPlansSection from "../../../components/astro-pop/AstroPopDeliveryPlansSection.vue";
+import AstroPopDeliveryTestimonialsSection from "../../../components/astro-pop/AstroPopDeliveryTestimonialsSection.vue";
+import AstroPopFooter from "../../../components/astro-pop/AstroPopFooter.vue";
 import DecorativeImage from "../../../components/shared/DecorativeImage.vue";
-import AstroPopNav from "../../../components/app/astro-pop/AstroPopNav.vue";
-import AstroPopNotificationContainer from "../../../components/app/astro-pop/AstroPopNotificationContainer.vue";
+import AstroPopNav from "../../../components/astro-pop/AstroPopNav.vue";
+import AstroPopNotificationContainer from "../../../components/astro-pop/AstroPopNotificationContainer.vue";
 import { ASTRO_POP_MEDIA } from "../../../data/astroPopMedia";
 
 const hasMounted = ref(false);
