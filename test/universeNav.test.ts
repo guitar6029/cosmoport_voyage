@@ -25,6 +25,15 @@ vi.stubGlobal("useAuth", () => ({
 vi.stubGlobal("useUser", () => ({ user }));
 vi.stubGlobal("useSeoMeta", vi.fn());
 vi.stubGlobal("$fetch", adminAccess);
+vi.stubGlobal("useFetch", () => ({
+  data: ref({ apps: [
+    { id: "astro-pop", title: "Astro Pop Soda Co.", description: "Your neighborhood soda shop, now serving the stars.", enabled: true },
+    { id: "cosmoport-voyage", title: "CosmoPort Voyage", description: "Our next departure is still under construction.", enabled: false },
+  ] }),
+  status: ref("success"),
+  error: ref(null),
+  refresh: vi.fn(),
+}));
 
 const mountSignedInNavigation = () => {
   authState.value = "signed-in";
@@ -293,11 +302,11 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain('aria-label="CosmoPort Universe"');
     expect(html).toContain("Explore the Concourse");
     expect(html).toContain("Your neighborhood soda shop, now serving the stars.");
-    expect(html).toContain("Enter AstroPop");
-    expect(html).toContain('href="/astro-pop"');
-    expect(html).toContain("Opening soon");
+    expect(html).toContain("Enter Astro Pop Soda Co.");
+    expect(html).toContain('href="/app/astro-pop"');
+    expect(html).toContain("CosmoPort Voyage");
     expect(html).toContain("Under Construction");
-    expect(html).not.toContain('href="/cosmoport-voyage"');
+    expect(html).not.toContain('href="/app/cosmoport-voyage"');
     expect(html).toContain('href="/passport-office?intent=sign-in"');
     expect(html).toContain('href="/passport-office?intent=register"');
     expect(html).toContain('href="/"');
@@ -314,8 +323,9 @@ describe("CosmoPort Universe navigation", () => {
     expect(source).toContain("heroImage.value?.complete && heroImage.value.naturalWidth === 0");
     expect(source).toContain("heroImage.value?.decode().catch");
     expect(source).toContain('@error="heroFailed = true"');
-    expect(source).toContain("object-fit: contain");
-    expect(source).toContain("prefers-reduced-motion: reduce");
+    const styles = await readFile(resolve(process.cwd(), "app/pages/index.css"), "utf8");
+    expect(styles).toContain("object-fit: contain");
+    expect(styles).toContain("prefers-reduced-motion: reduce");
   });
 
   it("renders the Universe About page with its destinations, engineering story, and home CTA", async () => {
@@ -324,7 +334,7 @@ describe("CosmoPort Universe navigation", () => {
     expect(html).toContain("One Universe.");
     expect(html).toContain("Endless Possibilities.");
     expect(html).toContain("Astro Pop");
-    expect(html).toContain('href="/astro-pop"');
+    expect(html).toContain('href="/app/astro-pop"');
     expect(html).toContain("In development");
     expect(html).toContain("The Engineering");
     expect(html).toContain("Cloudflare");
