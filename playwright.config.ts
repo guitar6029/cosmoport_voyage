@@ -16,7 +16,7 @@ export default defineConfig({
   },
   webServer: {
     command: `PLAYWRIGHT_TEST=true npm run dev -- --host 127.0.0.1 --port ${port}`,
-    url: `${baseURL}/astro-pop/cart`,
+    url: `${baseURL}/app/astro-pop/cart`,
     reuseExistingServer: !env.CI,
     timeout: 120_000,
   },

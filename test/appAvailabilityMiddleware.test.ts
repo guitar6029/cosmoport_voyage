@@ -58,12 +58,13 @@ describe("Global mini-app availability middleware", () => {
     });
   });
 
-  it("redirects legacy client navigation to the guarded namespace", async () => {
-    await expect(guard(path("/astro-pop/cart?checkout=cancelled"))).resolves.toEqual({
-      redirect: "/app/astro-pop/cart?checkout=cancelled",
-    });
-    expect(mocks.request).not.toHaveBeenCalled();
-  });
+  it.each(["/astro-pop", "/astro-pop/cart", "/cosmoport-voyage"])(
+    "ignores retired top-level application routes: %s", async (url) => {
+      await expect(guard(path(url))).resolves.toBeUndefined();
+      expect(mocks.request).not.toHaveBeenCalled();
+      expect(mocks.redirect).not.toHaveBeenCalled();
+    },
+  );
 
   it("rejects an /app route without a valid application id", async () => {
     await expect(guard(path("/app"))).resolves.toEqual({
