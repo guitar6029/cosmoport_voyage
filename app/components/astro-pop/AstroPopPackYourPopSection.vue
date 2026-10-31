@@ -57,7 +57,7 @@ const addBottle = (flavorId: AstroPopFlavorId) => {
       </div>
     </div>
 
-    <NuxtLink class="astropop-pack-your-pop-section__manifest-link" to="/astro-pop/cart">
+    <NuxtLink class="astropop-pack-your-pop-section__manifest-link" to="/app/astro-pop/cart">
       Review order manifest · {{ crateStore.totalBottles }} of 6 bottles
     </NuxtLink>
     <p v-if="confirmation" class="astropop-pack-your-pop-section__confirmation" aria-hidden="true">

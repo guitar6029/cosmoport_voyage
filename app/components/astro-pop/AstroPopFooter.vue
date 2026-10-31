@@ -13,11 +13,11 @@
         <nav aria-labelledby="astropop-footer-explore-title">
           <h3 id="astropop-footer-explore-title">Explore AstroPop</h3>
           <ul>
-            <li><NuxtLink to="/astro-pop/our-story">Our Story</NuxtLink></li>
-            <li><NuxtLink to="/astro-pop/#astropop-flavors-title">Our Marvelous Flavors</NuxtLink></li>
-            <li><NuxtLink to="/astro-pop/#pack-your-pop-title">Pack Your Pop</NuxtLink></li>
-            <li><NuxtLink to="/astro-pop/#astropop-delivery-plans">Delivery Plans</NuxtLink></li>
-            <li><NuxtLink to="/astro-pop/#astropop-delivery-testimonials">Happy Neighbors</NuxtLink></li>
+            <li><NuxtLink to="/app/astro-pop/our-story">Our Story</NuxtLink></li>
+            <li><NuxtLink to="/app/astro-pop/#astropop-flavors-title">Our Marvelous Flavors</NuxtLink></li>
+            <li><NuxtLink to="/app/astro-pop/#pack-your-pop-title">Pack Your Pop</NuxtLink></li>
+            <li><NuxtLink to="/app/astro-pop/#astropop-delivery-plans">Delivery Plans</NuxtLink></li>
+            <li><NuxtLink to="/app/astro-pop/#astropop-delivery-testimonials">Happy Neighbors</NuxtLink></li>
           </ul>
         </nav>
 
@@ -25,7 +25,7 @@
           <h3 id="astropop-footer-universe-title">The Cosmoport Universe</h3>
           <ul>
             <li><NuxtLink to="/">Universe Directory</NuxtLink></li>
-            <li><NuxtLink to="/cosmoport-voyage">Cosmoport Voyage</NuxtLink></li>
+            <li><NuxtLink to="/app/cosmoport-voyage">Cosmoport Voyage</NuxtLink></li>
             <li><a href="#">Back to Top</a></li>
           </ul>
         </nav>

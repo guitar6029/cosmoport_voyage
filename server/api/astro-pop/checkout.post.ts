@@ -7,7 +7,7 @@ import {
 import { z } from 'zod'
 import Stripe from 'stripe'
 import { ASTROPOP_FLAVORS } from '../../../app/data/astroPopFlavors'
-import { MAX_CART_ITEMS, MAX_CRATE_CAPACITY, MAX_QUANTITY_BOTTLES, MIN_CART_ITEMS, MIN_FLAVOR_ID_LENGTH, MIN_QUANTITY_BOTTLES, PRICE_PER_BOTTLE_CENTS } from '../../../app/constants/astro-pop/constants'
+import { MAX_CART_ITEMS, MAX_CRATE_CAPACITY, MAX_QUANTITY_BOTTLES, MIN_CART_ITEMS, MIN_FLAVOR_ID_LENGTH, MIN_QUANTITY_BOTTLES, PRICE_PER_BOTTLE_CENTS } from '../../../app/constants/app/astro-pop/constants'
 import {
     createError,
     defineEventHandler,
@@ -105,7 +105,7 @@ export default defineEventHandler(async (event) => {
 
     const stripe = new Stripe(secretKey)
 
-    const successUrl = new URL('/astro-pop/checkout/success', appUrl).toString()
+    const successUrl = new URL('/app/astro-pop/checkout/success', appUrl).toString()
 
 
     const existingGuestCredential = getAstroPopGuestCredential(event);
@@ -122,7 +122,7 @@ export default defineEventHandler(async (event) => {
         },
         success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: new URL(
-            '/astro-pop/cart?checkout=cancelled',
+            '/app/astro-pop/cart?checkout=cancelled',
             appUrl
         ).toString(),
     })

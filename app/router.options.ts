@@ -6,7 +6,7 @@ export default <RouterConfig>{
       return savedPosition;
     }
 
-    if (to.hash && to.path.replace(/\/$/, "") === "/astro-pop") {
+    if (to.hash && to.path.replace(/\/$/, "") === "/app/astro-pop") {
       return { el: to.hash };
     }
 

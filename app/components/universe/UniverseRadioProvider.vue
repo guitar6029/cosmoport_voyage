@@ -7,7 +7,7 @@ const route = useRoute();
 const { stopForMiniApp, dispose } = useUniverseRadio();
 
 function isMiniApp(path: string) {
-  return ["/astro-pop", "/passport-office", "/cosmoport-voyage"].some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+  return ["/app/astro-pop", "/passport-office", "/app/cosmoport-voyage"].some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
 }
 
 watch(() => route.path, (path) => {
