@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { GRAND_CONCOURSE_MEDIA } from "../data/grandConcourseMedia";
 
 const heroFailed = ref(false);
