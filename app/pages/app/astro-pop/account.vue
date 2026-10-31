@@ -14,13 +14,7 @@ useSeoMeta({
     <section class="account">
         <header class="account__header">
             <h1>My Account</h1>
-
-            <nav aria-label="Astro Pop account sections">
-                <NuxtLink to="/app/astro-pop/account" class="account__nav-link"
-                    exact-active-class="account__nav-link--active">
-                    Orders
-                </NuxtLink>
-            </nav>
+            <AstroPopNav variant="account" />
         </header>
 
         <div class="account__content">

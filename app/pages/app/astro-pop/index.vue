@@ -30,20 +30,14 @@ onMounted(() => {
           <AstroPopNav />
         </div>
 
-        <img
-          class="astropop-hero__image"
-          :src="ASTRO_POP_MEDIA.hero"
-          alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket"
-        />
+        <img class="astropop-hero__image" :src="ASTRO_POP_MEDIA.hero"
+          alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket" />
       </section>
 
       <div class="astropop-flavor-pack-transition">
         <AstroPopFlavorSection class="astropop-flavor-pack-transition__section" />
         <div class="astropop-flavor-pack-transition__artwork" aria-hidden="true">
-          <DecorativeImage
-            class="astropop-flavor-pack-transition__cap"
-            :src="ASTRO_POP_MEDIA.sodaCap"
-          />
+          <DecorativeImage class="astropop-flavor-pack-transition__cap" :src="ASTRO_POP_MEDIA.sodaCap" />
         </div>
         <AstroPopPackYourPopSection class="astropop-flavor-pack-transition__section" />
       </div>

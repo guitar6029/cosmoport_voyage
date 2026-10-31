@@ -14,6 +14,15 @@ const drawer = ref<HTMLElement>();
 let previousBodyOverflow = "";
 let mobileQuery: MediaQueryList | undefined;
 
+const props = withDefaults(
+  defineProps<{
+    variant?: "storefront" | "account"
+  }>(),
+  {
+    variant: "storefront"
+  },
+);
+
 const isMobileNavigation = () => isMobileMenu.value;
 
 const { isLoaded, isSignedIn, signOut } = useAuth();
@@ -123,7 +132,15 @@ onBeforeUnmount(() => {
     </button>
 
     <div class="navigation__links" aria-label="AstroPop sections">
-      <template v-if="isHomepage">
+
+      <template v-if="props.variant === 'account'">
+        <NuxtLink to="/app/astro-pop/account/orders">
+          Orders
+        </NuxtLink>
+      </template>
+
+
+      <template v-else-if="isHomepage">
         <a href="#astropop-flavors-title">Flavors</a>
         <a href="#pack-your-pop-title">Pack Your Pop</a>
         <a href="#astropop-delivery-plans">Delivery</a>
