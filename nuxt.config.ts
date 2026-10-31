@@ -10,7 +10,7 @@ const playwrightServerAuthMock = fileURLToPath(
 );
 
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt", "@vercel/analytics", ...(usePlaywrightAuthMock ? [] : ["@clerk/nuxt"])],
+  modules: ["@nuxtjs/sanity", "@nuxt/fonts", "@pinia/nuxt", ...(usePlaywrightAuthMock ? [] : ["@clerk/nuxt"])],
   clerk: {
     afterSignOutUrl: "/",
     // Playwright exercises existing guest flows without Doppler credentials in CI.
@@ -88,6 +88,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      ...(process.env.NODE_ENV === "production" ? { script: [{ src: "/_vercel/insights/script.js", defer: true }] } : {}),
       title: SITE_TITLE,
       meta: [
         { name: "description", content: SITE_DESCRIPTION },
