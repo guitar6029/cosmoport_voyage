@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
           <circle cx="12" cy="8" r="3.5" />
           <path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" />
         </svg>
-        <NuxtLink v-if="isSignedIn" to="/app/account">Account</NuxtLink>
+        <NuxtLink v-if="isSignedIn" to="/app/astro-pop/account">Account</NuxtLink>
       </div>
       <NuxtLink to="/app/astro-pop/cart" class="navigation__cart"
         :aria-label="`Cart, ${crateStore.totalBottles} bottles`">
