@@ -22,7 +22,7 @@ test.describe("AstroPop route-aware navigation", () => {
     await flavorsLink.click();
 
     await expect(page).toHaveURL(
-      /\/app/astro-pop#astropop-flavors-title$/,
+      /\/app\/astro-pop#astropop-flavors-title$/,
     );
 
     await expect(
