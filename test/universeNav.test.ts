@@ -347,8 +347,8 @@ describe("CosmoPort Universe navigation", () => {
     const [rootPage, appShell, astroPopPage, voyagePage] = await Promise.all([
       readFile(resolve(process.cwd(), "app/pages/index.vue"), "utf8"),
       readFile(resolve(process.cwd(), "app/app.vue"), "utf8"),
-      readFile(resolve(process.cwd(), "app/pages/astro-pop/index.vue"), "utf8"),
-      readFile(resolve(process.cwd(), "app/pages/cosmoport-voyage.vue"), "utf8"),
+      readFile(resolve(process.cwd(), "app/pages/app/astro-pop/index.vue"), "utf8"),
+      readFile(resolve(process.cwd(), "app/pages/app/cosmoport-voyage/index.vue"), "utf8"),
     ]);
 
     expect(rootPage).toContain("<UniverseNav />");

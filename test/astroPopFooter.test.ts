@@ -91,8 +91,8 @@ describe("AstroPop footer", () => {
     expect(footer).toContain('href="/app/astro-pop/#astropop-delivery-plans"');
     expect(footer).toContain('href="/app/astro-pop/#astropop-delivery-testimonials"');
     expect(footer).toContain('href="#"');
-    for (const page of ["index", "cosmoport-voyage"]) {
-      expect(existsSync(new URL(`../app/pages/${page}.vue`, import.meta.url))).toBe(true);
+    for (const page of ["index.vue", "app/cosmoport-voyage/index.vue"]) {
+      expect(existsSync(new URL(`../app/pages/${page}`, import.meta.url))).toBe(true);
     }
   });
 });
