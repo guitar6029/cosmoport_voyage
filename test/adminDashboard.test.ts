@@ -1,4 +1,4 @@
-import { createSSRApp, defineComponent, h } from "vue";
+import { createSSRApp, defineComponent, h, ref } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -27,9 +27,9 @@ describe("Admin Dashboard", () => {
     pageMeta.mockClear();
     fetchMock.mockReset();
     fetchMock.mockResolvedValue({
-      data: { value: { apps: [{ id: "astro-pop", title: "Astro Pop", description: "Soda", enabled: true }] } },
-      status: { value: "success" },
-      error: { value: null },
+      data: ref({ apps: [{ id: "astro-pop", title: "Astro Pop", description: "Soda", enabled: true }] }),
+      status: ref("success"),
+      error: ref(null),
       refresh: vi.fn(),
     });
   });
@@ -51,14 +51,14 @@ describe("Admin Dashboard", () => {
 
   it("shows the empty state only after a successful empty request", async () => {
     fetchMock.mockResolvedValueOnce({
-      data: { value: { apps: [] } }, status: { value: "success" }, error: { value: null }, refresh: vi.fn(),
+      data: ref({ apps: [] }), status: ref("success"), error: ref(null), refresh: vi.fn(),
     });
     expect(await renderDashboard()).toContain("No applications registered yet.");
   });
 
   it("shows an error instead of claiming no apps exist when fetching fails", async () => {
     fetchMock.mockResolvedValueOnce({
-      data: { value: null }, status: { value: "error" }, error: { value: new Error("Failed") }, refresh: vi.fn(),
+      data: ref(null), status: ref("error"), error: ref(new Error("Failed")), refresh: vi.fn(),
     });
     const html = await renderDashboard();
     expect(html).toContain("Unable to load applications");
