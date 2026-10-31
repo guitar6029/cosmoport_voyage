@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import type { CosmoportApp } from "../../../shared/types/cosmoportApp";
 
 const props = defineProps<{

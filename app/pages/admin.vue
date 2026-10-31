@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import CosmoportAppToggleActive from "../components/admin/CosmoportAppToggleActive.vue";
 import type { CosmoportApp } from "../../shared/types/cosmoportApp";
 

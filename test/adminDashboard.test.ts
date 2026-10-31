@@ -5,7 +5,6 @@ import { resolve } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AdminLayout from "../app/layouts/admin.vue";
 import AdminDashboardPage from "../app/pages/admin.vue";
-import Toggle from "../app/components/admin/CosmoportAppToggleActive.vue";
 
 const pageMeta = vi.fn();
 const fetchMock = vi.fn();
