@@ -13,8 +13,8 @@ const updated = {
   enabled: false,
 };
 
-function mount() {
-  const enabled = ref(true);
+function mount(initialEnabled = true) {
+  const enabled = ref(initialEnabled);
   const onUpdated = vi.fn((app: typeof updated) => { enabled.value = app.enabled; });
   const element = document.createElement("div");
   const app = createApp({
@@ -44,7 +44,9 @@ describe("Admin app toggle", () => {
     fetchMock.mockResolvedValue({ app: updated });
     const view = mount();
     expect(view.checkbox.checked).toBe(true);
-    expect(view.checkbox.getAttribute("aria-label")).toBe("Enable Astro Pop Soda Co.");
+    expect(view.checkbox.getAttribute("aria-label")).toBe("Public availability for Astro Pop Soda Co.");
+    expect(view.element.textContent).toContain("Public availability");
+    expect(view.element.textContent).toContain("On");
     view.checkbox.click();
     await flush();
     expect(fetchMock).toHaveBeenCalledWith("/api/admin/apps/astro-pop", {
@@ -52,6 +54,25 @@ describe("Admin app toggle", () => {
     });
     expect(view.onUpdated).toHaveBeenCalledWith(updated);
     expect(view.checkbox.checked).toBe(false);
+    expect(view.element.textContent).toContain("Off");
+    view.app.unmount();
+  });
+
+  it("shows Off initially and On after a successful enable request", async () => {
+    const enabledApp = { ...updated, enabled: true };
+    fetchMock.mockResolvedValue({ app: enabledApp });
+    const view = mount(false);
+    expect(view.checkbox.checked).toBe(false);
+    expect(view.element.textContent).toContain("Off");
+
+    view.checkbox.click();
+    await flush();
+    expect(fetchMock).toHaveBeenCalledWith("/api/admin/apps/astro-pop", {
+      method: "PATCH", body: { enabled: true },
+    });
+    expect(view.onUpdated).toHaveBeenCalledWith(enabledApp);
+    expect(view.checkbox.checked).toBe(true);
+    expect(view.element.textContent).toContain("On");
     view.app.unmount();
   });
 
@@ -71,13 +92,15 @@ describe("Admin app toggle", () => {
   });
 
   it("rolls back the native checkbox and reports a safe error when PATCH fails", async () => {
-    fetchMock.mockRejectedValue(new Error("Sensitive upstream details"));
+    fetchMock.mockRejectedValueOnce(new Error("Sensitive upstream details"));
     const view = mount();
     view.checkbox.click();
-    await flush();
-    expect(view.checkbox.checked).toBe(true);
+    await vi.waitFor(() => {
+      expect(view.checkbox.checked).toBe(true);
+      expect(view.element.querySelector('[role="alert"]')?.textContent).toContain("Unable to update");
+    });
+    expect(view.element.textContent).toContain("On");
     expect(view.onUpdated).not.toHaveBeenCalled();
-    expect(view.element.querySelector('[role="alert"]')?.textContent).toContain("Unable to update");
     expect(view.element.textContent).not.toContain("Sensitive upstream details");
     view.app.unmount();
   });

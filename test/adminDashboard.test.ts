@@ -46,7 +46,9 @@ describe("Admin Dashboard", () => {
     expect(html).toContain('id="admin-dashboard-title"');
     expect(html).toContain("Astro Pop");
     expect(html).toContain("Soda");
-    expect(html).toContain("Enable Astro Pop");
+    expect(html).toContain("Public availability for Astro Pop");
+    expect(html).toContain("Public availability");
+    expect(html).toContain("On");
   });
 
   it("shows the empty state only after a successful empty request", async () => {

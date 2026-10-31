@@ -48,13 +48,16 @@ async function handleChange(event: Event) {
 <template>
   <div class="flex flex-col items-start gap-1">
     <label class="flex cursor-pointer items-center gap-3">
-      <span class="text-sm font-semibold">{{ enabled ? "Enabled" : "Disabled" }}</span>
+      <span class="flex flex-col gap-0.5">
+        <span class="text-xs font-semibold">Public availability</span>
+        <span class="text-xs font-medium">{{ enabled ? "On" : "Off" }}</span>
+      </span>
       <input
         type="checkbox"
         class="toggle"
         :checked="enabled"
         :disabled="saving"
-        :aria-label="`Enable ${appTitle}`"
+        :aria-label="`Public availability for ${appTitle}`"
         @change="handleChange"
       />
     </label>
