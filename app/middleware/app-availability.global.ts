@@ -1,17 +1,28 @@
+/** All managed mini-app routes live under /app/:appId. */
 export default defineNuxtRouteMiddleware(async (to) => {
-    const appId = to.path.split("/")[1];
+  const [, namespace, appId] = to.path.split("/");
+  if (namespace !== "app") return;
 
-    if (!appId) {
-        return;
-    }
+  if (!appId || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(appId) || appId.length > 64) {
+    return abortNavigation(createError({ statusCode: 404, statusMessage: "Application not found" }));
+  }
 
-    console.log("App Availability", appId);
+  let enabled: boolean | null;
+  try {
+    const response = await useRequestFetch()<{
+      enabled: boolean | null;
+    }>(`/api/apps/${encodeURIComponent(appId)}/access`);
+    enabled = response.enabled;
+  } catch {
+    // Availability cannot be established. Never show a managed app by default.
+    return abortNavigation(createError({
+      statusCode: 503,
+      statusMessage: "Application availability unavailable",
+    }));
+  }
 
-    const { enabled } = await useRequestFetch()<{
-        enabled: boolean | null;
-    }>(`/api/apps/${encodeURIComponent(appId)}`);
+  if (enabled === true) return;
+  if (enabled === false) return navigateTo("/coming-soon");
 
-    console.log("Application:", appId);
-    console.log("Enabled:", enabled);
-
-})
+  return abortNavigation(createError({ statusCode: 404, statusMessage: "Application not found" }));
+});

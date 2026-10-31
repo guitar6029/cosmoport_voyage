@@ -58,10 +58,10 @@ const noApps = computed(() =>
         </div>
 
         <div v-else-if="data" class="concourse-experiences__cards">
-          <div v-for="app in data.apps" class="concourse-card">
+          <div v-for="app in data.apps" :key="app.id" class="concourse-card">
             <h2>{{ app.id }}</h2>
             <p>{{ app.description }}</p>
-            <NuxtLink v-if="app.enabled" :to="`/${app.id}`" class="concourse-card__link">
+            <NuxtLink v-if="app.enabled" :to="`/app/${app.id}`" class="concourse-card__link">
               Enter {{ app.title }}
             </NuxtLink>
 
