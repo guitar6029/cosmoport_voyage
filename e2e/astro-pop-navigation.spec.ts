@@ -1,6 +1,61 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("AstroPop route-aware navigation", () => {
+  test("renders order details responsively and returns to order history", async ({ page }) => {
+    const orderId = "f1c2d3e4-5a6b-4c7d-8e9f-0123456789ab";
+    const order = {
+      id: orderId,
+      createdAt: "2026-10-31T12:00:00.000Z",
+      totalCents: 357,
+      currency: "usd",
+      status: "PLACED",
+      paymentStatus: "PAID",
+      items: [{
+        flavorId: "atomic-cherry-fizz",
+        flavorName: "Atomic Cherry Fizz",
+        quantity: 3,
+        unitPriceCents: 119,
+      }],
+    };
+
+    await page.addInitScript(() => {
+      window.localStorage.setItem("playwright-clerk-authenticated", "true");
+    });
+    await page.route("**/api/astro-pop/account/session", (route) => route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ authenticated: true }),
+    }));
+    await page.route("**/api/astro-pop/account/orders", (route) => route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify([order]),
+    }));
+    await page.route(`**/api/astro-pop/account/orders/${orderId}`, (route) => route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(order),
+    }));
+
+    await page.goto("/app/astro-pop");
+    await page.getByRole("link", { name: "Account" }).click();
+    await expect(page).toHaveURL(/\/app\/astro-pop\/account$/);
+    await page.getByRole("link", { name: /View details/i }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/app/astro-pop/account/orders/${orderId}$`));
+    await expect(page.getByRole("heading", { name: /Order #F1C2D3E4/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: "Atomic Cherry Fizz" })).toBeVisible();
+    await expect(page.locator(".order-detail__total").getByText("$3.57", { exact: true })).toBeVisible();
+    await expect(page.locator(".order-detail__card")).toHaveCSS("color", "rgb(58, 44, 53)");
+    await expect(page.locator(".order-detail__header")).toHaveCSS("background-color", "rgb(225, 238, 232)");
+    await expect(page.locator(".order-detail__total")).toHaveCSS("background-color", "rgb(244, 197, 91)");
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.getByText("Line total")).toBeVisible();
+    await expect(page.getByRole("link", { name: /Back to Orders/i })).toBeVisible();
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/app\/astro-pop\/account$/);
+    await expect(page.getByRole("heading", { name: "Order History" })).toBeVisible();
+  });
+
   test("keeps homepage section shortcuts as local anchors", async ({ page }) => {
     await page.goto("/app/astro-pop");
 

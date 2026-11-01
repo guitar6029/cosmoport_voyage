@@ -5,8 +5,10 @@ import type { SignInResource, SignUpResource } from "@clerk/nuxt/types";
 // is only resolved while PLAYWRIGHT_TEST=true; real Clerk tests use the normal
 // module and development instance in playwright.clerk.config.ts.
 const isLoaded = ref(true);
-const isSignedIn = ref(false);
-const user = ref(null);
+const isSignedIn = ref(
+  typeof window !== "undefined" && window.localStorage.getItem("playwright-clerk-authenticated") === "true",
+);
+const user = ref(isSignedIn.value ? {} : null);
 const signOut = ref(async () => undefined);
 const signIn = ref<SignInResource>();
 const signUp = ref<SignUpResource>();
