@@ -44,6 +44,9 @@ export function getAstroPopOrderFromStripe(
     throw new AstroPopOrderValidationError("Session is not a paid AstroPop checkout");
   }
 
+  // clerk id
+  const clerkUserId = session.metadata?.clerk_user_id ?? null;
+
   const customerEmail = session.customer_details?.email ?? session.customer_email;
   if (!customerEmail) {
     throw new AstroPopOrderValidationError("Paid checkout session is missing a customer email");
@@ -87,11 +90,6 @@ export function getAstroPopOrderFromStripe(
   if (lineItemTotal !== session.amount_total) {
     throw new AstroPopOrderValidationError("Paid checkout session total does not match line items");
   }
-
-
-  const clerkUserId =
-    session.metadata?.clerk_user_id ?? null;
-
 
   return {
     clerkUserId,
