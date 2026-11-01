@@ -130,10 +130,14 @@ export default defineEventHandler(async (event) => {
 
 
 
-    // retrive clerk identiy
+    // Associate a checkout only with the verified server-side Clerk identity.
     const auth = getClerkAuth(event);
-
-
+    const userId =
+        auth.isAuthenticated === true &&
+        typeof auth.userId === "string" &&
+        auth.userId.trim().length > 0
+            ? auth.userId
+            : null;
 
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
