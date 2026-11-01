@@ -1,10 +1,10 @@
-# CosmoPort Universe
+# Cosmos Universe
 
 **Live universe:** https://cosmos-universe.com
 
 **Public launch:** October 31, 2026 · **Status:** Live and evolving
 
-**CosmoPort Universe** is a publicly accessible, interconnected collection of fictional experiences built around a colorful, 1950s-inspired **Atomic Age / Atompunk future**. The Grand Concourse connects imaginative destinations, from a neighborhood soda shop to an interplanetary travel terminal, through a shared web application and identity system.
+**Cosmos Universe** is a publicly accessible, interconnected collection of fictional experiences built around a colorful, 1950s-inspired **Atomic Age / Atompunk future**. The Grand Concourse connects imaginative destinations, from a neighborhood soda shop to an interplanetary travel terminal, through a shared web application and identity system.
 
 This is a **portfolio / product-engineering project**, not a real travel-booking service or fulfillment business. It combines immersive UI and storytelling with real application architecture, production deployment, third-party integrations, and automated testing. The public launch marks the beginning of an evolving ecosystem—not the completion of every planned experience.
 
@@ -22,7 +22,7 @@ This is a **portfolio / product-engineering project**, not a real travel-booking
 
 Astro Pop also includes an Our Story page (`/astro-pop/our-story`), individual flavor routes (`/astro-pop/flavors/[slug]`), and a cart (`/astro-pop/cart`).
 
-**Still planned:** issued traveler passports/profiles and account dashboard, cross-app personalization, an interactive Grand Concourse terminal map/directory, deeper CosmoPort Voyage functionality, and internal Mission Control/operations tooling. Existing registration and login do **not** imply that passport issuance or account dashboards exist today.
+**Still planned:** issued traveler passports/profiles, cross-app personalization, an interactive Grand Concourse terminal map/directory, deeper CosmoPort Voyage functionality, and internal Mission Control/operations tooling. Existing registration and login do **not** imply that passport issuance or account dashboards exist today.
 
 ## What has been built
 
@@ -48,7 +48,7 @@ The live site is more than a collection of static pages. Its implementation demo
 
 These are **planned**, not shipping features:
 
-1. **Traveler accounts:** issued passports, profiles, and a personalized dashboard.
+1. **Traveler accounts:** extend the existing Astro Pop account/orders experience toward issued passports, traveler profiles, and a shared dashboard.
 2. **Interactive Grand Concourse:** an explorable map/directory connecting future terminals and apps.
 3. **Mission Control:** internal administration and operational visibility.
 4. **Expanded experiences:** deeper Voyage interactions and additional themed destinations.
@@ -165,4 +165,4 @@ Useful technical references include the [Astro Pop database notes](docs/ASTRO-PO
 
 ---
 
-CosmoPort Universe is a fictional creative and engineering project.
+Cosmos Universe is a fictional creative and engineering project.
