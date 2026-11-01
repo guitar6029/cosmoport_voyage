@@ -1,25 +1,23 @@
-import type { ClerkAuth } from "@clerk/nuxt/server";
+type ClerkSessionAuth = {
+  isAuthenticated?: boolean;
+  userId?: string | null;
+};
 
-type ClerkAuthEvent = {
+type AuthEvent = {
   context: unknown;
 };
 
-/**
- * Accepts Nuxt RequestEvent and legacy H3Event without coupling callers
- * to either framework's event-context type.
- */
-export function getClerkAuth(event: ClerkAuthEvent): ClerkAuth {
+export function getClerkAuth(event: AuthEvent): ClerkSessionAuth {
   const context = event.context;
 
-  if (typeof context !== "object" || context === null || !("auth" in context)) {
+  if (
+    typeof context !== "object" ||
+    context === null ||
+    !("auth" in context) ||
+    typeof context.auth !== "function"
+  ) {
     throw new Error("Clerk authentication context unavailable");
   }
 
-  const auth = context.auth;
-
-  if (typeof auth !== "function") {
-    throw new Error("Clerk authentication context unavailable");
-  }
-
-  return (auth as () => ClerkAuth)();
+  return (context.auth as () => ClerkSessionAuth)();
 }
