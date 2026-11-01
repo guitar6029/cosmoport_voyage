@@ -21,7 +21,7 @@ useSeoMeta({
                 <h1>My Account</h1>
             </header>
 
-        <div class="account__content">
+            <div class="account__content">
                 <div class="account__section-heading">
                     <h2>Order History</h2>
                     <span>Last 30 days</span>
@@ -46,74 +46,60 @@ useSeoMeta({
 
 <style scoped>
 .astro-pop-account-page {
-    min-height: 100vh;
-    background: #ead5b0;
+  min-height: 100vh;
+  background: #ead5b0;
+  color: var(--astropop-ink);
+  font-family: var(--astropop-body-font);
 }
-
 .account {
-    width: min(100% - 2rem, 1200px);
-    margin-inline: auto;
-    padding-block: 2rem 4rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  width: min(100% - 2rem, 75rem);
+  margin-inline: auto;
+  padding-block: clamp(1.5rem, 4vw, 2.5rem) 4rem;
 }
-
-.account__header {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
+.account__header { margin-bottom: clamp(1.5rem, 3vw, 2rem); }
 .account__header h1 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    color: #452c35;
-}
-
-.account__header nav {
-    display: flex;
-    gap: 1rem;
-    border-bottom: 2px solid #452c35;
-}
-
-.account__nav-link {
-    padding: 0.75rem 1rem;
-    color: #452c35;
-    text-decoration: none;
-    font-weight: 700;
-}
-
-.account__nav-link--active {
-    border-bottom: 3px solid #b93637;
-}
-
-.account__content {
-    color: #452c35;
-    flex: 1;
-    min-height: 320px;
+  margin: 0;
+  font-family: var(--astropop-display-font);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.15;
 }
 .account__section-heading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: .75rem;
-    margin-bottom: 1.25rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-bottom: 1.25rem;
 }
-.account__section-heading h2 { font-size: 1.35rem; font-weight: 700; }
+.account__section-heading h2 {
+  margin: 0;
+  font-family: var(--astropop-display-font);
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  font-weight: 800;
+}
 .account__section-heading span { font-size: .9rem; }
 .account__orders { display: grid; gap: 1.5rem; }
 .account__message {
-    padding: 1.5rem;
-    border: 2px solid #452c35;
-    border-radius: 1rem;
-    background: #fff3d6;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: var(--astropop-border-width) solid var(--astropop-card-ink);
+  border-radius: var(--astropop-card-radius);
+  background: #fff3d6;
 }
-.account__message a, .account__message button {
-    display: inline-block;
-    margin-top: 1rem;
-    color: #a83f2e;
-    font-weight: 700;
-    text-decoration: underline;
+.account__message a,
+.account__message button {
+  display: inline-block;
+  margin-top: 1rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--astropop-red);
+  font: 700 1rem var(--astropop-body-font);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.account__message :is(a, button):focus-visible {
+  outline: 3px solid var(--astropop-focus-ring);
+  outline-offset: 4px;
 }
 </style>
