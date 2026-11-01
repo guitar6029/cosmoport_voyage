@@ -65,42 +65,43 @@ const bottleCount = computed(() => props.order.items.reduce((sum, item) => sum +
 <style scoped>
 .order-card {
   overflow: hidden;
-  border: 2px solid #45313a;
-  border-radius: 1rem;
+  border: var(--astropop-border-width) solid var(--astropop-card-ink);
+  border-radius: var(--astropop-card-radius);
   background: #fff3d6;
-  box-shadow: 4px 5px 0 #45313a;
-  color: #45313a;
+  box-shadow: .35rem .4rem 0 var(--astropop-card-ink);
+  color: var(--astropop-ink);
+  font-family: var(--astropop-body-font);
 }
 .order-card__header {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem 3rem;
-  padding: 1rem 1.25rem;
-  border-bottom: 2px solid #45313a;
+  gap: .85rem clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(.9rem, 2vw, 1.25rem);
+  border-bottom: var(--astropop-border-width) solid var(--astropop-card-ink);
   background: #e1eee8;
 }
-.order-card__header > div { display: flex; flex-direction: column; gap: .25rem; }
+.order-card__header > div { display: grid; align-content: start; gap: .25rem; }
+.order-card__header strong { font-size: 1rem; line-height: 1.35; }
 .order-card__eyebrow {
-  font: 700 .76rem/1.2 "Barlow Condensed", Arial, sans-serif;
+  font: 700 .8rem/1.2 var(--astropop-label-font);
   text-transform: uppercase;
   letter-spacing: .09em;
 }
-.order-card__status { color: #0d777a; text-transform: capitalize; }
-.order-card__body { padding: 1rem 1.25rem; }
-.order-card__items { display: grid; gap: .9rem; }
+.order-card__status { color: #116c70; text-transform: capitalize; }
+.order-card__body { padding: clamp(.9rem, 2vw, 1.25rem); }
+.order-card__items { display: grid; gap: 1rem; }
 .order-card__item {
   display: flex;
   align-items: center;
   gap: 1rem;
   min-height: 5.5rem;
+  min-width: 0;
 }
 .order-card__artwork {
   position: relative;
   display: grid;
   place-items: center;
   flex: 0 0 5rem;
-  min-width: 0;
-  min-height: 0;
   width: 5rem;
   height: 5rem;
   border-radius: .75rem;
@@ -113,8 +114,6 @@ const bottleCount = computed(() => props.order.items.reduce((sum, item) => sum +
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  max-width: 100%;
-  max-height: 100%;
   padding: .45rem;
   object-fit: contain;
   object-position: center;
@@ -127,27 +126,29 @@ const bottleCount = computed(() => props.order.items.reduce((sum, item) => sum +
   min-width: 1.6rem;
   padding: .2rem .35rem;
   border-radius: 999px;
-  background: #c43c30;
-  color: white;
+  background: var(--astropop-red);
+  color: #fff;
+  font-size: .85rem;
   font-weight: 700;
+  line-height: 1.3;
   text-align: center;
 }
-.order-card__item-text { display: flex; flex-direction: column; gap: .2rem; }
-.order-card__item-text span { font-size: .9rem; }
+.order-card__item-text { display: grid; gap: .25rem; min-width: 0; }
+.order-card__item-text strong { font-size: 1rem; line-height: 1.4; }
+.order-card__item-text span { font-size: .9rem; line-height: 1.4; }
 .order-card__footer {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: .5rem;
-  margin-top: 1rem;
-  padding-top: .75rem;
-  border-top: 1px solid #b9a28d;
-  font-size: .8rem;
+  gap: .5rem 1rem;
+  margin-top: 1.25rem;
+  padding-top: .85rem;
+  border-top: 1px solid var(--astropop-muted-gold);
+  font-size: .85rem;
+  line-height: 1.5;
 }
 @media (max-width: 600px) {
-  .order-card { min-height: 19rem; }
-  .order-card__header { gap: .8rem 1.5rem; padding: .85rem; }
-  .order-card__body { padding: .85rem; }
+  .order-card__header { gap: .8rem 1.25rem; }
   .order-card__footer { flex-direction: column; }
 }
 </style>
