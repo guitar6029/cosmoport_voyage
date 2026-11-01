@@ -1,8 +1,18 @@
-import type { H3Event } from "h3";
 import type { ClerkAuth } from "@clerk/nuxt/server";
 
-export function getClerkAuth(event: H3Event): ClerkAuth {
-    return (event.context as {
-        auth: () => ClerkAuth;
-    }).auth();
+type ClerkAuthEvent = {
+  context: {
+    auth?: unknown;
+  };
+};
+
+/** Works with both Nuxt RequestEvent and legacy H3Event contexts. */
+export function getClerkAuth(event: ClerkAuthEvent): ClerkAuth {
+  const auth = event.context.auth;
+
+  if (typeof auth !== "function") {
+    throw new Error("Clerk authentication context unavailable");
+  }
+
+  return (auth as () => ClerkAuth)();
 }
