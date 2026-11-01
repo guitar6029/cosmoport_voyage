@@ -33,6 +33,7 @@
   background: #fff3d6;
   box-shadow: .35rem .4rem 0 var(--astropop-card-ink);
 }
+.order-detail__card { overflow: hidden; }
 .order-detail__message { padding: clamp(1.25rem, 3vw, 2rem); }
 .order-detail__message h1 { margin-top: 0; color: var(--astropop-ink); font-family: var(--astropop-display-font); }
 .order-detail__message p { color: var(--astropop-ink); }
