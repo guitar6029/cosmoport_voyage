@@ -134,7 +134,7 @@ export async function isAstroPopOrderRecorded(
 export async function getAstroPopOrdersByUser(
   clerkUserId: string,
   connectionString = process.env.ASTROPOP_POOLED_URL
-): Promise<AstroPopOrderHistory[] | null> {
+): Promise<AstroPopOrderHistory[]> {
 
   assertAstroPopConnectionString(connectionString);
 
