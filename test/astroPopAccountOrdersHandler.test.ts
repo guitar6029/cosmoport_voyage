@@ -48,7 +48,8 @@ describe("Astro Pop account orders endpoint", () => {
     mocks.auth.mockReturnValue({ isAuthenticated: true, userId: "user_owner" });
     mocks.orders.mockResolvedValue(history);
     await expect(handler(event())).resolves.toEqual(history);
-    expect(mocks.orders).toHaveBeenCalledExactlyOnceWith("user_owner");
+    expect(mocks.orders).toHaveBeenCalledOnce();
+    expect(mocks.orders).toHaveBeenCalledWith("user_owner");
   });
   it("returns an empty collection for authenticated users with no orders", async () => {
     mocks.auth.mockReturnValue({ isAuthenticated: true, userId: "user_empty" });
