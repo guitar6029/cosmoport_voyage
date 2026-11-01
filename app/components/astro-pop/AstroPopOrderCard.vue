@@ -88,20 +88,40 @@ const bottleCount = computed(() => props.order.items.reduce((sum, item) => sum +
 .order-card__status { color: #0d777a; text-transform: capitalize; }
 .order-card__body { padding: 1rem 1.25rem; }
 .order-card__items { display: grid; gap: .9rem; }
-.order-card__item { display: flex; align-items: center; gap: 1rem; }
+.order-card__item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 5.5rem;
+}
 .order-card__artwork {
   position: relative;
   display: grid;
   place-items: center;
   flex: 0 0 5rem;
+  min-width: 0;
+  min-height: 0;
   width: 5rem;
   height: 5rem;
   border-radius: .75rem;
   background: #efdbc0;
 }
-.order-card__artwork img { width: 100%; height: 100%; object-fit: contain; }
+.order-card__artwork img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  padding: .45rem;
+  object-fit: contain;
+  object-position: center;
+}
 .order-card__quantity {
   position: absolute;
+  z-index: 1;
   right: -.35rem;
   bottom: -.35rem;
   min-width: 1.6rem;
