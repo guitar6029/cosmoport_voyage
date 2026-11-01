@@ -67,6 +67,7 @@ export function getAstroPopOrderFromStripe(
       throw new AstroPopOrderValidationError("Paid checkout session contains an invalid line item");
     }
 
+
     return {
       flavorId,
       flavorName: lineItem.description,
@@ -87,7 +88,13 @@ export function getAstroPopOrderFromStripe(
     throw new AstroPopOrderValidationError("Paid checkout session total does not match line items");
   }
 
+
+  const clerkUserId =
+    session.metadata?.clerk_user_id ?? null;
+
+
   return {
+    clerkUserId,
     stripeCheckoutSessionId: session.id,
     stripePaymentIntentId: getPaymentIntentId(session.payment_intent),
     customerEmail,

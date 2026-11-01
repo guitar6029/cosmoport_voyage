@@ -8,6 +8,7 @@ export interface AstroPopOrderItem {
 }
 
 export interface AstroPopOrder {
+  clerkUserId: string | null;
   stripeCheckoutSessionId: string;
   stripePaymentIntentId: string | null;
   customerEmail: string;
@@ -79,7 +80,7 @@ export async function persistAstroPopOrder(
         total_cents,
         currency
       ) VALUES (
-        NULL,
+        ${order.clerkUserId},
         ${order.customerEmail},
         ${order.stripeCheckoutSessionId},
         ${order.stripePaymentIntentId},
