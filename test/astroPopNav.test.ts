@@ -50,7 +50,7 @@ describe("AstroPop navigation", () => {
   it("shows Orders without a redundant Account link on the account page", async () => {
     const html = await renderNavigation(0, "/app/astro-pop/account");
     expect(html).toContain('href="/app/astro-pop/account"');
-    expect(html).toContain(">Orders</a>");
+    expect(html).toMatch(/>\s*Orders\s*<\/a>/);
     expect(html).not.toContain(">Account</a>");
   });
 
