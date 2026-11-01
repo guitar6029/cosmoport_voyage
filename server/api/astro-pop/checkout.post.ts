@@ -15,6 +15,7 @@ import {
     defineEventHandler,
     readBody,
 } from "nuxt/server";
+import { getClerkAuth } from "../../utils/getClerkAuth"
 
 const checkoutSchema = z.object({
     items: z.array(
@@ -128,12 +129,23 @@ export default defineEventHandler(async (event) => {
     const guestFingerprint = getAstroPopGuestFingerprint(guestCredential);
 
 
+
+    // Associate a checkout only with the verified server-side Clerk identity.
+    const auth = getClerkAuth(event);
+    const userId =
+        auth.isAuthenticated === true &&
+        typeof auth.userId === "string" &&
+        auth.userId.trim().length > 0
+            ? auth.userId
+            : null;
+
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: lineItems,
         metadata: {
             astro_pop_order: 'true',
             astro_pop_guest_fingerprint: guestFingerprint,
+            ...(userId ? { clerk_user_id: userId } : {}),
         },
         success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: new URL(

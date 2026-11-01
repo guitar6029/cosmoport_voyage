@@ -39,6 +39,7 @@ const lineItems = [
 describe("AstroPop paid-order conversion", () => {
   it("uses Stripe's line-item metadata and amounts for multiple flavors", () => {
     expect(getAstroPopOrderFromStripe(session, lineItems)).toEqual({
+      clerkUserId: null,
       stripeCheckoutSessionId: "cs_test_astro_pop_paid",
       stripePaymentIntentId: "pi_test_astro_pop",
       customerEmail: "traveler@example.com",
@@ -59,6 +60,14 @@ describe("AstroPop paid-order conversion", () => {
         },
       ],
     });
+  });
+
+  it("preserves the verified checkout session Clerk user ID", () => {
+    const signedIn = {
+      ...session,
+      metadata: { astro_pop_order: "true", clerk_user_id: "user_verified" },
+    } as Stripe.Checkout.Session;
+    expect(getAstroPopOrderFromStripe(signedIn, lineItems).clerkUserId).toBe("user_verified");
   });
 
   it("rejects unpaid sessions before any database write can occur", () => {

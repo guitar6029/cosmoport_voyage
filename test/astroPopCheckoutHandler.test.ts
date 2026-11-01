@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => {
     setCredential: vi.fn(),
     stripeClient,
     appEnabled: vi.fn(),
+    getClerkAuth: vi.fn(),
   };
 });
 
@@ -22,6 +23,8 @@ vi.mock("nuxt/server", () => ({
   defineEventHandler: <T>(handler: T) => handler,
   readBody: mocks.readBody,
 }));
+
+vi.mock("../server/utils/getClerkAuth", () => ({ getClerkAuth: mocks.getClerkAuth }));
 
 vi.mock("../server/utils/cosmoportCoreDatabase", () => ({
   getCosmoportAppEnabled: mocks.appEnabled,
@@ -60,6 +63,7 @@ describe("Astro Pop checkout creation handler", () => {
     vi.stubEnv("COSMOPORT_APP_URL", "https://example.test");
     vi.clearAllMocks();
     mocks.appEnabled.mockResolvedValue(true);
+    mocks.getClerkAuth.mockReturnValue({ isAuthenticated: false, userId: null });
     mocks.readBody.mockResolvedValue(cart);
     mocks.getCredential.mockReturnValue(existingCredential);
     mocks.getFingerprint.mockReturnValue("f".repeat(64));
@@ -105,6 +109,16 @@ describe("Astro Pop checkout creation handler", () => {
       existingCredential,
     );
     expect(mocks.setCredential).not.toHaveBeenCalled();
+  });
+
+  it("attaches the verified Clerk identity to a signed-in checkout", async () => {
+    mocks.getClerkAuth.mockReturnValue({ isAuthenticated: true, userId: "user_verified" });
+    await handler({});
+    expect(mocks.stripeClient.checkout.sessions.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({ clerk_user_id: "user_verified" }),
+      }),
+    );
   });
 
   it("reuses one browser credential for multiple checkout sessions", async () => {

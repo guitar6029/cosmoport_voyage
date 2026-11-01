@@ -6,6 +6,10 @@ import { useAstroPopCrateStore } from "../../stores/astroPopCrate";
 const route = useRoute();
 const crateStore = useAstroPopCrateStore();
 const isHomepage = computed(() => route.path === "/app/astro-pop");
+const isAccountPage = computed(() =>
+  route.path === "/app/astro-pop/account" ||
+  route.path.startsWith("/app/astro-pop/account/"),
+);
 const isMenuOpen = ref(false);
 const isMobileMenu = ref(true);
 const menuTrigger = ref<HTMLButtonElement>();
@@ -15,6 +19,8 @@ let previousBodyOverflow = "";
 let mobileQuery: MediaQueryList | undefined;
 
 const isMobileNavigation = () => isMobileMenu.value;
+
+const { isLoaded, isSignedIn, signOut } = useAuth();
 
 const scrollToTop = () => {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -109,29 +115,27 @@ onBeforeUnmount(() => {
 
 <template>
   <nav class="navigation" aria-label="AstroPop navigation">
-    <NuxtLink
-      v-if="!isHomepage && !isMobileNavigation()"
-      class="navigation__cap"
-      to="/app/astro-pop"
-      aria-label="Astro Pop home"
-    >
+    <NuxtLink v-if="!isHomepage && !isMobileNavigation()" class="navigation__cap" to="/app/astro-pop"
+      aria-label="Astro Pop home">
       <img :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
     </NuxtLink>
-    <button
-      v-else
-      ref="menuTrigger"
-      class="navigation__cap"
-      type="button"
+    <button v-else ref="menuTrigger" class="navigation__cap" type="button"
       :aria-expanded="isMobileNavigation() ? isMenuOpen : undefined"
       :aria-controls="isMobileNavigation() ? 'astropop-mobile-menu' : undefined"
-      :aria-label="isMobileNavigation() ? 'Open navigation menu' : 'Back to top'"
-      @click="handleCapClick"
-    >
+      :aria-label="isMobileNavigation() ? 'Open navigation menu' : 'Back to top'" @click="handleCapClick">
       <img :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
     </button>
 
     <div class="navigation__links" aria-label="AstroPop sections">
-      <template v-if="isHomepage">
+
+      <template v-if="isAccountPage">
+        <NuxtLink to="/app/astro-pop/account">
+          Orders
+        </NuxtLink>
+      </template>
+
+
+      <template v-else-if="isHomepage">
         <a href="#astropop-flavors-title">Flavors</a>
         <a href="#pack-your-pop-title">Pack Your Pop</a>
         <a href="#astropop-delivery-plans">Delivery</a>
@@ -140,24 +144,32 @@ onBeforeUnmount(() => {
       <NuxtLink v-else to="/app/astro-pop/#astropop-flavors-title">Shop Flavors</NuxtLink>
     </div>
 
-    <NuxtLink to="/app/astro-pop/cart" class="navigation__cart" :aria-label="`Cart, ${crateStore.totalBottles} bottles`">
-      <img :src="ASTRO_POP_MEDIA.cartCrate" alt="" aria-hidden="true" loading="lazy" />
-      <span class="navigation__cart-count" aria-hidden="true">{{ crateStore.totalBottles }}</span>
-    </NuxtLink>
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.5" />
+          <path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" />
+        </svg>
+        <NuxtLink v-if="isSignedIn && !isAccountPage" to="/app/astro-pop/account">Account</NuxtLink>
+      </div>
+      <NuxtLink to="/app/astro-pop/cart" class="navigation__cart"
+        :aria-label="`Cart, ${crateStore.totalBottles} bottles`">
+        <img :src="ASTRO_POP_MEDIA.cartCrate" alt="" aria-hidden="true" loading="lazy" />
+        <span class="navigation__cart-count" aria-hidden="true">{{ crateStore.totalBottles }}</span>
+      </NuxtLink>
+    </div>
   </nav>
 
   <Teleport to="body">
     <div v-if="isMenuOpen" class="navigation-drawer-wrap">
-      <button class="navigation-drawer__backdrop" type="button" aria-label="Close navigation menu" @click="closeMenu()" />
-      <aside id="astropop-mobile-menu" ref="drawer" class="navigation-drawer" role="dialog" aria-modal="true" aria-label="AstroPop navigation menu">
+      <button class="navigation-drawer__backdrop" type="button" aria-label="Close navigation menu"
+        @click="closeMenu()" />
+      <aside id="astropop-mobile-menu" ref="drawer" class="navigation-drawer" role="dialog" aria-modal="true"
+        aria-label="AstroPop navigation menu">
         <div class="navigation-drawer__header">
-          <NuxtLink
-            v-if="!isHomepage"
-            class="navigation-drawer__home-link"
-            to="/app/astro-pop"
-            aria-label="Astro Pop home"
-            @click="closeMenu(false)"
-          >
+          <NuxtLink v-if="!isHomepage" class="navigation-drawer__home-link" to="/app/astro-pop"
+            aria-label="Astro Pop home" @click="closeMenu(false)">
             <img :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
           </NuxtLink>
           <img v-else :src="ASTRO_POP_MEDIA.sodaCap" alt="" aria-hidden="true" />
@@ -166,7 +178,10 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <nav aria-label="AstroPop mobile sections">
-          <template v-if="isHomepage">
+          <template v-if="isAccountPage">
+            <NuxtLink to="/app/astro-pop/account" @click="closeMenu(false)">Orders</NuxtLink>
+          </template>
+          <template v-else-if="isHomepage">
             <a href="#astropop-flavors-title" @click="closeMenu(false)">Flavors</a>
             <a href="#pack-your-pop-title" @click="closeMenu(false)">Pack Your Pop</a>
             <a href="#astropop-delivery-plans" @click="closeMenu(false)">Delivery</a>

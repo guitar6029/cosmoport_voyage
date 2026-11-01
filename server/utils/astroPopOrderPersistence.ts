@@ -1,5 +1,5 @@
 import type Stripe from "stripe";
-import type { AstroPopOrder, AstroPopOrderItem } from "./astroPopDatabase";
+import type { AstroPopOrder, AstroPopOrderItem } from "../types/astro-pop.types";
 
 const ASTROPOP_ORDER_METADATA_KEY = "astro_pop_order";
 const ASTROPOP_FLAVOR_METADATA_KEY = "astro_pop_flavor_id";
@@ -44,6 +44,9 @@ export function getAstroPopOrderFromStripe(
     throw new AstroPopOrderValidationError("Session is not a paid AstroPop checkout");
   }
 
+  // clerk id
+  const clerkUserId = session.metadata?.clerk_user_id ?? null;
+
   const customerEmail = session.customer_details?.email ?? session.customer_email;
   if (!customerEmail) {
     throw new AstroPopOrderValidationError("Paid checkout session is missing a customer email");
@@ -67,6 +70,7 @@ export function getAstroPopOrderFromStripe(
       throw new AstroPopOrderValidationError("Paid checkout session contains an invalid line item");
     }
 
+
     return {
       flavorId,
       flavorName: lineItem.description,
@@ -88,6 +92,7 @@ export function getAstroPopOrderFromStripe(
   }
 
   return {
+    clerkUserId,
     stripeCheckoutSessionId: session.id,
     stripePaymentIntentId: getPaymentIntentId(session.payment_intent),
     customerEmail,

@@ -1,20 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-
-export interface AstroPopOrderItem {
-  flavorId: string;
-  flavorName: string;
-  quantity: number;
-  unitPriceCents: number;
-}
-
-export interface AstroPopOrder {
-  stripeCheckoutSessionId: string;
-  stripePaymentIntentId: string | null;
-  customerEmail: string;
-  totalCents: number;
-  currency: string;
-  items: readonly AstroPopOrderItem[];
-}
+import { type AstroPopOrderHistory, type AstroPopOrder, type AstroPopOrderHistoryItem } from "../types/astro-pop.types"
 
 export class AstroPopDatabaseConfigurationError extends Error {
   constructor() {
@@ -31,9 +16,8 @@ export class AstroPopDatabaseConfigurationError extends Error {
 export async function getAstroPopDatabaseHealth(
   connectionString = process.env.ASTROPOP_POOLED_URL,
 ) {
-  if (!connectionString) {
-    throw new AstroPopDatabaseConfigurationError();
-  }
+
+  assertAstroPopConnectionString(connectionString);
 
   const sql = neon(connectionString);
   await sql`SELECT 1 AS connected`;
@@ -50,9 +34,8 @@ export async function persistAstroPopOrder(
   order: AstroPopOrder,
   connectionString = process.env.ASTROPOP_POOLED_URL,
 ) {
-  if (!connectionString) {
-    throw new AstroPopDatabaseConfigurationError();
-  }
+
+  assertAstroPopConnectionString(connectionString);
 
   const sql = neon(connectionString);
   const items = JSON.stringify(
@@ -79,7 +62,7 @@ export async function persistAstroPopOrder(
         total_cents,
         currency
       ) VALUES (
-        NULL,
+        ${order.clerkUserId},
         ${order.customerEmail},
         ${order.stripeCheckoutSessionId},
         ${order.stripePaymentIntentId},
@@ -128,9 +111,8 @@ export async function isAstroPopOrderRecorded(
   sessionId: string,
   connectionString = process.env.ASTROPOP_POOLED_URL,
 ): Promise<boolean> {
-  if (!connectionString) {
-    throw new AstroPopDatabaseConfigurationError();
-  }
+
+  assertAstroPopConnectionString(connectionString);
 
   const sql = neon(connectionString);
 
@@ -147,4 +129,75 @@ export async function isAstroPopOrderRecorded(
   }
 
   return rows[0].recorded === true;
+}
+
+export async function getAstroPopOrdersByUser(
+  clerkUserId: string,
+  connectionString = process.env.ASTROPOP_POOLED_URL
+): Promise<AstroPopOrderHistory[]> {
+
+  assertAstroPopConnectionString(connectionString);
+
+  const sql = neon(connectionString)
+
+  const rows = await sql`
+   WITH recent_orders AS (
+  SELECT
+    id,
+    created_at,
+    total_cents,
+    currency,
+    status,
+    payment_status
+  FROM public.orders
+  WHERE clerk_user_id = ${clerkUserId}
+    AND created_at >= NOW() - INTERVAL '30 days'
+  ORDER BY created_at DESC, id DESC
+  LIMIT 20
+)
+SELECT
+  o.*,
+  COALESCE(
+    jsonb_agg(
+      jsonb_build_object(
+        'flavorId', oi.flavor_id,
+        'flavorName', oi.flavor_name,
+        'quantity', oi.quantity,
+        'unitPriceCents', oi.unit_price_cents
+      )
+    ) FILTER (WHERE oi.id IS NOT NULL),
+    '[]'::jsonb
+  ) AS items
+FROM recent_orders o
+LEFT JOIN public.order_items oi
+  ON oi.order_id = o.id
+GROUP BY
+  o.id,
+  o.created_at,
+  o.total_cents,
+  o.currency,
+  o.status,
+  o.payment_status
+ORDER BY o.created_at DESC, o.id DESC;
+  `
+
+  return rows.map((row) => ({
+    id: String(row.id),
+    createdAt: String(row.created_at),
+    totalCents: Number(row.total_cents),
+    currency: String(row.currency),
+    status: String(row.status),
+    paymentStatus: String(row.payment_status),
+    items: row.items as AstroPopOrderHistoryItem[],
+  }));
+
+}
+
+
+function assertAstroPopConnectionString(
+  connectionString: string | undefined,
+): asserts connectionString is string {
+  if (!connectionString) {
+    throw new AstroPopDatabaseConfigurationError();
+  }
 }
