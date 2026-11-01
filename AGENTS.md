@@ -40,8 +40,8 @@ From an existing repository checkout, for example:
 
 ```sh
 git fetch origin main
-git worktree add -b docs/refresh-universe-readme ../cosmoport_voyage-readme origin/main
-cd ../cosmoport_voyage-readme
+git worktree add -b docs/refresh-universe-readme ../cosmos-universe-readme origin/main
+cd ../cosmos-universe-readme
 git rev-parse --show-toplevel
 git branch --show-current
 git status --short --branch
@@ -59,7 +59,7 @@ Choose a unique branch and path instead of reusing this illustrative example. If
 
 ## Project overview
 
-**CosmoPort Universe** is a multi-experience, 1950s Space Age / Atompunk fictional world. The Nuxt 4 application includes:
+**Cosmos Universe** is a multi-experience, 1950s Space Age / Atompunk fictional world. The Nuxt 4 application includes:
 
 - **Grand Concourse (`/`):** Universe homepage, shared navigation and account controls, and CosmoPort Radio.
 - **Astro Pop Soda Co. (`/astro-pop`):** fictional storefront with flavor details, crate/cart, Stripe Checkout integration, server-side validation, notifications, and Neon-backed orders via Stripe webhooks.
