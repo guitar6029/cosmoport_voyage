@@ -42,7 +42,7 @@ test.describe("AstroPop route-aware navigation", () => {
     await expect(page).toHaveURL(new RegExp(`/app/astro-pop/account/orders/${orderId}$`));
     await expect(page.getByRole("heading", { name: /Order #F1C2D3E4/i })).toBeVisible();
     await expect(page.getByRole("img", { name: "Atomic Cherry Fizz" })).toBeVisible();
-    await expect(page.getByText("$3.57", { exact: true })).toBeVisible();
+    await expect(page.locator(".order-detail__total").getByText("$3.57", { exact: true })).toBeVisible();
     await expect(page.locator(".order-detail__card")).toHaveCSS("color", "rgb(58, 44, 53)");
     await expect(page.locator(".order-detail__header")).toHaveCSS("background-color", "rgb(225, 238, 232)");
     await expect(page.locator(".order-detail__total")).toHaveCSS("background-color", "rgb(244, 197, 91)");
