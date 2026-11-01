@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useAstroPopOrder } from "../../../../../composables/useAstroPopOrder";
+import { ASTROPOP_FLAVORS } from "../../../../../data/astroPopFlavors";
 
 const route = useRoute();
 const orderId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
@@ -30,6 +31,11 @@ const formatCurrency = (amountCents: number) => new Intl.NumberFormat("en-US", {
 }).format(amountCents / 100);
 
 const formatStatus = (status: string) => status.replaceAll("_", " ").toLowerCase();
+
+const itemImages = computed(() => order.value?.items.map((item) => ({
+  ...item,
+  image: ASTROPOP_FLAVORS.find((flavor) => flavor.id === item.flavorId)?.bottleImage,
+})) ?? []);
 </script>
 
 <template>
@@ -71,21 +77,36 @@ const formatStatus = (status: string) => status.replaceAll("_", " ").toLowerCase
             <h1 :id="`order-${order.id}-title`">Order #{{ order.id.slice(0, 8).toUpperCase() }}</h1>
             <p>Placed {{ formattedDate }}</p>
           </div>
-          <div class="order-detail__status-grid">
-            <span><b>Order</b> {{ formatStatus(order.status) }}</span>
-            <span><b>Payment</b> {{ formatStatus(order.paymentStatus) }}</span>
+          <div class="order-detail__status-grid" aria-label="Order status">
+            <span class="order-detail__status">
+              <b>Order status</b>
+              {{ formatStatus(order.status) }}
+            </span>
+            <span class="order-detail__status order-detail__status--payment">
+              <b>Payment status</b>
+              {{ formatStatus(order.paymentStatus) }}
+            </span>
           </div>
         </header>
 
         <section class="order-detail__items" aria-labelledby="order-items-title">
           <h2 id="order-items-title">Your crate</h2>
-          <ul>
-            <li v-for="item in order.items" :key="item.flavorId">
-              <div>
-                <strong>{{ item.flavorName }}</strong>
-                <span>{{ item.quantity }} {{ item.quantity === 1 ? "bottle" : "bottles" }} · {{ formatCurrency(item.unitPriceCents) }} each</span>
+          <ul class="order-detail__item-list">
+            <li v-for="item in itemImages" :key="item.flavorId" class="order-detail__item">
+              <div class="order-detail__artwork">
+                <img v-if="item.image" :src="item.image" :alt="item.flavorName" />
+                <span v-else aria-hidden="true">✦</span>
+                <span class="order-detail__quantity" :aria-label="`Quantity ${item.quantity}`">×{{ item.quantity }}</span>
               </div>
-              <strong>{{ formatCurrency(item.quantity * item.unitPriceCents) }}</strong>
+              <div class="order-detail__item-copy">
+                <strong>{{ item.flavorName }}</strong>
+                <span>{{ item.quantity }} {{ item.quantity === 1 ? "bottle" : "bottles" }}</span>
+                <span>{{ formatCurrency(item.unitPriceCents) }} each</span>
+              </div>
+              <div class="order-detail__line-total">
+                <span>Line total</span>
+                <strong>{{ formatCurrency(item.quantity * item.unitPriceCents) }}</strong>
+              </div>
             </li>
           </ul>
         </section>
