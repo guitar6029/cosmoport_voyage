@@ -1,5 +1,4 @@
 import type Stripe from "stripe";
-import type { AstroPopOrder, AstroPopOrderItem } from "./astroPopDatabase";
 
 const ASTROPOP_ORDER_METADATA_KEY = "astro_pop_order";
 const ASTROPOP_FLAVOR_METADATA_KEY = "astro_pop_flavor_id";
