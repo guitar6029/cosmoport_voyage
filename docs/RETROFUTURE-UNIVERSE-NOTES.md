@@ -2,7 +2,7 @@
 
 > **Status:** Creative exploration, not final canon. Names, slogans, planets, and product ideas below are working concepts unless explicitly approved later.
 >
-> **Development principle:** One shared fictional universe, many *possible* standalone experiences, but only one active application at a time. Finish CosmoPort Voyage before building spin-offs.
+> **Historical planning note:** This document captures early world-building ideas from before the Cosmos Universe launch. The current ecosystem contains multiple experiences, and CosmoPort Voyage remains a distinct mini-app. For shipped capabilities and current priorities, see the repository README.
 
 ## The big idea
 
