@@ -3,6 +3,7 @@ import { createSSRApp, h, ref } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AstroPopOrderDetailPage from "../app/pages/app/astro-pop/account/orders/[id].vue";
+import { ASTROPOP_FLAVORS } from "../app/data/astroPopFlavors";
 
 const route = { params: { id: "f1c2d3e4-5a6b-4c7d-8e9f-0123456789ab" } };
 const fetchResult = {
@@ -47,9 +48,12 @@ describe("Astro Pop order detail page", () => {
     };
     const html = await renderPage();
     expect(html).toContain("Atomic Cherry Fizz");
-    expect(html).toContain("3 bottles · $1.19 each");
+    expect(html).toContain("3 bottles");
+    expect(html).toContain("$1.19 each");
     expect(html).toContain("$3.57");
     expect(html).toContain("partially refunded");
+    expect(html).toContain(ASTROPOP_FLAVORS[0].bottleImage);
+    expect(html).toContain("Line total");
     expect(html).toContain('href="/app/astro-pop/account"');
   });
 
