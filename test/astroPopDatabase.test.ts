@@ -9,6 +9,7 @@ vi.mock("@neondatabase/serverless", () => ({
 import {
   AstroPopDatabaseConfigurationError,
   getAstroPopDatabaseHealth,
+  getAstroPopOrdersByUser,
   isAstroPopOrderRecorded,
   persistAstroPopOrder,
 } from "../server/utils/astroPopDatabase";
@@ -54,6 +55,7 @@ describe("Astro Pop database health", () => {
     await expect(
       persistAstroPopOrder(
         {
+          clerkUserId: null,
           stripeCheckoutSessionId: "cs_test_multiple_flavors",
           stripePaymentIntentId: "pi_test_123",
           customerEmail: "traveler@example.com",
@@ -82,7 +84,7 @@ describe("Astro Pop database health", () => {
     expect(sql.mock.calls[0]?.[0].raw.join(" ")).toContain("WITH inserted_order AS");
     expect(sql.mock.calls[0]?.[0].raw.join(" ")).toContain("INSERT INTO public.order_items");
     expect(sql.mock.calls[0]?.[0].raw.join(" ")).toContain("ON CONFLICT (stripe_checkout_session_id) DO NOTHING");
-    expect(sql.mock.calls[0]?.[0].raw.join(" ")).toContain("NULL,");
+    expect(sql.mock.calls[0]?.slice(1)).toContain(null);
     expect(sql.mock.calls[0]?.[0].raw.join(" ")).toContain("jsonb_to_recordset(");
     expect(sql.mock.calls[0]?.slice(1)).toContain(
       JSON.stringify([
@@ -109,6 +111,7 @@ describe("Astro Pop database health", () => {
     await expect(
       persistAstroPopOrder(
         {
+          clerkUserId: null,
           stripeCheckoutSessionId: "cs_test_duplicate",
           stripePaymentIntentId: null,
           customerEmail: "traveler@example.com",
@@ -135,6 +138,7 @@ describe("Astro Pop database health", () => {
     await expect(
       persistAstroPopOrder(
         {
+          clerkUserId: null,
           stripeCheckoutSessionId: "cs_test_database_failure",
           stripePaymentIntentId: null,
           customerEmail: "traveler@example.com",
@@ -152,6 +156,30 @@ describe("Astro Pop database health", () => {
         "postgresql://test.example/astro_pop",
       ),
     ).rejects.toBe(databaseError);
+  });
+
+  it("returns a bounded, ownership-filtered order history with items", async () => {
+    const sql = vi.fn().mockResolvedValue([{
+      id: "order-1", created_at: "2026-11-01T15:00:00Z",
+      total_cents: 357, currency: "usd", status: "PLACED", payment_status: "PAID",
+      items: [{ flavorId: "atomic-cherry-fizz", flavorName: "Atomic Cherry Fizz", quantity: 3, unitPriceCents: 119 }],
+    }]);
+    neonMock.mockReturnValue(sql);
+
+    await expect(getAstroPopOrdersByUser("user_test_123", "postgresql://test.example/astro_pop"))
+      .resolves.toMatchObject([{ id: "order-1", totalCents: 357, items: [{ quantity: 3 }] }]);
+    const query = sql.mock.calls[0]?.[0].raw.join(" ");
+    expect(query).toContain("clerk_user_id =");
+    expect(query).toContain("INTERVAL '30 days'");
+    expect(query).toContain("LIMIT 20");
+    expect(query).toContain("ORDER BY o.created_at DESC, o.id DESC");
+    expect(sql.mock.calls[0]?.slice(1)).toContain("user_test_123");
+  });
+
+  it("returns an empty list when the authenticated user has no recent orders", async () => {
+    neonMock.mockReturnValue(vi.fn().mockResolvedValue([]));
+    await expect(getAstroPopOrdersByUser("user_other", "postgresql://test.example/astro_pop"))
+      .resolves.toEqual([]);
   });
 
   it("returns true when the Checkout Session has a persisted order", async () => {
