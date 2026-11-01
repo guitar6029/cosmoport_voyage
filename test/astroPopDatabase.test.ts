@@ -9,6 +9,7 @@ vi.mock("@neondatabase/serverless", () => ({
 import {
   AstroPopDatabaseConfigurationError,
   getAstroPopDatabaseHealth,
+  getAstroPopOrderByIdForUser,
   getAstroPopOrdersByUser,
   isAstroPopOrderRecorded,
   persistAstroPopOrder,
@@ -180,6 +181,33 @@ describe("Astro Pop database health", () => {
     neonMock.mockReturnValue(vi.fn().mockResolvedValue([]));
     await expect(getAstroPopOrdersByUser("user_other", "postgresql://test.example/astro_pop"))
       .resolves.toEqual([]);
+  });
+
+  it("returns one order with historical line-item prices only when its owner matches", async () => {
+    const sql = vi.fn().mockResolvedValue([{
+      id: "f1c2d3e4-5a6b-4c7d-8e9f-0123456789ab", created_at: "2026-11-01T15:00:00Z",
+      total_cents: 357, currency: "usd", status: "PLACED", payment_status: "PAID",
+      items: [{ flavorId: "atomic-cherry-fizz", flavorName: "Atomic Cherry Fizz", quantity: 3, unitPriceCents: 119 }],
+    }]);
+    neonMock.mockReturnValue(sql);
+
+    await expect(getAstroPopOrderByIdForUser(
+      "f1c2d3e4-5a6b-4c7d-8e9f-0123456789ab", "user_owner", "postgresql://test.example/astro_pop",
+    )).resolves.toMatchObject({ totalCents: 357, items: [{ quantity: 3, unitPriceCents: 119 }] });
+
+    const query = sql.mock.calls[0]?.[0].raw.join(" ");
+    expect(query).toContain("WHERE o.id =");
+    expect(query).toContain("AND o.clerk_user_id =");
+    expect(sql.mock.calls[0]?.slice(1)).toEqual(expect.arrayContaining([
+      "f1c2d3e4-5a6b-4c7d-8e9f-0123456789ab", "user_owner",
+    ]));
+  });
+
+  it("returns null when no order matches the ID and authenticated owner", async () => {
+    neonMock.mockReturnValue(vi.fn().mockResolvedValue([]));
+    await expect(getAstroPopOrderByIdForUser(
+      "f1c2d3e4-5a6b-4c7d-8e9f-0123456789ab", "user_other", "postgresql://test.example/astro_pop",
+    )).resolves.toBeNull();
   });
 
   it("returns true when the Checkout Session has a persisted order", async () => {

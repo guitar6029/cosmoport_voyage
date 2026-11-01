@@ -57,6 +57,9 @@ const bottleCount = computed(() => props.order.items.reduce((sum, item) => sum +
       <footer class="order-card__footer">
         <span>{{ bottleCount }} {{ bottleCount === 1 ? "bottle" : "bottles" }} · {{ order.status.toLowerCase() }}</span>
         <span>Demo checkout · Order #{{ order.id.slice(0, 8).toUpperCase() }}</span>
+        <NuxtLink class="order-card__details-link" :to="`/app/astro-pop/account/orders/${order.id}`">
+          View details <span aria-hidden="true">→</span>
+        </NuxtLink>
       </footer>
     </div>
   </article>
@@ -146,6 +149,16 @@ const bottleCount = computed(() => props.order.items.reduce((sum, item) => sum +
   border-top: 1px solid var(--astropop-muted-gold);
   font-size: .85rem;
   line-height: 1.5;
+}
+.order-card__details-link {
+  color: var(--astropop-red);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: .18em;
+}
+.order-card__details-link:focus-visible {
+  outline: 3px solid var(--astropop-focus-ring);
+  outline-offset: 4px;
 }
 @media (max-width: 600px) {
   .order-card__header { gap: .8rem 1.25rem; }

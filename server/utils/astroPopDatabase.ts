@@ -1,5 +1,10 @@
 import { neon } from "@neondatabase/serverless";
-import { type AstroPopOrderHistory, type AstroPopOrder, type AstroPopOrderHistoryItem } from "../types/astro-pop.types"
+import {
+  type AstroPopOrderDetail,
+  type AstroPopOrderHistory,
+  type AstroPopOrder,
+  type AstroPopOrderHistoryItem,
+} from "../types/astro-pop.types"
 
 export class AstroPopDatabaseConfigurationError extends Error {
   constructor() {
@@ -191,6 +196,66 @@ ORDER BY o.created_at DESC, o.id DESC;
     items: row.items as AstroPopOrderHistoryItem[],
   }));
 
+}
+
+/**
+ * Returns one order only when it belongs to the authenticated Clerk user.
+ * The ownership predicate is part of the SQL query so an order ID can never
+ * be used to discover another customer's purchase details.
+ */
+export async function getAstroPopOrderByIdForUser(
+  orderId: string,
+  clerkUserId: string,
+  connectionString = process.env.ASTROPOP_POOLED_URL,
+): Promise<AstroPopOrderDetail | null> {
+  assertAstroPopConnectionString(connectionString);
+
+  const sql = neon(connectionString);
+  const rows = await sql`
+    SELECT
+      o.id,
+      o.created_at,
+      o.total_cents,
+      o.currency,
+      o.status,
+      o.payment_status,
+      COALESCE(
+        jsonb_agg(
+          jsonb_build_object(
+            'flavorId', oi.flavor_id,
+            'flavorName', oi.flavor_name,
+            'quantity', oi.quantity,
+            'unitPriceCents', oi.unit_price_cents
+          )
+          ORDER BY oi.id
+        ) FILTER (WHERE oi.id IS NOT NULL),
+        '[]'::jsonb
+      ) AS items
+    FROM public.orders o
+    LEFT JOIN public.order_items oi ON oi.order_id = o.id
+    WHERE o.id = ${orderId}
+      AND o.clerk_user_id = ${clerkUserId}
+    GROUP BY
+      o.id,
+      o.created_at,
+      o.total_cents,
+      o.currency,
+      o.status,
+      o.payment_status
+  `;
+
+  const row = rows[0];
+  if (!row) return null;
+
+  return {
+    id: String(row.id),
+    createdAt: String(row.created_at),
+    totalCents: Number(row.total_cents),
+    currency: String(row.currency),
+    status: String(row.status),
+    paymentStatus: String(row.payment_status),
+    items: row.items as AstroPopOrderHistoryItem[],
+  };
 }
 
 
