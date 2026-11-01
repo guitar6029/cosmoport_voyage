@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useAstroPopOrders } from "../../../composables/useAstroPopOrders";
-import AstroPopOrderCard from "../../../components/astro-pop/AstroPopOrderCard.vue";
+import { useAstroPopOrders } from "../../../../composables/useAstroPopOrders";
+import AstroPopOrderCard from "../../../../components/astro-pop/AstroPopOrderCard.vue";
 
 const { orders, pending, error, refresh } = useAstroPopOrders();
 definePageMeta({
