@@ -1,8 +1,8 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: "About | CosmoPort Universe",
-  description: "Discover the imaginative digital worlds and thoughtful engineering behind CosmoPort Universe.",
-  ogTitle: "About | CosmoPort Universe",
+  title: "About | Cosmos Universe",
+  description: "Discover the imaginative digital worlds and thoughtful engineering behind Cosmos Universe.",
+  ogTitle: "About | Cosmos Universe",
   ogDescription: "An expanding collection of digital worlds, built with curiosity and engineered with purpose.",
 });
 </script>
@@ -16,10 +16,10 @@ useSeoMeta({
     <main>
       <section class="universe-about__hero" aria-labelledby="about-title">
         <div class="universe-about__hero-content">
-          <p class="universe-about__eyebrow">CosmoPort Universe · Est. Tomorrow</p>
+          <p class="universe-about__eyebrow">Cosmos Universe · Est. Tomorrow</p>
           <h1 id="about-title">One Universe.<br><em>Endless Possibilities.</em></h1>
           <p class="universe-about__lede">
-            Cosmo Universe is an expanding collection of digital worlds inspired by the optimism,
+            Cosmos Universe is an expanding collection of digital worlds inspired by the optimism,
             imagination, and unmistakable charm of the 1950s Space Age.
           </p>
           <p class="universe-about__intro">
@@ -71,7 +71,7 @@ useSeoMeta({
           <p class="universe-about__eyebrow">Mission control</p>
           <h2 id="engineering-title">The Engineering<br><em>Behind the Magic.</em></h2>
           <p>
-            Cosmo Universe is a place to explore real product development: where design choices,
+            Cosmos Universe is a place to explore real product development: where design choices,
             software systems, and integrations work together to make an experience feel effortless.
           </p>
         </div>
