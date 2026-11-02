@@ -5,6 +5,7 @@ const cdnMedia = (key: string) => `${ASTRO_POP_MEDIA_BASE_URL}/${key}`;
 /** Verified public R2 object keys for Astro Pop media. */
 export const ASTRO_POP_MEDIA = {
   hero: cdnMedia("hero/astropopman-delivers-cosmic-cheer.png"),
+  loadingRocket: cdnMedia("loading/astro-boy-loading.png"),
   deliveryArtwork: cdnMedia("hero/astropop-delivers-retro-soda-adventure.png"),
   sodaCap: cdnMedia("drinks/vintage-astropop-soda-cap.png"),
   bottleOpener: cdnMedia("accents/astro-pop-bottle-opener.png"),
