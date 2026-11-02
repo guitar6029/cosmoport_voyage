@@ -84,6 +84,18 @@ test.describe("AstroPop route-aware navigation", () => {
     await expect(page.getByRole("status", { name: "Fetching your orders..." })).toHaveCount(0);
   });
 
+  test("shows a branded text fallback if the Astro Pop hero image fails", async ({ page }) => {
+    await page.route("**/astro-pop/hero/astropopman-delivers-cosmic-cheer.png", (route) =>
+      route.fulfill({ status: 404, body: "Not found" }),
+    );
+
+    await page.goto("/app/astro-pop");
+    await expect(page.getByRole("heading", { name: "AstroPop Soda Co." })).toBeVisible();
+    await expect(page.getByText("Bringing Tomorrow to Your Doorstep!")).toBeVisible();
+    await expect(page.locator(".astropop-hero__image")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Flavors", exact: true })).toBeVisible();
+  });
+
   test("keeps homepage section shortcuts as local anchors", async ({ page }) => {
     await page.goto("/app/astro-pop");
 
