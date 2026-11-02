@@ -56,6 +56,34 @@ test.describe("AstroPop route-aware navigation", () => {
     await expect(page.getByRole("heading", { name: "Order History" })).toBeVisible();
   });
 
+  test("shows the reusable rocket loader while order history is pending", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("playwright-clerk-authenticated", "true");
+    });
+    await page.route("**/api/astro-pop/account/session", (route) => route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ authenticated: true }),
+    }));
+
+    let releaseOrders: (() => void) | undefined;
+    const waitingForOrders = new Promise<void>((resolve) => { releaseOrders = resolve; });
+    await page.route("**/api/astro-pop/account/orders", async (route) => {
+      await waitingForOrders;
+      await route.fulfill({ contentType: "application/json", body: "[]" });
+    });
+
+    try {
+      await page.goto("/app/astro-pop");
+      await page.getByRole("link", { name: "Account" }).click({ noWaitAfter: true });
+      await expect(page.getByRole("status", { name: "Fetching your orders..." })).toBeVisible();
+    } finally {
+      releaseOrders?.();
+    }
+
+    await expect(page.getByText("No orders in the last 30 days.")).toBeVisible();
+    await expect(page.getByRole("status", { name: "Fetching your orders..." })).toHaveCount(0);
+  });
+
   test("keeps homepage section shortcuts as local anchors", async ({ page }) => {
     await page.goto("/app/astro-pop");
 

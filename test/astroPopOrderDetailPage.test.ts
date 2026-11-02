@@ -21,7 +21,8 @@ vi.stubGlobal("useSeoMeta", () => undefined);
 const NuxtLinkStub = { props: { to: { type: String, required: true } }, template: '<a :href="to"><slot /></a>' };
 const renderPage = () => renderToString(createSSRApp({ render: () => h(AstroPopOrderDetailPage) })
   .component("NuxtLink", NuxtLinkStub)
-  .component("AstroPopNav", { template: "<nav>Astro Pop</nav>" }));
+  .component("AstroPopNav", { template: "<nav>Astro Pop</nav>" })
+  .component("AstroPopLoader", { props: ["message"], template: '<div role="status">{{ message }}</div>' }));
 
 describe("Astro Pop order detail page", () => {
   beforeEach(() => {
@@ -33,7 +34,9 @@ describe("Astro Pop order detail page", () => {
 
   it("shows a loading state while the order is requested", async () => {
     fetchResult.pending.value = true;
-    await expect(renderPage()).resolves.toContain("Loading your order…");
+    const html = await renderPage();
+    expect(html).toContain('role="status"');
+    expect(html).toContain("Fetching your order...");
   });
 
   it("renders historical quantities, prices, statuses, and total", async () => {

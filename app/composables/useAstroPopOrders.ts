@@ -9,6 +9,7 @@ export function useAstroPopOrders() {
     key: "astro-pop-account-orders",
     default: () => [],
     headers: { Accept: "application/json" },
+    lazy: true,
   });
 
   return {

@@ -46,7 +46,7 @@ const itemImages = computed(() => order.value?.items.map((item) => ({
         <span aria-hidden="true">←</span> Back to Orders
       </NuxtLink>
 
-      <p v-if="pending" class="order-detail__message" role="status">Loading your order…</p>
+      <AstroPopLoader v-if="pending" message="Fetching your order..." />
 
       <section v-else-if="errorStatus === 404" class="order-detail__message" role="alert">
         <h1>Order not found</h1>
