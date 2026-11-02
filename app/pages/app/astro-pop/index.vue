@@ -12,6 +12,8 @@ import AstroPopNotificationContainer from "../../../components/astro-pop/AstroPo
 import { ASTRO_POP_MEDIA } from "../../../data/astroPopMedia";
 
 const hasMounted = ref(false);
+const heroLoaded = ref(false);
+const heroFailed = ref(false);
 
 onMounted(() => {
   hasMounted.value = true;
@@ -24,14 +26,26 @@ onMounted(() => {
       <AstroPopNotificationContainer v-if="hasMounted" />
       <section class="astropop-hero" aria-labelledby="astropop-title">
         <NuxtLink class="astropop-home-link" to="/">← Universe directory</NuxtLink>
-        <h1 id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>
-
         <div class="astropop-nav">
           <AstroPopNav />
         </div>
 
-        <img class="astropop-hero__image" :src="ASTRO_POP_MEDIA.hero"
-          alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket" />
+        <div class="astropop-hero__visual">
+          <div v-if="!heroLoaded || heroFailed" class="astropop-hero__fallback">
+            <p class="astropop-hero__eyebrow">A little sparkle in every bottle</p>
+            <h1 id="astropop-title">AstroPop <span>Soda Co.</span></h1>
+            <p class="astropop-hero__tagline">Bringing Tomorrow to Your Doorstep!</p>
+          </div>
+          <h1 v-else id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>
+          <img v-if="!heroFailed" class="astropop-hero__image"
+            :class="{ 'astropop-hero__image--loaded': heroLoaded }"
+            :src="ASTRO_POP_MEDIA.hero"
+            alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket"
+            fetchpriority="high"
+            decoding="async"
+            @load="heroLoaded = true"
+            @error="heroFailed = true" />
+        </div>
       </section>
 
       <div class="astropop-flavor-pack-transition">
@@ -111,13 +125,75 @@ onMounted(() => {
     #e8d3ad;
 }
 
+.astropop-hero__visual {
+  display: grid;
+  width: 100%;
+  flex: 1;
+  place-items: center;
+  min-height: 0;
+}
+
+.astropop-hero__visual > * {
+  grid-area: 1 / 1;
+}
+
+.astropop-hero__fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(.75rem, 2vw, 1.5rem);
+  width: 100%;
+  min-height: min(60vh, 36rem);
+  padding: clamp(2rem, 5vw, 4rem) 1rem;
+  color: #183d4a;
+  text-align: center;
+}
+
+.astropop-hero__eyebrow {
+  margin: 0;
+  color: #a83f2e;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.astropop-hero__fallback h1 {
+  margin: 0;
+  color: #a83f2e;
+  font-family: var(--astropop-display-font), Georgia, serif;
+  font-size: clamp(3.5rem, 11vw, 9rem);
+  font-weight: 900;
+  line-height: .95;
+  text-wrap: balance;
+}
+
+.astropop-hero__fallback h1 span {
+  display: block;
+  font-size: .5em;
+}
+
+.astropop-hero__tagline {
+  max-width: 32rem;
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .astropop-hero__image {
+  opacity: 0;
   display: block;
   width: auto;
   max-width: min(100%, 124rem);
   max-height: calc(100svh - 9.5rem);
   height: auto;
   object-fit: contain;
+}
+
+.astropop-hero__image--loaded {
+  opacity: 1;
 }
 
 .astropop-home-link {
