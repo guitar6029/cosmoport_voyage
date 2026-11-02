@@ -171,6 +171,24 @@ describe("media worker", () => {
     expect(response.headers.get("X-Content-Type-Options")).toBe("nosniff");
   });
 
+  it("serves Astro Pop loading artwork from the existing public prefix with safe image caching", async () => {
+    const key = "astro-pop/loading/astro-boy-loading.png";
+    const { env, get } = enabledEnv({ [key]: "loading-artwork" });
+    const { match, put } = installCache();
+    const { context, pending } = executionContext();
+
+    const response = await dispatch(`/${key}`, env, undefined, context);
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe("loading-artwork");
+    expect(response.headers.get("Content-Type")).toBe("image/png");
+    expect(response.headers.get("Cache-Control")).toContain("s-maxage=300");
+    expect(get).toHaveBeenCalledWith(key);
+    expect(match).toHaveBeenCalledOnce();
+    await Promise.all(pending);
+    expect(put).toHaveBeenCalledOnce();
+  });
+
   it("serves reviewed Passport Office artwork from the public prefix", async () => {
     const key = "passport-office/retro-spaceport-passport-bureau.png";
     const { env, get } = enabledEnv({ [key]: "animated-webp" });
