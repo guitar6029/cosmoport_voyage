@@ -73,7 +73,8 @@ test.describe("AstroPop route-aware navigation", () => {
     });
 
     try {
-      await page.goto("/app/astro-pop/account");
+      await page.goto("/app/astro-pop");
+      await page.getByRole("link", { name: "Account" }).click({ noWaitAfter: true });
       await expect(page.getByRole("status", { name: "Fetching your orders..." })).toBeVisible();
     } finally {
       releaseOrders?.();
