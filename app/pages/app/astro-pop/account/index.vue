@@ -27,7 +27,7 @@ useSeoMeta({
                     <span>Last 30 days</span>
                 </div>
 
-                <p v-if="pending" role="status">Loading your orders…</p>
+                <AstroPopLoader v-if="pending" message="Fetching your orders..." />
                 <div v-else-if="error" class="account__message" role="alert">
                     <p>We couldn't load your orders right now.</p>
                     <button type="button" @click="refresh()">Try again</button>
