@@ -80,7 +80,7 @@ export class TerminalGateController {
     const reservedGate = reserveGate(gate, spacecraftId);
     this.gates.set(reservedGate.id, reservedGate);
 
-    return { outcome: "RESERVED", gate: cloneGate(reservedGate) };
+    return { outcome: "RESERVED", gate: cloneGate(reservedGate) as ReservedGate };
   }
 
   confirmDocking(gateId: GateId, spacecraftId: SpacecraftId): OccupiedGate {
