@@ -14,9 +14,18 @@ import { ASTRO_POP_MEDIA } from "../../../data/astroPopMedia";
 const hasMounted = ref(false);
 const heroLoaded = ref(false);
 const heroFailed = ref(false);
+const heroImage = ref<HTMLImageElement | null>(null);
 
 onMounted(() => {
   hasMounted.value = true;
+  // The browser may finish (or fail) the SSR image request before Vue attaches
+  // its @load/@error listeners during hydration.
+  const image = heroImage.value;
+  if (!image) return;
+  if (image.complete) {
+    if (image.naturalWidth === 0) heroFailed.value = true;
+    else heroLoaded.value = true;
+  }
 });
 </script>
 
@@ -37,7 +46,7 @@ onMounted(() => {
             <p class="astropop-hero__tagline">Bringing Tomorrow to Your Doorstep!</p>
           </div>
           <h1 v-else id="astropop-title" class="sr-only">AstroPop Soda Co.</h1>
-          <img v-if="!heroFailed" class="astropop-hero__image"
+          <img v-if="!heroFailed" ref="heroImage" class="astropop-hero__image"
             :class="{ 'astropop-hero__image--loaded': heroLoaded }"
             :src="ASTRO_POP_MEDIA.hero"
             alt="Vintage AstroPop Soda Co. advertisement featuring a smiling soda delivery man and a flying delivery rocket"
