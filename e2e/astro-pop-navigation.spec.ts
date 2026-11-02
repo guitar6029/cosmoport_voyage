@@ -91,7 +91,7 @@ test.describe("AstroPop route-aware navigation", () => {
 
     await page.goto("/app/astro-pop");
     await expect(page.getByRole("heading", { name: "AstroPop Soda Co." })).toBeVisible();
-    await expect(page.getByText("Bringing Tomorrow to Your Doorstep!")).toBeVisible();
+    await expect(page.locator(".astropop-hero__fallback").getByText("Bringing Tomorrow to Your Doorstep!")).toBeVisible();
     await expect(page.locator(".astropop-hero__image")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Flavors", exact: true })).toBeVisible();
   });
